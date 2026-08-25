@@ -3030,16 +3030,83 @@
   ["incValor","expValor","budgetValor","cardLimite","debtTotal","goalTarget","goalCurrent"].forEach(function(id){
     attachMoneyMask(document.getElementById(id));
   });
-  renderAll();
+    renderAll();
   renderTipFilters();
   renderTipGrid();
   renderDicaDoDia();
   loadLiveRates();
 
   // expose for automated testing only
-  window.__app = { loadSampleData: loadSampleData, state: function(){ return state; }, monthTotals: monthTotals, netWorth: netWorth, accountTotals: accountTotals, cardFatura: cardFatura, simulateProjection: simulateProjection };
+  window.__app = {
+    loadSampleData: loadSampleData,
+    state: function(){ return state; },
+    monthTotals: monthTotals,
+    netWorth: netWorth,
+    accountTotals: accountTotals,
+    cardFatura: cardFatura,
+    simulateProjection: simulateProjection
+  };
 
 })();
 </script>
+
+<!-- Supabase Authentication -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = "https://acjbjocmwukmtocxudwg.supabase.co";
+
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_bGaSjpWnKibqowcO1LWTaA_lEKRwx4U";
+
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  async function checkAccess() {
+
+    // Verificar se existe uma sessão de login
+    const {
+      data: { session },
+      error: sessionError
+    } = await supabaseClient.auth.getSession();
+
+    // Se não estiver logado, mandar para o login
+    if (sessionError || !session) {
+      window.location.href = "/login.html";
+      return;
+    }
+
+    // Verificar se o utilizador possui uma compra ativa
+    const {
+      data: purchase,
+      error
+    } = await supabaseClient
+      .from("purchases")
+      .select("access_active")
+      .eq("user_id", session.user.id)
+      .eq("access_active", true)
+      .limit(1)
+      .maybeSingle();
+
+    // Se não tiver compra ativa, bloquear acesso
+    if (error || !purchase) {
+
+      await supabaseClient.auth.signOut();
+
+      alert("A sua conta não possui uma compra ativa.");
+
+      window.location.href = "/login.html";
+
+      return;
+    }
+
+    // Se chegou aqui, o utilizador tem acesso
+    console.log("Acesso autorizado.");
+  }
+
+  checkAccess();
+</script>
+
 </body>
 </html>
