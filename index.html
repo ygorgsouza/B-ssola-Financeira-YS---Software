@@ -3082,7 +3082,7 @@
       data: purchase,
       error
     } = await supabaseClient
-      .from("purchases")
+      .from("Purchases")
       .select("access_active")
       .eq("user_id", session.user.id)
       .eq("access_active", true)
