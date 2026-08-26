@@ -1335,7 +1335,9 @@
 (function(){
   "use strict";
 
-  var STORAGE_KEY = "bussola_financeira_v4";
+var STORAGE_KEY_BASE = "bussola_financeira_v4";
+var STORAGE_KEY = null;
+var CURRENT_USER_ID = null;
   var ESSENCIAIS = ["Moradia","Alimentação","Transporte","Saúde","Educação","Dívidas"];
   var monthNames = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
 
