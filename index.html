@@ -471,7 +471,8 @@
         <div class="stat-card highlight">
           <div class="stat-label">Património líquido</div>
           <div class="stat-value num" id="statPatrimonio">—</div>
-          <div style="font-size:10.5px; color:var(--on-dark-soft); margin-top:4px;">acumulado desde o início dos registros</div>
+          <div style="font-size:10.5px; color:var(--on-dark-soft); margin-top:4px;">= dinheiro acumulado + investimentos − dívidas e faturas em aberto</div>
+          <div style="font-size:10.2px; color:var(--on-dark-soft); margin-top:6px; opacity:0.85;">Um financiamento (ex.: de um imóvel ou carro) entra aqui como dívida integral desde o dia em que é cadastrado — por isso o património pode ficar bem negativo no início. Isso é esperado: representa tudo que ainda deve. O valor do próprio bem financiado (o imóvel, o carro) não é somado automaticamente; se quiser refletir isso, cadastre-o como uma conta em "Investimentos".</div>
         </div>
       </div>
 
@@ -504,6 +505,7 @@
         <div class="bar-row"><div class="bar-label">Essenciais</div><div class="bar-track"><div class="bar-fill" id="barEssenciais" style="background:var(--rust); width:0%;"></div></div><div class="bar-val num" id="barEssenciaisVal">0%</div></div>
         <div class="bar-row"><div class="bar-label">Não essenciais</div><div class="bar-track"><div class="bar-fill" id="barNaoEssenciais" style="background:var(--amber); width:0%;"></div></div><div class="bar-val num" id="barNaoEssenciaisVal">0%</div></div>
         <div class="bar-row"><div class="bar-label">Investido</div><div class="bar-track"><div class="bar-fill" id="barInvestido" style="background:var(--moss); width:0%;"></div></div><div class="bar-val num" id="barInvestidoVal">0%</div></div>
+        <p class="section-hint" style="margin-top:8px;">Cores por barra: <strong>verde</strong> dentro do limite saudável, <strong>âmbar</strong> perto do limite, <strong>vermelho</strong> fora do recomendado (para Investido a lógica é ao contrário: quanto mais, melhor).</p>
       </div>
     </section>
 
@@ -610,6 +612,7 @@
     <section id="tab-dividas" class="hidden">
       <h2 class="section-title">Dívidas</h2>
       <p class="section-hint">Empréstimos, financiamentos e parcelamentos. Marque as parcelas conforme forem pagas.</p>
+      <p class="section-hint">⚠️ Ao cadastrar um financiamento (ex.: de um imóvel ou carro), o valor total entra imediatamente como dívida no Património líquido do Dashboard — isso é esperado, pois representa tudo que você ainda deve. O valor do próprio bem (o imóvel, o carro) não é somado automaticamente; se quiser refletir isso, cadastre-o como uma conta em "Investimentos".</p>
 
       <div class="form-card">
         <div class="form-row cols-6">
@@ -903,17 +906,46 @@
 
 <div class="modal-overlay hidden" id="helpOverlay">
   <div class="modal-box">
-    <h2>Ajuda rápida</h2>
+    <h2>Ajuda</h2>
+
     <h3>Como meus dados são salvos?</h3>
     <p>Tudo fica salvo apenas neste navegador (localStorage), neste computador. Nada é enviado para a internet. Isso significa privacidade total, mas também que <strong>você</strong> é responsável pelo backup.</p>
+
     <h3>Como faço backup?</h3>
     <p>Clique em "Exportar backup" no rodapé. Isso baixa um arquivo .json. Guarde-o em local seguro (Google Drive, e-mail para você mesmo, etc.). Para restaurar, use "Importar backup".</p>
+
     <h3>Perdi meus dados, e agora?</h3>
     <p>Se você tinha um backup exportado, use "Importar backup". Sem um backup, infelizmente os dados não podem ser recuperados — por isso a recomendação de exportar regularmente.</p>
+
     <h3>O painel funciona offline?</h3>
     <p>Sim, quase tudo. Só as taxas Selic/CDI na aba Educação precisam de internet para atualizar — sem conexão, mostram um valor de referência.</p>
+
     <h3>O que significa cada aba?</h3>
     <p><strong>Dashboard</strong>: visão geral do mês. <strong>Rendimentos/Despesas</strong>: seu fluxo de caixa. <strong>Cartões/Dívidas</strong>: suas obrigações. <strong>Investimentos</strong>: suas aplicações e rendimentos reais. <strong>Projeções</strong>: simulação futura. <strong>Metas</strong>: objetivos financeiros. <strong>Análises</strong>: gráficos e tendências. <strong>Educação</strong>: dicas e taxas de mercado.</p>
+
+    <h3>Como funciona o Património líquido?</h3>
+    <p>É calculado como <strong>dinheiro acumulado + investimentos − dívidas e faturas em aberto</strong>. Ao cadastrar um financiamento (ex.: de um imóvel), o valor total entra <strong>imediatamente</strong> como dívida, então o número pode ficar bem negativo no início — isso é esperado, pois representa tudo que ainda deve. O valor do bem em si (o imóvel, o carro) não é somado automaticamente; se quiser refletir isso, cadastre-o como uma conta em Investimentos.</p>
+
+    <h3>O que são os alertas do Dashboard?</h3>
+    <p>São avisos automáticos sobre saldo, uso do cartão, dívidas atrasadas, orçamento estourado e progresso de investimento, coloridos por gravidade: <strong style="color:var(--moss);">verde</strong> = ok, <strong style="color:var(--amber);">âmbar</strong> = atenção, <strong style="color:var(--rust);">vermelho</strong> = requer ação.</p>
+
+    <h3>Como funcionam as cores da distribuição de renda?</h3>
+    <p>No Dashboard, as barras de Essenciais, Não essenciais e Investido mudam de cor conforme a porcentagem da renda: <strong style="color:var(--moss);">verde</strong> dentro do limite saudável, <strong style="color:var(--amber);">âmbar</strong> perto do limite, <strong style="color:var(--rust);">vermelho</strong> fora do recomendado. Para Investido a lógica é invertida — quanto mais, melhor.</p>
+
+    <h3>Como funciona o PIN de proteção?</h3>
+    <p>Um PIN de 4 dígitos evita que outra pessoa abra o painel casualmente — não é criptografia real. Ao definir um PIN, você recebe um <strong>código de recuperação único</strong>; guarde-o em local seguro, pois é a única forma de destravar o painel caso esqueça o PIN.</p>
+
+    <h3>Editar ou excluir um lançamento</h3>
+    <p>Em Rendimentos, Despesas, Cartões, Dívidas e Investimentos, cada linha tem ícones de editar (✎) e excluir. Excluir mostra um aviso de "desfazer" por alguns segundos, caso tenha sido engano.</p>
+
+    <h3>Como funciona o relatório em PDF?</h3>
+    <p>Em "Gerar relatório (PDF)" no rodapé, escolha o mês (ou "todos os meses") e o painel monta um relatório com capa, resumo executivo, despesas por categoria, orçamento, cartões/dívidas, investimentos e metas — pronto para salvar como PDF pela tela de impressão do navegador.</p>
+
+    <h3>Como funcionam as Projeções e Metas?</h3>
+    <p>Projeções simulam sua evolução futura com base no padrão atual de receitas, despesas e investimento. Metas permitem definir um objetivo com valor e prazo, acompanhando o progresso automaticamente conforme você registra aportes.</p>
+
+    <p class="callout" style="margin-top:16px;">Precisa de mais explicações, exemplos práticos e dicas de organização financeira? A aba <strong>Educação</strong> tem um guia completo, com a regra 50/30/20, reserva de emergência, percentuais por perfil de investidor e erros comuns de quem está começando.</p>
+
     <h3>Versão</h3>
     <p>Bússola Financeira v<span id="helpVersionLabel"></span></p>
     <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
@@ -929,10 +961,35 @@
     <h2 id="pinModalTitle">Definir PIN</h2>
     <p>Um PIN simples de 4 dígitos para evitar que outra pessoa abra seus dados casualmente. <strong>Não é criptografia real</strong> — quem tiver acesso ao arquivo no computador ainda pode contornar isso tecnicamente. É só uma proteção contra olhares casuais.</p>
     <input type="text" id="pinInput" maxlength="4" inputmode="numeric" placeholder="0000" style="width:100%; padding:10px; font-size:20px; text-align:center; letter-spacing:8px; border:1px solid var(--line); border-radius:8px; background:var(--surface);">
+    <p style="font-size:12px; color:var(--text-soft); margin-top:10px;">Ao salvar, você recebe um <strong>código de recuperação</strong> — guarde-o em local seguro (gerenciador de senhas, papel). É a única forma de destravar o painel se esquecer o PIN.</p>
     <div class="modal-close-row">
       <button class="btn btn-ghost btn-sm" id="pinRemoveBtn">Remover PIN</button>
       <button class="btn btn-ghost btn-sm" id="pinCancelBtn">Cancelar</button>
       <button class="btn btn-primary btn-sm" id="pinSaveBtn">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="pinRecoveryRevealOverlay">
+  <div class="modal-box" style="max-width:380px;">
+    <h2>Guarde seu código de recuperação</h2>
+    <p>Se esquecer o PIN, é este código que permite destravar o painel — sem ele, seus dados salvos neste navegador ficam inacessíveis (nenhum servidor guarda essa informação). Ele só aparece <strong>uma vez</strong>, agora.</p>
+    <div id="pinRecoveryCodeBox" style="font-size:22px; font-weight:700; letter-spacing:0.08em; text-align:center; padding:14px; border:1px dashed var(--line); border-radius:8px; background:var(--surface); margin:10px 0;">—</div>
+    <p style="font-size:12px; color:var(--text-soft);">Sugestões seguras: salve num gerenciador de senhas, anote em papel guardado num local seguro, ou envie para si mesmo por e-mail com um assunto discreto. Evite guardá-lo num arquivo de texto solto no mesmo computador.</p>
+    <div class="modal-close-row"><button class="btn btn-primary btn-sm" id="pinRecoveryRevealCloseBtn">Guardei o código</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="pinRecoveryUseOverlay">
+  <div class="modal-box" style="max-width:380px;">
+    <h2>Esqueci o PIN</h2>
+    <p>Digite o código de recuperação que foi mostrado quando você definiu o PIN.</p>
+    <input type="text" id="pinRecoveryCodeInput" placeholder="XXXX-XXXX" style="width:100%; padding:10px; font-size:16px; text-align:center; letter-spacing:2px; border:1px solid var(--line); border-radius:8px; background:var(--surface); text-transform:uppercase;">
+    <div class="err" id="pinRecoveryErr" style="color:var(--rust); font-size:12.5px; min-height:16px; margin-top:6px;"></div>
+    <p style="font-size:12px; color:var(--text-soft);">Não tem o código? Como o PIN não é criptografia real e os dados ficam só neste navegador, não existe outra forma de recuperação — o código é a única chave. Se realmente o perdeu, será preciso limpar os dados deste painel para voltar a usá-lo (Ajustes → Limpar dados), o que apaga tudo que estiver salvo aqui.</p>
+    <div class="modal-close-row">
+      <button class="btn btn-ghost btn-sm" id="pinRecoveryUseCancelBtn">Cancelar</button>
+      <button class="btn btn-primary btn-sm" id="pinRecoveryUseSubmitBtn">Destravar</button>
     </div>
   </div>
 </div>
@@ -1388,6 +1445,27 @@
     for(var i=0;i<str.length;i++){ h = ((h<<5)-h+str.charCodeAt(i))|0; }
     return String(h);
   }
+  /* Gera um código de recuperação de PIN legível (sem caracteres ambíguos como 0/O, 1/I).
+     Usa crypto.getRandomValues quando disponível para uma aleatoriedade mais forte. */
+  function generateRecoveryCode(){
+    var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    var out = "";
+    var bytes = new Uint8Array(8);
+    if(window.crypto && window.crypto.getRandomValues){ window.crypto.getRandomValues(bytes); }
+    else { for(var b=0;b<8;b++){ bytes[b] = Math.floor(Math.random()*256); } }
+    for(var i=0;i<8;i++){
+      out += chars[bytes[i] % chars.length];
+      if(i===3) out += "-";
+    }
+    return out;
+  }
+  function showRecoveryCodeReveal(code){
+    document.getElementById("pinRecoveryCodeBox").textContent = code;
+    document.getElementById("pinRecoveryRevealOverlay").classList.remove("hidden");
+  }
+  document.getElementById("pinRecoveryRevealCloseBtn").addEventListener("click", function(){
+    document.getElementById("pinRecoveryRevealOverlay").classList.add("hidden");
+  });
   document.getElementById("pinToggle").addEventListener("click", function(){
     document.getElementById("pinModalTitle").textContent = state.pin ? "Alterar ou remover PIN" : "Definir PIN";
     document.getElementById("pinInput").value = "";
@@ -1399,12 +1477,14 @@
     var v = document.getElementById("pinInput").value.trim();
     if(!/^\d{4}$/.test(v)){ showToast("Digite exatamente 4 números."); return; }
     state.pin = simpleHash(v);
+    var code = generateRecoveryCode();
+    state.pinRecoveryHash = simpleHash(code);
     saveState();
     document.getElementById("pinOverlay").classList.add("hidden");
-    showToast("PIN definido.");
+    showRecoveryCodeReveal(code);
   });
   document.getElementById("pinRemoveBtn").addEventListener("click", function(){
-    state.pin = null; saveState();
+    state.pin = null; state.pinRecoveryHash = null; saveState();
     document.getElementById("pinOverlay").classList.add("hidden");
     showToast("PIN removido.");
   });
@@ -1415,7 +1495,8 @@
     lock.innerHTML = '<div style="font-size:15px; text-transform:uppercase; letter-spacing:0.06em; color:var(--on-dark-soft);">Bússola Financeira</div>'+
       '<input type="password" id="lockInput" maxlength="4" inputmode="numeric" placeholder="••••">'+
       '<div class="err" id="lockErr"></div>'+
-      '<button class="btn btn-primary btn-sm" id="lockSubmit">Entrar</button>';
+      '<button class="btn btn-primary btn-sm" id="lockSubmit">Entrar</button>'+
+      '<a href="#" id="lockForgotBtn" style="margin-top:14px; font-size:12.5px; color:var(--on-dark-soft); text-decoration:underline;">Esqueci o PIN</a>';
     document.body.appendChild(lock);
     function tryUnlock(){
       var v = document.getElementById("lockInput").value.trim();
@@ -1424,7 +1505,28 @@
     }
     document.getElementById("lockSubmit").addEventListener("click", tryUnlock);
     document.getElementById("lockInput").addEventListener("keydown", function(e){ if(e.key==="Enter") tryUnlock(); });
+    document.getElementById("lockForgotBtn").addEventListener("click", function(e){
+      e.preventDefault();
+      document.getElementById("pinRecoveryCodeInput").value = "";
+      document.getElementById("pinRecoveryErr").textContent = "";
+      document.getElementById("pinRecoveryUseOverlay").classList.remove("hidden");
+    });
   }
+  document.getElementById("pinRecoveryUseCancelBtn").addEventListener("click", function(){
+    document.getElementById("pinRecoveryUseOverlay").classList.add("hidden");
+  });
+  document.getElementById("pinRecoveryUseSubmitBtn").addEventListener("click", function(){
+    var v = document.getElementById("pinRecoveryCodeInput").value.trim().toUpperCase();
+    if(!v || simpleHash(v) !== state.pinRecoveryHash){
+      document.getElementById("pinRecoveryErr").textContent = "Código de recuperação incorreto.";
+      return;
+    }
+    state.pin = null; state.pinRecoveryHash = null; saveState();
+    document.getElementById("pinRecoveryUseOverlay").classList.add("hidden");
+    var lock = document.getElementById("lockScreen");
+    if(lock) lock.remove();
+    showToast("PIN removido com o código de recuperação. Defina um novo PIN quando quiser em 🔒.");
+  });
   if(state.pin){ showLockScreen(); }
 
   var ownerInput = document.getElementById("ownerName");
@@ -2353,16 +2455,27 @@
     });
     var pctEss = t.income>0 ? (essTotal/t.income)*100 : 0;
     var pctNao = t.income>0 ? (naoEssTotal/t.income)*100 : 0;
-    setBar("barEssenciais","barEssenciaisVal", pctEss, fmtMoney(essTotal));
-    setBar("barNaoEssenciais","barNaoEssenciaisVal", pctNao, fmtMoney(naoEssTotal));
-    setBar("barInvestido","barInvestidoVal", pctInvested, fmtMoney(t.invest));
+    setBar("barEssenciais","barEssenciaisVal", pctEss, fmtMoney(essTotal), "essenciais");
+    setBar("barNaoEssenciais","barNaoEssenciaisVal", pctNao, fmtMoney(naoEssTotal), "naoessenciais");
+    setBar("barInvestido","barInvestidoVal", pctInvested, fmtMoney(t.invest), "investido");
 
     renderAlerts();
   }
 
-  function setBar(fillId, valId, pct, moneyText){
+  /* Classifica a porcentagem de cada barra da distribuição de renda em verde (dentro do
+     limite saudável), amarelo (perto do limite) ou vermelho (fora do limite recomendado).
+     Para "investido" a lógica é invertida: quanto mais, melhor. */
+  function classifyBarPct(kind, pct){
+    if(kind==="essenciais"){ if(pct<=50) return "var(--moss)"; if(pct<=60) return "var(--amber)"; return "var(--rust)"; }
+    if(kind==="naoessenciais"){ if(pct<=30) return "var(--moss)"; if(pct<=35) return "var(--amber)"; return "var(--rust)"; }
+    if(kind==="investido"){ if(pct>=20) return "var(--moss)"; if(pct>=10) return "var(--amber)"; return "var(--rust)"; }
+    return "var(--brass)";
+  }
+  function setBar(fillId, valId, pct, moneyText, kind){
     var clamped = Math.max(0, Math.min(100, pct));
-    document.getElementById(fillId).style.width = clamped + "%";
+    var fillEl = document.getElementById(fillId);
+    fillEl.style.width = clamped + "%";
+    if(kind){ fillEl.style.background = classifyBarPct(kind, pct); }
     document.getElementById(valId).textContent = moneyText + " (" + pct.toFixed(0) + "%)";
   }
 
