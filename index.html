@@ -72,7 +72,19 @@
   .owner-field::placeholder{color:#8A9587;}
   .month-nav{display:flex; align-items:center; gap:10px;}
   .month-nav button{background:rgba(255,255,255,0.08); border:1px solid #4C5C4F; color:#F4EFDF; border-radius:7px; width:30px; height:30px; cursor:pointer; font-size:14px;}
-  .theme-toggle{background:rgba(255,255,255,0.08); border:1px solid #4C5C4F; color:#F4EFDF; border-radius:999px; width:34px; height:34px; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center;}
+  .theme-toggle{background:rgba(255,255,255,0.08); border:1px solid #4C5C4F; color:#F4EFDF; border-radius:999px; width:34px; height:34px; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center; transition:transform .15s ease, background .15s ease;}
+  .theme-toggle:hover{ transform:translateY(-1px); background:rgba(255,255,255,0.14); }
+  .bell-toggle{position:relative;}
+  .bell-badge{position:absolute; top:-4px; right:-4px; background:var(--rust); color:#fff; font-size:10px; font-weight:700; min-width:16px; height:16px; border-radius:999px; display:flex; align-items:center; justify-content:center; padding:0 3px; line-height:1;}
+  .info-dot{width:15px; height:15px; border-radius:50%; border:1px solid currentColor; background:none; color:inherit; font-size:9.5px; font-weight:700; cursor:pointer; padding:0; line-height:1; opacity:0.65; vertical-align:middle; margin-left:2px;}
+  .info-dot:hover{ opacity:1; }
+  .health-card{border-radius:var(--radius); border:1px solid var(--line); padding:18px 20px; background:var(--surface);}
+  .health-top{display:flex; align-items:center; gap:12px; margin-bottom:12px;}
+  .health-emoji{font-size:26px;}
+  .health-title{font-family:'Fraunces', serif; font-size:17px; font-weight:600;}
+  .health-factors{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:10px; margin-top:12px;}
+  .health-factor{display:flex; align-items:center; gap:8px; font-size:12.5px; padding:8px 10px; border-radius:8px; background:var(--surface-2);}
+  .health-factor .hf-dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
   .theme-toggle:hover{background:rgba(255,255,255,0.16);}
 
   select.has-add{cursor:pointer;}
@@ -110,6 +122,9 @@
 
   /* ===== FAQ / Ajuda em accordion ===== */
   .faq-list{ border-top:1px solid var(--line); margin-top:6px; }
+  .help-cat-filters{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px;}
+  .help-cat-filter{font-size:11.5px; font-weight:600; padding:5px 12px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--text-soft); cursor:pointer; transition:all .15s ease;}
+  .help-cat-filter.active{background:var(--brass); color:#fff; border-color:var(--brass);}
   .faq-item{ border-bottom:1px solid var(--line); }
   .faq-q{ width:100%; text-align:left; background:none; border:none; padding:14px 2px; display:flex; justify-content:space-between; align-items:center; gap:10px; cursor:pointer; font-size:13.5px; font-weight:600; color:var(--text); transition:color .15s ease; }
   .faq-q:hover{ color:var(--brass); }
@@ -139,7 +154,7 @@
   .stat-card.highlight .stat-label{color:#C9BFA0;}
   .stat-label{font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-soft); margin:0 0 8px; text-align:center;}
   .stat-value{font-size:32px; font-weight:700; line-height:1.1; text-align:center;}
-  .stat-value.rust{color:var(--rust);} .stat-value.moss{color:var(--moss);}
+  .stat-value.rust{color:var(--rust);} .stat-value.moss{color:var(--moss);} .stat-value.accent{color:var(--accent2);}
   .stat-card-icon{width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:17px; margin-bottom:10px; transition:transform .25s cubic-bezier(.16,.8,.3,1);}
   .stat-card:hover .stat-card-icon{ transform:scale(1.12) rotate(-4deg); }
   .stat-card-icon.moss-tone{background:var(--moss-bg); color:var(--moss-text);}
@@ -542,6 +557,7 @@
       </div>
     </div>
     <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+      <button id="bellToggle" class="theme-toggle bell-toggle" aria-label="Central de alertas" title="Central de alertas e insights">🔔<span class="bell-badge" id="bellBadge" style="display:none;">0</span></button>
       <button id="helpToggle" class="theme-toggle" aria-label="Ajuda" title="Ajuda / manual rápido">?</button>
       <button id="themeToggle" class="theme-toggle" aria-label="Alternar modo claro/escuro" title="Alternar modo claro/escuro">☀️</button>
       <div class="month-nav">
@@ -607,12 +623,14 @@
           <div id="statInvestTrend"></div>
         </div>
         <div class="stat-card highlight">
-          <div class="stat-label">Património líquido</div>
+          <div class="stat-label">Património líquido <button type="button" class="info-dot" data-help-cat="Património" title="Como isso é calculado?">?</button></div>
           <div class="stat-value num" id="statPatrimonio">—</div>
           <div id="statPatrimonioTrend"></div>
           <div class="stat-card-breakdown" style="color:var(--on-dark-soft);" id="statPatrimonioTooltip">= dinheiro acumulado + investimentos − dívidas e faturas em aberto</div>
         </div>
       </div>
+
+      <div id="healthScoreSection" style="margin-top:22px;"></div>
 
       <h3 style="margin-top:26px; font-size:15px;">Fluxo de caixa do mês</h3>
       <div class="cashflow-bar" id="cashflowBar"><div class="cashflow-in" id="cashflowIn" style="width:50%;"></div><div class="cashflow-out" id="cashflowOut" style="width:50%;"></div></div>
@@ -784,10 +802,11 @@
       <h2 class="section-title">Investimentos</h2>
       <p class="section-hint">Crie uma conta por aplicação. Registre aportes e retiradas, e sempre que quiser, atualize o "saldo real" — o rendimento é calculado automaticamente pela diferença.</p>
 
-      <div class="grid grid-3" style="margin-bottom:18px;">
+      <div class="grid grid-4" style="margin-bottom:18px;">
         <div class="stat-card"><div class="stat-label">Total aportado</div><div class="stat-value num" id="statTotalAportado">—</div></div>
         <div class="stat-card"><div class="stat-label">Saldo atual (real)</div><div class="stat-value moss num" id="statSaldoAtualTotal">—</div></div>
         <div class="stat-card"><div class="stat-label">Rendimentos recebidos</div><div class="stat-value moss num" id="statRendimentoTotal">—</div></div>
+        <div class="stat-card"><div class="stat-label">Renda passiva média</div><div class="stat-value accent num" id="statRendaPassivaMedia">—</div><div class="stat-card-breakdown">Soma do rendimento mensal estimado de todas as contas</div></div>
       </div>
 
       <div class="form-card">
@@ -1098,58 +1117,174 @@
   </div>
 </div>
 
+<div class="modal-overlay hidden" id="bellOverlay">
+  <div class="modal-box" style="max-width:480px;">
+    <h2>Central de Alertas</h2>
+    <p class="section-hint" style="margin-bottom:10px;">Tudo o que a Bússola identificou nos seus dados, organizado por tipo — não é preciso ir à Dashboard para ver.</p>
+    <div id="bellContent"></div>
+    <div class="modal-close-row"><button class="btn btn-primary btn-sm" id="bellCloseBtn">Fechar</button></div>
+  </div>
+</div>
+
 <div class="modal-overlay hidden" id="helpOverlay">
   <div class="modal-box">
-    <h2>Ajuda</h2>
+    <h2>Central de Ajuda</h2>
+    <p class="section-hint" style="margin-bottom:14px;">Tudo sobre como a Bússola funciona e como cada valor é calculado.</p>
+
+    <div class="help-cat-filters" id="helpCatFilters"></div>
 
     <div class="faq-list" id="helpFaqList">
-      <div class="faq-item">
+      <div class="faq-item" data-cat="Começando">
+        <button class="faq-q" type="button">Como começar a usar a Bússola<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Comece pela aba <strong>Rendimentos</strong> registrando sua renda do mês, depois vá em <strong>Despesas</strong> e anote o que gastou. Isso já faz o Dashboard ganhar vida. Cartões, Dívidas e Investimentos são opcionais, mas quanto mais completo, mais úteis ficam os Alertas e Análises.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Começando">
+        <button class="faq-q" type="button">Como preencher os dados corretamente<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Use a data real de quando o dinheiro entrou ou saiu — isso é o que define em qual mês cada lançamento conta. Categorize despesas com atenção: "Cartão de Crédito" e "Dívidas" são tratadas de forma diferente das demais (não somam no gasto "consumo" do Dashboard, viram fatura/dívida).</p></div>
+      </div>
+      <div class="faq-item" data-cat="Começando">
+        <button class="faq-q" type="button">Como funciona a Dashboard<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Mostra o retrato do <strong>mês selecionado</strong> (troque o mês nas setas do topo): quanto entrou, quanto saiu, quanto foi investido e o património líquido atual. Depois vem a evolução ao longo dos meses, a distribuição da renda, e por último os alertas que precisam da sua atenção.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Começando">
+        <button class="faq-q" type="button">Como interpretar os indicadores<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Cada indicador principal mostra, além do valor, uma comparação com o mês anterior (▲ ou ▼) — verde quando a mudança é boa, vermelho quando não é (por exemplo, despesa subindo é vermelho; renda subindo é verde).</p></div>
+      </div>
+
+      <div class="faq-item" data-cat="Receitas">
+        <button class="faq-q" type="button">O que é considerado receita?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Qualquer dinheiro que entra: salário, freelas, rendas extras, presentes em dinheiro, reembolsos etc. Cada rendimento tem um "Tipo" (categoria) e, opcionalmente, um "Membro" da família responsável.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Receitas">
+        <button class="faq-q" type="button">Receita recorrente vs. receita extraordinária<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>A Bússola não distingue automaticamente — é só registrar todo mês (recorrente, ex.: salário) ou só quando acontecer (extraordinária, ex.: um bônus). O sistema calcula médias e tendências a partir do que estiver lançado, então uma receita pontual grande pode puxar a média momentaneamente para cima.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Receitas">
+        <button class="faq-q" type="button">Como a receita influencia os cálculos?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>É a base de tudo: saldo do mês (receita − despesas − investido), a regra 50/30/20 (% de essenciais/não essenciais/investido sobre a receita) e a taxa de poupança são todos calculados em cima do total de receita do mês.</p></div>
+      </div>
+
+      <div class="faq-item" data-cat="Despesas">
+        <button class="faq-q" type="button">Despesas fixas vs. variáveis<span class="chevron">▾</span></button>
+        <div class="faq-a"><p><strong>Fixa</strong>: se repete todo mês em valor parecido (aluguel, assinaturas). <strong>Variável</strong>: muda mês a mês (mercado, lazer). Marcar corretamente ajuda a análise de "Despesas fixas vs. variáveis" na aba Análises a fazer sentido. Você também pode marcar uma despesa como recorrente para ela se repetir automaticamente todo mês.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Despesas">
+        <button class="faq-q" type="button">Como uma compra no cartão é contabilizada?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Compras no cartão (aba Cartões) <strong>não</strong> entram na "Despesa do mês" do Dashboard no momento da compra — elas viram fatura em aberto, que conta como dívida no Património. Só quando você paga a fatura (total ou parcial) é que vira uma despesa registrada, na categoria "Cartão de Crédito".</p></div>
+      </div>
+      <div class="faq-item" data-cat="Despesas">
+        <button class="faq-q" type="button">Como o orçamento por categoria funciona?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Defina um teto mensal por categoria em Despesas → "Orçamento por categoria". O painel compara o gasto real do mês com esse teto e avisa (inclusive nos Alertas) quando você ultrapassa.</p></div>
+      </div>
+
+      <div class="faq-item" data-cat="Investimentos">
+        <button class="faq-q" type="button">O que é um aporte?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>É dinheiro que você coloca numa conta de investimento. Ao registrar um "Aporte", o painel já atualiza o saldo real automaticamente somando esse valor — você não precisa lançar o Aporte e depois o Saldo separadamente.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Investimentos">
+        <button class="faq-q" type="button">O que é "saldo atual" (real)?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>É o valor de mercado real da sua aplicação hoje — inclui os aportes, retiradas E o rendimento acumulado. Atualize esse valor de vez em quando (extrato do banco/corretora) para o rendimento ser calculado corretamente pela diferença.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Investimentos">
+        <button class="faq-q" type="button">Como o rendimento é calculado?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p><strong>Rendimento = Saldo atual − (Aportes − Retiradas)</strong>. Ou seja, é a diferença entre o que você colocou/tirou e o que a conta vale hoje. Quando há pelo menos 2 atualizações de saldo, o painel também estima um rendimento mensal equivalente (% a.m.) com base no intervalo entre elas.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Investimentos">
+        <button class="faq-q" type="button">Como funciona a "Renda passiva média"?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Soma, de todas as suas contas de investimento, o rendimento mensal estimado (saldo atual × rendimento % a.m. de cada conta) — dá uma ideia de quanto seu dinheiro investido está gerando por mês, no ritmo atual. É uma estimativa, não uma garantia.</p></div>
+      </div>
+
+      <div class="faq-item" data-cat="Património">
+        <button class="faq-q" type="button">O que é património líquido?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>É tudo que você possui (dinheiro em caixa + investimentos) menos tudo que você deve (dívidas + faturas de cartão em aberto). Em outras palavras: se você vendesse tudo e pagasse tudo o que deve hoje, quanto sobraria.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Património">
+        <button class="faq-q" type="button">Como é calculado exatamente?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p><strong>Património líquido = caixa acumulado (soma de todo saldo mensal desde o início) + saldo atual dos investimentos − dívidas restantes − faturas de cartão em aberto.</strong> É recalculado no valor de hoje, não muda retroativamente para meses passados.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Património">
+        <button class="faq-q" type="button">O que aumenta o património?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Sobrar dinheiro no mês (receita maior que despesa+investido), o rendimento dos seus investimentos, e quitar dívidas.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Património">
+        <button class="faq-q" type="button">O que reduz o património?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Gastar mais do que ganha, contrair uma nova dívida ou financiamento (entra imediatamente como dívida integral), e deixar faturas de cartão em aberto acumularem.</p></div>
+      </div>
+
+      <div class="faq-item" data-cat="Análises">
+        <button class="faq-q" type="button">Como interpretar os gráficos de Análises?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Cada gráfico responde uma pergunta específica (ex.: "Despesas por mês" mostra a evolução dos seus gastos totais). Passe o mouse (ou toque) sobre qualquer ponto para ver o valor exato daquele mês.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Análises">
+        <button class="faq-q" type="button">Como funcionam as comparações e o filtro de período?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Os pills "3 meses / 6 meses / 12 meses / Tudo" no topo da aba Análises controlam a janela de tempo de todos os gráficos mensais de uma vez. Use o seletor de ano ao lado para focar num ano específico do passado.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Análises">
+        <button class="faq-q" type="button">O que significam os insights automáticos?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>São observações geradas a partir dos seus próprios dados (nunca inventadas) comparando o mês atual com sua média recente — por exemplo, se as despesas subiram bem acima do normal. Só aparecem quando há dados suficientes (mínimo de 3 meses).</p></div>
+      </div>
+
+      <div class="faq-item" data-cat="Metas">
+        <button class="faq-q" type="button">Como criar uma meta?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Na aba Metas, escolha o tipo: <strong>Investimento</strong> (vinculada a uma conta da aba Investimentos, progresso 100% automático) ou <strong>Reserva</strong> (ex.: viagem, emergência — você atualiza o valor atual manualmente).</p></div>
+      </div>
+      <div class="faq-item" data-cat="Metas">
+        <button class="faq-q" type="button">Como funciona o progresso?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Progresso (%) = valor atual ÷ valor alvo. Para metas de Investimento, o "valor atual" é puxado direto do saldo real da conta vinculada — não precisa atualizar à mão.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Metas">
+        <button class="faq-q" type="button">Como saber quanto preciso investir por mês?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>A Bússola não calcula isso automaticamente na aba Metas hoje — mas você pode usar a aba <strong>Projeções</strong> para simular: ajuste o "Aporte mensal" e o "Prazo" até o "Saldo projetado" bater perto do valor da sua meta.</p></div>
+      </div>
+
+      <div class="faq-item" data-cat="Projeções">
+        <button class="faq-q" type="button">Como as projeções são feitas?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Simulação de juros compostos: a cada mês, aplica a taxa (CDI) sobre o saldo acumulado e soma o aporte mensal definido. É pré-preenchida com a média dos seus aportes reais, mas totalmente ajustável.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Projeções">
+        <button class="faq-q" type="button">Quais valores são utilizados?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Meses, aporte mensal, aporte extra único, taxa CDI (% a.a., com valor de mercado atual carregado automaticamente quando há internet) e se deseja descontar 15% de IR sobre o rendimento.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Projeções">
+        <button class="faq-q" type="button">Por que o resultado pode mudar?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>É uma <strong>simulação</strong>, não uma promessa — o CDI real varia ao longo do tempo, e seus aportes futuros podem ser diferentes do valor simulado. Trate o resultado como uma estimativa ilustrativa para planejamento, não como garantia de rendimento.</p></div>
+      </div>
+
+      <div class="faq-item" data-cat="Geral">
         <button class="faq-q" type="button">Como meus dados são salvos?<span class="chevron">▾</span></button>
         <div class="faq-a"><p>Tudo fica salvo apenas neste navegador (localStorage), neste computador. Nada é enviado para a internet. Isso significa privacidade total, mas também que <strong>você</strong> é responsável pelo backup.</p></div>
       </div>
-      <div class="faq-item">
+      <div class="faq-item" data-cat="Geral">
         <button class="faq-q" type="button">Como faço backup?<span class="chevron">▾</span></button>
         <div class="faq-a"><p>Clique em "Exportar backup" no rodapé. Isso baixa um arquivo .json. Guarde-o em local seguro (Google Drive, e-mail para você mesmo, etc.). Para restaurar, use "Importar backup".</p></div>
       </div>
-      <div class="faq-item">
+      <div class="faq-item" data-cat="Geral">
         <button class="faq-q" type="button">Perdi meus dados, e agora?<span class="chevron">▾</span></button>
         <div class="faq-a"><p>Se você tinha um backup exportado, use "Importar backup". Sem um backup, infelizmente os dados não podem ser recuperados — por isso a recomendação de exportar regularmente.</p></div>
       </div>
-      <div class="faq-item">
+      <div class="faq-item" data-cat="Geral">
         <button class="faq-q" type="button">O painel funciona offline?<span class="chevron">▾</span></button>
         <div class="faq-a"><p>Sim, quase tudo. Só as taxas Selic/CDI na aba Educação precisam de internet para atualizar — sem conexão, mostram um valor de referência.</p></div>
       </div>
-      <div class="faq-item">
-        <button class="faq-q" type="button">O que significa cada aba?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p><strong>Dashboard</strong>: visão geral do mês. <strong>Rendimentos/Despesas</strong>: seu fluxo de caixa. <strong>Cartões/Dívidas</strong>: suas obrigações. <strong>Investimentos</strong>: suas aplicações e rendimentos reais. <strong>Projeções</strong>: simulação futura. <strong>Metas</strong>: objetivos financeiros. <strong>Análises</strong>: gráficos e tendências. <strong>Educação</strong>: dicas e taxas de mercado.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" type="button">Como funciona o Património líquido?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>É calculado como <strong>dinheiro acumulado + investimentos − dívidas e faturas em aberto</strong>. Ao cadastrar um financiamento (ex.: de um imóvel), o valor total entra <strong>imediatamente</strong> como dívida, então o número pode ficar bem negativo no início — isso é esperado, pois representa tudo que ainda deve. O valor do bem em si (o imóvel, o carro) não é somado automaticamente; se quiser refletir isso, cadastre-o como uma conta em Investimentos.</p></div>
-      </div>
-      <div class="faq-item">
+      <div class="faq-item" data-cat="Geral">
         <button class="faq-q" type="button">O que são os alertas do Dashboard?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>São avisos automáticos sobre saldo, uso do cartão, dívidas atrasadas, orçamento estourado e progresso de investimento, coloridos por gravidade: <strong style="color:var(--moss);">verde</strong> = ok, <strong style="color:var(--amber);">âmbar</strong> = atenção, <strong style="color:var(--rust);">vermelho</strong> = requer ação.</p></div>
+        <div class="faq-a"><p>São avisos automáticos e acionáveis sobre saldo, uso do cartão, dívidas atrasadas, orçamento estourado, tendências de várias meses e progresso de investimento — cada um com um botão que leva direto à aba relevante.</p></div>
       </div>
-      <div class="faq-item">
+      <div class="faq-item" data-cat="Geral">
         <button class="faq-q" type="button">Como funcionam as cores da distribuição de renda?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>No Dashboard, as barras de Essenciais, Não essenciais e Investido mudam de cor conforme a porcentagem da renda: <strong style="color:var(--moss);">verde</strong> dentro do limite saudável, <strong style="color:var(--amber);">âmbar</strong> perto do limite, <strong style="color:var(--rust);">vermelho</strong> fora do recomendado. Para Investido a lógica é invertida — quanto mais, melhor.</p></div>
+        <div class="faq-a"><p>No Dashboard, cada linha (Essenciais, Não essenciais, Investido) mostra a % real, um selo colorido (🟢/🟠/🔴) e a diferença em pontos percentuais vs. a referência 50/30/20. Para Investido a lógica é invertida — quanto mais, melhor.</p></div>
       </div>
-      <div class="faq-item">
+      <div class="faq-item" data-cat="Geral">
         <button class="faq-q" type="button">Como faço login?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>O acesso é feito com o e-mail e a senha que você define na tela de login — não há mais PIN dentro do painel. Esqueceu a senha? Use a opção "Esqueci minha senha" na tela de login para redefini-la.</p></div>
+        <div class="faq-a"><p>O acesso é feito com o e-mail e a senha que você define na tela de login. Esqueceu a senha? Use a opção "Esqueci minha senha" na tela de login para redefini-la.</p></div>
       </div>
-      <div class="faq-item">
+      <div class="faq-item" data-cat="Geral">
         <button class="faq-q" type="button">Editar ou excluir um lançamento<span class="chevron">▾</span></button>
         <div class="faq-a"><p>Em Rendimentos, Despesas, Cartões, Dívidas e Investimentos, cada linha tem ícones de editar (✎) e excluir. Excluir mostra um aviso de "desfazer" por alguns segundos, caso tenha sido engano.</p></div>
       </div>
-      <div class="faq-item">
+      <div class="faq-item" data-cat="Geral">
         <button class="faq-q" type="button">Como funciona o relatório em PDF?<span class="chevron">▾</span></button>
         <div class="faq-a"><p>Em "Gerar relatório (PDF)" no rodapé, escolha o mês (ou "todos os meses") e o painel monta um relatório com capa, resumo executivo, despesas por categoria, orçamento, cartões/dívidas, investimentos e metas — pronto para salvar como PDF pela tela de impressão do navegador.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" type="button">Como funcionam as Projeções e Metas?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>Projeções simulam sua evolução futura com base no padrão atual de receitas, despesas e investimento. Metas permitem definir um objetivo com valor e prazo, acompanhando o progresso automaticamente conforme você registra aportes.</p></div>
       </div>
     </div>
 
@@ -1307,7 +1442,7 @@
 
   /* ===== Animação de contagem nos números do Dashboard ===== */
   var PREFERS_REDUCED_MOTION = (typeof window.matchMedia === "function") && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function animateMoneyValue(el, targetValue){
+  function animateMoneyValue(el, targetValue, customDuration){
     if(!el) return;
     var target = Number(targetValue)||0;
     var previous = (typeof el._animVal === "number") ? el._animVal : target;
@@ -1316,7 +1451,7 @@
       el.textContent = fmtMoney(target);
       return;
     }
-    var duration = 500;
+    var duration = customDuration || 1900;
     var start = null;
     if(el._animFrame) cancelAnimationFrame(el._animFrame);
     function step(ts){
@@ -1687,6 +1822,37 @@
       var wasOpen = item.classList.contains("open");
       document.querySelectorAll("#helpFaqList .faq-item.open").forEach(function(o){ o.classList.remove("open"); o.querySelector(".faq-q").setAttribute("aria-expanded","false"); });
       if(!wasOpen){ item.classList.add("open"); btn.setAttribute("aria-expanded","true"); }
+    });
+  });
+  var setHelpCategory = function(){}; // substituída abaixo por initHelpCategoryFilters
+  (function initHelpCategoryFilters(){
+    var CAT_ORDER = ["Todos","Começando","Receitas","Despesas","Investimentos","Património","Análises","Metas","Projeções","Geral"];
+    var present = Array.from(new Set(Array.from(document.querySelectorAll("#helpFaqList .faq-item")).map(function(el){return el.dataset.cat;})));
+    var cats = ["Todos"].concat(CAT_ORDER.filter(function(c){return c!=="Todos" && present.indexOf(c)!==-1;}));
+    var current = "Todos";
+    var bar = document.getElementById("helpCatFilters");
+    function render(){
+      bar.innerHTML = cats.map(function(c){ return '<button type="button" class="help-cat-filter'+(c===current?' active':'')+'" data-cat="'+c+'">'+c+'</button>'; }).join("");
+      bar.querySelectorAll(".help-cat-filter").forEach(function(btn){
+        btn.addEventListener("click", function(){ current = btn.dataset.cat; render(); applyFilter(); });
+      });
+    }
+    function applyFilter(){
+      document.querySelectorAll("#helpFaqList .faq-item").forEach(function(item){
+        item.style.display = (current==="Todos" || item.dataset.cat===current) ? "" : "none";
+      });
+    }
+    render(); applyFilter();
+    setHelpCategory = function(cat){ current = cat; render(); applyFilter(); };
+  })();
+
+  /* Botões "?" contextuais (ao lado de indicadores) que abrem a Central de Ajuda já
+     filtrada na categoria certa — explicação da fórmula a um clique de distância. */
+  document.querySelectorAll(".info-dot[data-help-cat]").forEach(function(btn){
+    btn.addEventListener("click", function(e){
+      e.stopPropagation();
+      setHelpCategory(btn.dataset.helpCat);
+      document.getElementById("helpOverlay").classList.remove("hidden");
     });
   });
 
@@ -2255,11 +2421,16 @@
   var acctExpanded = {};
   function renderAccounts(){
     var wrap = document.getElementById("acctsList"); wrap.innerHTML="";
-    var totalAportado=0, totalSaldo=0, totalRend=0;
-    state.investmentAccounts.forEach(function(a){ var t=accountTotals(a); totalAportado+=t.aportado; totalSaldo+=t.saldoAtual; totalRend+=t.rendimento; });
-    document.getElementById("statTotalAportado").textContent = fmtMoney(totalAportado);
-    document.getElementById("statSaldoAtualTotal").textContent = fmtMoney(totalSaldo);
-    document.getElementById("statRendimentoTotal").textContent = fmtMoney(totalRend);
+    var totalAportado=0, totalSaldo=0, totalRend=0, totalRendaPassiva=0;
+    state.investmentAccounts.forEach(function(a){
+      var t=accountTotals(a);
+      totalAportado+=t.aportado; totalSaldo+=t.saldoAtual; totalRend+=t.rendimento;
+      if(t.monthlyYieldPct!==null && t.saldoAtual>0){ totalRendaPassiva += t.saldoAtual * (t.monthlyYieldPct/100); }
+    });
+    animateMoneyValue(document.getElementById("statTotalAportado"), totalAportado);
+    animateMoneyValue(document.getElementById("statSaldoAtualTotal"), totalSaldo);
+    animateMoneyValue(document.getElementById("statRendimentoTotal"), totalRend);
+    animateMoneyValue(document.getElementById("statRendaPassivaMedia"), Math.max(0,totalRendaPassiva));
 
     if(state.investmentAccounts.length===0){
       wrap.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📈</div><h3>Ainda não há investimentos</h3><p>Comece criando sua primeira conta de investimento — pode ser uma reserva, uma aplicação de renda fixa ou variável.</p></div>';
@@ -2681,14 +2852,16 @@
     var fillEl = document.getElementById(fillId);
     fillEl.style.width = clamped + "%";
     fillEl.style.background = classifyBarPct(kind, pct);
-    document.getElementById(valId).textContent = pct.toFixed(0) + "%";
+    var status = classifyBarStatus(kind, pct);
+    var valEl = document.getElementById(valId);
+    valEl.textContent = pct.toFixed(0) + "%";
+    valEl.style.color = status.color;
     var ref = kind==="essenciais" ? 50 : (kind==="naoessenciais" ? 30 : 20);
     var delta = pct - ref;
-    var isGood = kind==="investido" ? delta>=0 : delta<=0;
     var sign = delta>=0 ? "+" : "−";
     var dir = delta>=0 ? "acima" : "abaixo";
     var refLabel = kind==="investido" ? "≥"+ref+"%" : "≤"+ref+"%";
-    document.getElementById(deltaId).innerHTML = '<span class="'+(isGood?"dist-good":"dist-bad")+'">'+sign+Math.abs(delta).toFixed(0)+' p.p. '+dir+' da referência ('+refLabel+')</span> · '+moneyText;
+    document.getElementById(deltaId).innerHTML = '<span style="color:'+status.color+'; font-weight:700;">'+status.emoji+' '+status.label+'</span> · '+sign+Math.abs(delta).toFixed(0)+' p.p. '+dir+' da referência ('+refLabel+') · '+moneyText;
   }
 
   /* ===== Alertas: cards acionáveis com destino direto para a aba relevante ===== */
@@ -2730,14 +2903,36 @@
       }
     });
 
-    // Investimento abaixo da média dos últimos meses
+    // Investimento abaixo da média dos últimos meses (ancorado no mês visualizado, não na
+    // posição do array — evita comparar com meses errados se o usuário estiver navegando
+    // por um mês passado enquanto já existem meses futuros com dados)
     var monthsHist = allMonthsSorted();
-    if(monthsHist.length>=4){
-      var prevMonths = monthsHist.slice(-4,-1); // 3 meses antes do atual
+    var monthsBeforeView = monthsHist.filter(function(m){ return m < state.viewMonth; });
+    if(monthsBeforeView.length>=3){
+      var prevMonths = monthsBeforeView.slice(-3);
       var avgPrev = prevMonths.reduce(function(s,m){return s+monthTotals(m).invest;},0)/prevMonths.length;
       if(avgPrev>0 && t.invest < avgPrev*0.6){
         alerts.push({level:"warn", icon:"📉", title:"Investimento abaixo da sua média", desc:"Você investiu "+fmtMoney(t.invest)+" este mês, contra uma média de "+fmtMoney(avgPrev)+" nos 3 meses anteriores.", cta:"Ver investimentos", tab:"investimentos"});
       }
+    }
+
+    // Tendência consecutiva: despesas subindo (ou renda caindo) mês após mês, olhando o
+    // histórico até o mês visualizado — mais inteligente que só olhar o mês atual isolado.
+    function consecutiveTrend(getValue, wantIncrease){
+      var seq = monthsBeforeView.concat([state.viewMonth]);
+      var streak = 1;
+      for(var i=seq.length-1; i>0; i--){
+        var cur = getValue(seq[i]), prev = getValue(seq[i-1]);
+        var moved = wantIncrease ? cur > prev*1.02 : cur < prev*0.98;
+        if(moved){ streak++; } else { break; }
+      }
+      return streak;
+    }
+    if(monthsBeforeView.length>=3){
+      var expStreak = consecutiveTrend(function(m){return monthTotals(m).expense;}, true);
+      if(expStreak>=4){ alerts.push({level:"warn", icon:"📈", title:"Despesas em alta há "+expStreak+" meses seguidos", desc:"Suas despesas vêm aumentando mês após mês. Vale revisar o que mudou nesse período.", cta:"Ver despesas", tab:"despesas"}); }
+      var incStreak = consecutiveTrend(function(m){return monthTotals(m).income;}, false);
+      if(incStreak>=3){ alerts.push({level:"warn", icon:"📉", title:"Renda em queda há "+incStreak+" meses seguidos", desc:"Sua renda vem caindo mês após mês — vale entender a causa antes que afete o orçamento.", cta:"Ver rendimentos", tab:"rendimentos"}); }
     }
 
     var hasAnyData = state.incomes.length>0 || state.expenses.length>0 || state.investmentAccounts.length>0;
@@ -2754,28 +2949,102 @@
     return alerts;
   }
 
+  function alertCardHtml(a){
+    var ctaHtml = "";
+    if(a.cta && a.tab){ ctaHtml = '<button type="button" class="ac-cta" data-tab="'+a.tab+'">'+escapeHtml(a.cta)+' →</button>'; }
+    else if(a.cta && a.action==="backup"){ ctaHtml = '<button type="button" class="ac-cta" data-action="backup">'+escapeHtml(a.cta)+' →</button>'; }
+    return '<div class="alert-card '+(a.level||"ok")+'"><div class="ac-icon">'+a.icon+'</div><div class="ac-body">'+
+      '<div class="ac-title">'+escapeHtml(a.title)+'</div>'+
+      '<div class="ac-desc">'+escapeHtml(a.desc)+'</div>'+
+      ctaHtml+
+    '</div></div>';
+  }
+  function wireAlertCardActions(container){
+    container.querySelectorAll(".ac-cta[data-tab]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        document.getElementById("bellOverlay").classList.add("hidden");
+        document.getElementById("helpOverlay").classList.add("hidden");
+        activateTab(btn.dataset.tab);
+        window.scrollTo({top:0, behavior: PREFERS_REDUCED_MOTION ? "auto" : "smooth"});
+      });
+    });
+    container.querySelectorAll(".ac-cta[data-action='backup']").forEach(function(btn){
+      btn.addEventListener("click", function(){ document.getElementById("exportBtn").click(); });
+    });
+  }
+
   function renderAlerts(){
     var list = document.getElementById("alertList");
     var alerts = computeAlerts().slice(0,8);
     document.getElementById("attentionHeading").textContent = (alerts.length===1 && alerts[0].level==="ok") ? "Tudo em dia por aqui" : "Precisa da sua atenção";
-    list.innerHTML = alerts.map(function(a){
-      var ctaHtml = "";
-      if(a.cta && a.tab){ ctaHtml = '<button type="button" class="ac-cta" data-tab="'+a.tab+'">'+escapeHtml(a.cta)+' →</button>'; }
-      else if(a.cta && a.action==="backup"){ ctaHtml = '<button type="button" class="ac-cta" data-action="backup">'+escapeHtml(a.cta)+' →</button>'; }
-      return '<div class="alert-card '+a.level+'"><div class="ac-icon">'+a.icon+'</div><div class="ac-body">'+
-        '<div class="ac-title">'+escapeHtml(a.title)+'</div>'+
-        '<div class="ac-desc">'+escapeHtml(a.desc)+'</div>'+
-        ctaHtml+
-      '</div></div>';
-    }).join("");
-    list.querySelectorAll(".ac-cta[data-tab]").forEach(function(btn){
-      btn.addEventListener("click", function(){ activateTab(btn.dataset.tab); window.scrollTo({top:0, behavior: PREFERS_REDUCED_MOTION ? "auto" : "smooth"}); });
-    });
-    list.querySelectorAll(".ac-cta[data-action='backup']").forEach(function(btn){
-      btn.addEventListener("click", function(){ document.getElementById("exportBtn").click(); });
-    });
+    list.innerHTML = alerts.map(alertCardHtml).join("");
+    wireAlertCardActions(list);
     staggerIn(list, ".alert-card");
+    updateBellBadge();
   }
+
+  /* ===== Central de alertas (sino) — agrupa em Atenção / Oportunidades / Evolução / Educação ===== */
+  function computeBellSections(){
+    var attention = computeAlerts().filter(function(a){ return a.level==="danger" || a.level==="warn"; });
+    var opportunities = [];
+    var evolution = [];
+    var education = [];
+
+    var t = monthTotals(state.viewMonth);
+    if(t.invest>0){
+      opportunities.push({icon:"💡", title:"Projeção do seu ritmo atual", desc:"Você investiu "+fmtMoney(t.invest)+" este mês. Mantendo esse ritmo, seriam cerca de "+fmtMoney(t.invest*12)+" em aportes ao longo de 12 meses (sem contar rendimento).", cta:"Ver projeções", tab:"projecoes"});
+    }
+    var temMetaReserva = state.goals.some(function(g){ return g.tipo!=="Investimento"; });
+    if(!temMetaReserva){
+      opportunities.push({icon:"🎯", title:"Você ainda não tem uma meta de reserva", desc:"Criar uma meta dedicada ajuda a acompanhar o progresso até os 3–6 meses de despesas recomendados como reserva de emergência.", cta:"Criar meta", tab:"metas"});
+    }
+
+    var capitalSeries = computeCapitalAccumSeries();
+    if(capitalSeries.length>=2){
+      var deltaCapital = capitalSeries[capitalSeries.length-1].value - capitalSeries[capitalSeries.length-2].value;
+      if(deltaCapital>0){ evolution.push({icon:"📈", title:"Seu capital acumulado cresceu", desc:fmtMoney(deltaCapital)+" a mais desde o mês passado.", cta:"Ver Dashboard", tab:"dashboard"}); }
+      else if(deltaCapital<0){ evolution.push({icon:"📉", title:"Seu capital acumulado caiu este mês", desc:fmtMoney(Math.abs(deltaCapital))+" a menos desde o mês passado.", cta:"Ver Dashboard", tab:"dashboard"}); }
+    }
+    var pctInv = t.income>0 ? (t.invest/t.income)*100 : 0;
+    if(pctInv>=20){ evolution.push({icon:"🏆", title:"Parabéns!", desc:"Você investiu "+pctInv.toFixed(0)+"% da sua renda em "+monthLabel(state.viewMonth)+" — acima da meta de referência de 20%.", cta:null}); }
+
+    var eduTips = [
+      {icon:"📚", title:"Você sabia?", desc:"Patrimônio líquido é diferente de saldo em conta — ele soma seus investimentos e subtrai suas dívidas.", cta:"Entender", tab:"guia"},
+      {icon:"📚", title:"Você sabia?", desc:"Despesas fixas e variáveis são tratadas de forma diferente nas Análises — vale sempre categorizar corretamente.", cta:"Ver Análises", tab:"analises"},
+      {icon:"📚", title:"Você sabia?", desc:"Uma compra no cartão só vira despesa registrada quando a fatura é paga — até lá, ela conta como dívida no Património.", cta:"Entender", tab:"guia"}
+    ];
+    education.push(eduTips[parseInt(state.viewMonth.slice(5,7),10) % eduTips.length]);
+
+    return {attention:attention, opportunities:opportunities, evolution:evolution, education:education};
+  }
+  function updateBellBadge(){
+    var s = computeBellSections();
+    var count = s.attention.length;
+    var badge = document.getElementById("bellBadge");
+    if(count>0){ badge.style.display="flex"; badge.textContent = count>9 ? "9+" : String(count); }
+    else{ badge.style.display="none"; }
+  }
+  function renderBellPanel(){
+    var s = computeBellSections();
+    var wrap = document.getElementById("bellContent");
+    var blocks = [];
+    function section(title, items){
+      if(items.length===0) return "";
+      return '<h3 style="font-size:13px; margin:16px 0 8px;">'+title+'</h3><div class="alert-cards" style="margin-top:0;">'+items.map(alertCardHtml).join("")+'</div>';
+    }
+    blocks.push(section("Precisa da sua atenção", s.attention));
+    blocks.push(section("Oportunidades", s.opportunities));
+    blocks.push(section("Evolução", s.evolution));
+    blocks.push(section("Educação", s.education));
+    var html = blocks.join("");
+    wrap.innerHTML = html || '<p class="section-hint">Nenhum alerta ou insight no momento. Continue registrando seus dados.</p>';
+    wireAlertCardActions(wrap);
+  }
+  document.getElementById("bellToggle").addEventListener("click", function(){
+    renderBellPanel();
+    document.getElementById("bellOverlay").classList.remove("hidden");
+  });
+  document.getElementById("bellCloseBtn").addEventListener("click", function(){ document.getElementById("bellOverlay").classList.add("hidden"); });
 
   function monthExpenseBreakdown(month){
     var items = monthEntries(state.expenses, month);
@@ -2846,9 +3115,47 @@
     setDistRow("barInvestido","barInvestidoVal","barInvestidoDelta", pctInvested, fmtMoney(t.invest), "investido");
 
     renderPatrimonioEvoSection();
+    renderHealthScore();
     renderAlerts();
   }
 
+  /* ===== "Como estou?" — saúde financeira, com fatores explicados (não é score inventado) ===== */
+  function computeHealthFactors(){
+    var t = monthTotals(state.viewMonth);
+    var factors = [];
+    if(t.income>0){
+      var pctExp = (t.expense/t.income)*100;
+      factors.push({label:"Despesas", ok: pctExp<=80, note: pctExp.toFixed(0)+"% da renda (meta: ≤80%)"});
+    }
+    var pctInv = t.income>0 ? (t.invest/t.income)*100 : 0;
+    factors.push({label:"Investimento", ok: pctInv>=10, note: pctInv.toFixed(0)+"% da renda (meta: ≥10%)"});
+    var temAtrasada = state.debts.some(debtIsAtrasada);
+    factors.push({label:"Dívidas", ok: !temAtrasada, note: temAtrasada ? "há parcela atrasada" : "todas em dia"});
+    var capSeries = computeCapitalAccumSeries();
+    var patOk = true, patNote = "sem histórico suficiente ainda";
+    if(capSeries.length>=2){
+      var d = capSeries[capSeries.length-1].value - capSeries[capSeries.length-2].value;
+      patOk = d>=0; patNote = d>=0 ? "crescendo este mês" : "em queda este mês";
+    }
+    factors.push({label:"Património", ok:patOk, note:patNote});
+    var temMeta = state.goals.length>0;
+    factors.push({label:"Metas", ok:temMeta, note: temMeta ? state.goals.length+" definida(s)" : "nenhuma definida ainda"});
+    return factors;
+  }
+  function renderHealthScore(){
+    var wrap = document.getElementById("healthScoreSection");
+    if(allMonthsSorted().length<2){ wrap.innerHTML=""; return; }
+    var factors = computeHealthFactors();
+    var goodCount = factors.filter(function(f){return f.ok;}).length;
+    var verdict = goodCount>=4 ? {emoji:"🟢", label:"Boa evolução"} : (goodCount>=2 ? {emoji:"🟡", label:"Atenção necessária"} : {emoji:"🔴", label:"Precisa de atenção"});
+    wrap.innerHTML = '<div class="health-card">'+
+      '<div class="health-top"><span class="health-emoji">'+verdict.emoji+'</span><div><div class="health-title">Sua saúde financeira: '+verdict.label+'</div><div style="font-size:11.5px; color:var(--text-soft);">'+goodCount+' de '+factors.length+' fatores positivos em '+monthLabel(state.viewMonth)+'</div></div></div>'+
+      '<div class="health-factors">'+factors.map(function(f){
+        return '<div class="health-factor"><span class="hf-dot" style="background:'+(f.ok?"var(--moss)":"var(--rust)")+';"></span><strong>'+f.label+':</strong>&nbsp;'+f.note+'</div>';
+      }).join("")+'</div>'+
+      '<p style="font-size:11px; color:var(--text-soft); margin-top:12px;">Calculado a partir de 5 fatores objetivos: despesas ≤80% da renda, investimento ≥10% da renda, dívidas em dia, património crescendo, e ao menos uma meta definida. Não é um conselho financeiro — é só um resumo dos seus próprios números.</p>'+
+    '</div>';
+  }
   /* Classifica a porcentagem de cada barra da distribuição de renda em verde (dentro do
      limite saudável), amarelo (perto do limite) ou vermelho (fora do limite recomendado).
      Para "investido" a lógica é invertida: quanto mais, melhor. */
@@ -2857,6 +3164,24 @@
     if(kind==="naoessenciais"){ if(pct<=30) return "var(--moss)"; if(pct<=35) return "var(--amber)"; return "var(--rust)"; }
     if(kind==="investido"){ if(pct>=20) return "var(--moss)"; if(pct>=10) return "var(--amber)"; return "var(--rust)"; }
     return "var(--brass)";
+  }
+  /* Mesma classificação, mas devolvendo a variante "-text" de cada cor (mais escura/saturada),
+     própria para uso em texto — garante contraste suficiente sobre fundo claro ou escuro,
+     em vez de usar a cor "de traço" (mais clara) das barras. */
+  function classifyBarStatus(kind, pct){
+    if(kind==="essenciais"){
+      if(pct<=50) return {color:"var(--moss-text)", emoji:"🟢", label:"Dentro da referência"};
+      if(pct<=60) return {color:"var(--amber-text)", emoji:"🟠", label:"Acima da referência"};
+      return {color:"var(--rust-text)", emoji:"🔴", label:"Bem acima da referência"};
+    }
+    if(kind==="naoessenciais"){
+      if(pct<=30) return {color:"var(--moss-text)", emoji:"🟢", label:"Dentro da referência"};
+      if(pct<=35) return {color:"var(--amber-text)", emoji:"🟠", label:"Acima da referência"};
+      return {color:"var(--rust-text)", emoji:"🔴", label:"Bem acima da referência"};
+    }
+    if(pct>=20) return {color:"var(--moss-text)", emoji:"🟢", label:"Excelente"};
+    if(pct>=10) return {color:"var(--amber-text)", emoji:"🟠", label:"Abaixo da referência"};
+    return {color:"var(--rust-text)", emoji:"🔴", label:"Bem abaixo da referência"};
   }
   /* ===== Analytics ===== */
   function buildMonthlySeries(){
@@ -3517,9 +3842,9 @@
     var rendaPassivaFinal = ptsN[ptsN.length-1].rendimentoMes;
 
     document.getElementById("projSaldoLabel").textContent = "Saldo em "+meses+"m";
-    document.getElementById("projSaldoFinal").textContent = fmtMoney(saldoFinal);
-    document.getElementById("projRendimentos").textContent = fmtMoney(rendimentosTotais);
-    document.getElementById("projRendaPassiva").textContent = fmtMoney(rendaPassivaFinal);
+    animateMoneyValue(document.getElementById("projSaldoFinal"), saldoFinal, 200);
+    animateMoneyValue(document.getElementById("projRendimentos"), rendimentosTotais, 200);
+    animateMoneyValue(document.getElementById("projRendaPassiva"), rendaPassivaFinal, 200);
 
     // checkpoints for main chart: hoje + up to 4 evenly spaced points
     var checkpointCount = Math.min(5, meses+1);
