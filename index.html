@@ -1364,6 +1364,33 @@ var CURRENT_USER_ID = null;
 
 var state = null;
 
+var CURRENT_USER_ID = null;
+var STORAGE_KEY_BASE = "bussola_financeira_v4";
+var STORAGE_KEY = null;
+
+async function initializeUserData() {
+  const {
+    data: { session },
+    error
+  } = await supabaseClient.auth.getSession();
+
+  if (error || !session || !session.user) {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  CURRENT_USER_ID = session.user.id;
+  STORAGE_KEY = STORAGE_KEY_BASE + "_" + CURRENT_USER_ID;
+
+function loadState(){
+
+  console.log("Dados carregados para:", CURRENT_USER_ID);
+
+  renderAll();
+}
+
+initializeUserData();
+
   function loadState(){
     try{
       var raw = localStorage.getItem(STORAGE_KEY);
