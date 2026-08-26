@@ -113,11 +113,11 @@
   .grid{display:grid; gap:16px;}
   .grid-2{grid-template-columns:1fr 1fr;}
   .grid-3{grid-template-columns:repeat(3,1fr);}
-  .grid-4{grid-template-columns:repeat(4,1fr);}
+  .grid-4{grid-template-columns:repeat(4,1fr); align-items:start;}
   @media (max-width:820px){ .grid-4{grid-template-columns:1fr 1fr;} .grid-3{grid-template-columns:1fr 1fr;} }
   @media (max-width:560px){ .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;} }
 
-  .stat-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 18px 16px; transition:transform .18s ease, box-shadow .18s ease; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:96px; }
+  .stat-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 18px 16px; transition:transform .18s ease, box-shadow .18s ease; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; min-height:96px; }
   .stat-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow); }
   .stat-card.highlight{background:var(--grad-hero); color:#F4EFDF; border-color:var(--surface-dark); position:relative; overflow:hidden;}
   .stat-card.highlight::after{content:""; position:absolute; right:-30px; top:-30px; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(63,224,200,0.25), transparent 70%);}
@@ -126,7 +126,8 @@
   .stat-label{font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-soft); margin:0 0 8px; text-align:center;}
   .stat-value{font-size:32px; font-weight:700; line-height:1.1; text-align:center;}
   .stat-value.rust{color:var(--rust);} .stat-value.moss{color:var(--moss);}
-  .stat-card-icon{width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:17px; margin-bottom:10px;}
+  .stat-card-icon{width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:17px; margin-bottom:10px; transition:transform .25s cubic-bezier(.16,.8,.3,1);}
+  .stat-card:hover .stat-card-icon{ transform:scale(1.12) rotate(-4deg); }
   .stat-card-icon.moss-tone{background:var(--moss-bg); color:var(--moss-text);}
   .stat-card-icon.rust-tone{background:var(--rust-bg); color:var(--rust-text);}
   .stat-card-icon.accent-tone{background:var(--accent2-bg); color:var(--accent2-text);}
