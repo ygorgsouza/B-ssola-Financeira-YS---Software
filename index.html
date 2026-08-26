@@ -52,13 +52,16 @@
   :focus-visible{outline:2px solid var(--accent2); outline-offset:2px;}
   @media (prefers-reduced-motion: reduce){ *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;} }
 
-  .cover{ background: var(--grad-hero); color:#F4EFDF; padding:22px 20px 0; position:relative; }
+  .cover{ background: var(--grad-hero); color:#F4EFDF; padding:22px 20px 0; position:sticky; top:0; z-index:100; transition:padding .25s ease, box-shadow .25s ease; }
+  .cover.scrolled{ padding-top:12px; box-shadow:0 8px 24px -8px rgba(0,0,0,0.35); }
+  .cover.scrolled .brand-mark{ width:30px; height:30px; }
+  .cover.scrolled .brand h1{ font-size:16px; }
   .cover::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:2px; background:var(--grad-accent); opacity:0.85; }
   .cover-inner{ max-width:1320px; margin:0 auto; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; padding-bottom:18px; border-bottom:2px solid var(--brass); }
   .brand{display:flex; align-items:center; gap:12px;}
-  .brand-mark{width:40px; height:40px; flex-shrink:0;}
+  .brand-mark{width:40px; height:40px; flex-shrink:0; transition:width .25s ease, height .25s ease;}
   .brand h1{
-    font-size:22px; margin:0;
+    font-size:22px; margin:0; transition:font-size .25s ease;
     background: linear-gradient(90deg, #F8F3E4 0%, #9FE6D8 60%, #D8CCFF 100%);
     -webkit-background-clip:text; background-clip:text; color:transparent;
   }
@@ -99,6 +102,8 @@
   @keyframes tabFadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
   .tab-fade-in{ animation:tabFadeIn .25s ease; }
   @keyframes cardRiseIn{ from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:translateY(0);} }
+  .reveal-on-scroll{ opacity:0; transform:translateY(18px); transition:opacity .6s cubic-bezier(.16,.8,.3,1), transform .6s cubic-bezier(.16,.8,.3,1); }
+  .reveal-on-scroll.revealed{ opacity:1; transform:translateY(0); }
   .card-rise-in{ animation:cardRiseIn .45s cubic-bezier(.16,.8,.3,1) both; }
   @keyframes patrimonioGlow{ 0%,100%{ opacity:0.25; } 50%{ opacity:0.55; } }
   .stat-card.highlight::after{ animation:patrimonioGlow 4s ease-in-out infinite; }
@@ -121,6 +126,17 @@
   .stat-label{font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-soft); margin:0 0 8px; text-align:center;}
   .stat-value{font-size:32px; font-weight:700; line-height:1.1; text-align:center;}
   .stat-value.rust{color:var(--rust);} .stat-value.moss{color:var(--moss);}
+  .stat-card-icon{width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:17px; margin-bottom:10px;}
+  .stat-card-icon.moss-tone{background:var(--moss-bg); color:var(--moss-text);}
+  .stat-card-icon.rust-tone{background:var(--rust-bg); color:var(--rust-text);}
+  .stat-card-icon.accent-tone{background:var(--accent2-bg); color:var(--accent2-text);}
+  .stat-trend{font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:999px; margin-top:8px; display:inline-block;}
+  .stat-trend.up-good{background:var(--moss-bg); color:var(--moss-text);}
+  .stat-trend.up-bad{background:var(--rust-bg); color:var(--rust-text);}
+  .stat-trend.down-good{background:var(--moss-bg); color:var(--moss-text);}
+  .stat-trend.down-bad{background:var(--rust-bg); color:var(--rust-text);}
+  .stat-trend.flat{background:var(--surface-2); color:var(--text-soft);}
+  .stat-card-breakdown{font-size:10.5px; color:var(--text-soft); margin-top:8px; line-height:1.5; text-align:center;}
 
   .ledger{ margin-top:18px; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background-color:var(--bg); overflow-x:auto; }
   table{width:100%; border-collapse:collapse; font-size:13.5px; min-width:480px;}
@@ -324,8 +340,9 @@
   input[type="range"]{width:100%; accent-color:var(--brass);}
   .check-row{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-soft); margin-top:6px;}
   .proj-summary{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:18px;}
-  .proj-summary .stat-value{font-size:clamp(16px, 3.4vw, 26px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;}
-  @media (max-width:700px){ .proj-summary{grid-template-columns:1fr;} }
+  .proj-summary .stat-card{min-height:104px;}
+  .proj-summary .stat-value{font-size:clamp(15px, 2.6vw, 22px); white-space:normal; word-break:break-word; max-width:100%; letter-spacing:-0.02em;}
+  @media (max-width:700px){ .proj-summary{grid-template-columns:1fr;} .proj-summary .stat-value{font-size:24px;} }
 
   .guide-block{margin-bottom:24px; transition:transform .2s ease;}
   .guide-block:hover{ transform:translateX(3px); }
@@ -362,7 +379,7 @@
   /* ===== Modals ===== */
   .modal-overlay{
     position:fixed; inset:0; background:rgba(10,15,9,0.6); display:flex; align-items:center; justify-content:center;
-    z-index:100; padding:20px;
+    z-index:150; padding:20px;
   }
   .modal-box{
     background:var(--bg); border:1px solid var(--line); border-radius:14px; max-width:560px; width:100%;
@@ -458,17 +475,23 @@
 
       <div class="grid grid-4">
         <div class="stat-card">
+          <div class="stat-card-icon moss-tone">💰</div>
           <div class="stat-label">Renda do mês</div>
           <div class="stat-value moss num" id="statRenda">—</div>
+          <div id="statRendaTrend"></div>
         </div>
         <div class="stat-card">
+          <div class="stat-card-icon rust-tone">🧾</div>
           <div class="stat-label">Despesas do mês</div>
           <div class="stat-value rust num" id="statGastos">—</div>
-          <div style="font-size:10.5px; color:var(--text-soft); margin-top:4px;" id="statGastosBreakdown"></div>
+          <div id="statGastosTrend"></div>
+          <div class="stat-card-breakdown" id="statGastosBreakdown"></div>
         </div>
         <div class="stat-card">
+          <div class="stat-card-icon accent-tone">📈</div>
           <div class="stat-label">Investido no mês</div>
           <div class="stat-value moss num" id="statInvest">—</div>
+          <div id="statInvestTrend"></div>
         </div>
         <div class="stat-card highlight">
           <div class="stat-label">Património líquido</div>
@@ -1169,6 +1192,41 @@
       el.classList.add("card-rise-in");
     });
   }
+
+  /* Revela elementos suavemente conforme entram na viewport ao rolar a página —
+     usado nos blocos estáticos (ex.: guia da Educação), que não são re-renderizados. */
+  var scrollRevealObserver = (!PREFERS_REDUCED_MOTION && "IntersectionObserver" in window)
+    ? new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            entry.target.classList.add("revealed");
+            scrollRevealObserver.unobserve(entry.target);
+          }
+        });
+      }, {threshold:0.12, rootMargin:"0px 0px -40px 0px"})
+    : null;
+  function observeReveal(selector){
+    if(!scrollRevealObserver) return;
+    document.querySelectorAll(selector).forEach(function(el){
+      el.classList.add("reveal-on-scroll");
+      scrollRevealObserver.observe(el);
+    });
+  }
+
+  /* Cabeçalho reage ao scroll: encolhe e ganha sombra, como um produto premium. */
+  (function initStickyHeaderScroll(){
+    var coverEl = document.querySelector(".cover");
+    if(!coverEl) return;
+    var ticking = false;
+    function updateScrolled(){
+      coverEl.classList.toggle("scrolled", window.scrollY > 12);
+      ticking = false;
+    }
+    window.addEventListener("scroll", function(){
+      if(!ticking){ requestAnimationFrame(updateScrolled); ticking = true; }
+    }, {passive:true});
+    updateScrolled();
+  })();
 
   /* ===== Animação de "desenhar" as linhas dos gráficos ===== */
   function animateChartDrawIn(pathEl){
@@ -2406,13 +2464,29 @@
     return {consumo:consumo, obrigacoes:obrigacoes, cartaoGastoMes:cartaoGastoMes};
   }
 
+  /* Selo de tendência (▲/▼ X% vs mês anterior) para os cards do topo do Dashboard.
+     higherIsBetter define se subir é bom (renda, investido) ou ruim (despesas). */
+  function trendBadge(current, previous, higherIsBetter){
+    if(!previous || previous<=0) return "";
+    var pct = ((current-previous)/previous)*100;
+    if(Math.abs(pct) < 0.5) return '<span class="stat-trend flat">— igual ao mês anterior</span>';
+    var arrow = pct>0 ? "▲" : "▼";
+    var isGood = higherIsBetter ? pct>0 : pct<0;
+    var cls = isGood ? "up-good" : "up-bad";
+    return '<span class="stat-trend '+cls+'">'+arrow+' '+Math.abs(pct).toFixed(0)+'% vs mês anterior</span>';
+  }
+
   function renderDashboard(){
     document.getElementById("monthLabel").textContent = monthLabel(state.viewMonth);
     renderMotivationPanel();
     var t = monthTotals(state.viewMonth);
+    var tPrev = monthTotals(shiftMonth(state.viewMonth, -1));
     animateMoneyValue(document.getElementById("statRenda"), t.income);
     animateMoneyValue(document.getElementById("statGastos"), t.expense);
     animateMoneyValue(document.getElementById("statInvest"), t.invest);
+    document.getElementById("statRendaTrend").innerHTML = trendBadge(t.income, tPrev.income, true);
+    document.getElementById("statGastosTrend").innerHTML = trendBadge(t.expense, tPrev.expense, false);
+    document.getElementById("statInvestTrend").innerHTML = trendBadge(t.invest, tPrev.invest, true);
     var brk = monthExpenseBreakdown(state.viewMonth);
     document.getElementById("statGastosBreakdown").textContent = "Consumo "+fmtMoney(brk.consumo)+" · Dívidas pagas "+fmtMoney(brk.obrigacoes)+" · Cartão gasto no mês (vira fatura, não somado aqui) "+fmtMoney(brk.cartaoGastoMes);
     var pat = netWorth();
@@ -3279,6 +3353,7 @@
   renderTipGrid();
   renderDicaDoDia();
   loadLiveRates();
+  observeReveal(".guide-block");
 
   // expose for automated testing only
   window.__app = {
