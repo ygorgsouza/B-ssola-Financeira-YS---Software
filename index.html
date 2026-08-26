@@ -52,14 +52,16 @@
   :focus-visible{outline:2px solid var(--accent2); outline-offset:2px;}
   @media (prefers-reduced-motion: reduce){ *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;} }
 
-  .cover{ background: var(--grad-hero); color:#F4EFDF; padding:22px 20px 0; position:sticky; top:0; z-index:100; transition:padding .25s ease, box-shadow .25s ease; }
-  .cover.scrolled{ padding-top:12px; box-shadow:0 8px 24px -8px rgba(0,0,0,0.35); }
+  .cover{ background: var(--grad-hero); color:#F4EFDF; padding:22px 20px 0; position:sticky; top:0; z-index:100; transition:padding .25s ease, box-shadow .25s ease, background .3s ease; }
+  .cover.scrolled{ padding-top:12px; box-shadow:0 8px 24px -8px rgba(0,0,0,0.35); background:linear-gradient(135deg, rgba(22,35,28,0.94) 0%, rgba(27,59,51,0.94) 45%, rgba(20,58,74,0.94) 100%); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+  [data-theme="dark"] .cover.scrolled{ background:linear-gradient(135deg, rgba(10,15,9,0.94) 0%, rgba(16,48,40,0.94) 45%, rgba(12,42,56,0.94) 100%); }
+  #scrollProgressBar{ position:absolute; left:0; bottom:0; height:2px; width:0%; background:linear-gradient(90deg, var(--accent2), var(--brass-light)); transition:width .1s linear; }
   .cover.scrolled .brand-mark{ width:30px; height:30px; }
   .cover.scrolled .brand h1{ font-size:16px; }
   .cover::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:2px; background:var(--grad-accent); opacity:0.85; }
   .cover-inner{ max-width:1320px; margin:0 auto; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; padding-bottom:18px; border-bottom:2px solid var(--brass); }
   .brand{display:flex; align-items:center; gap:12px;}
-  .brand-mark{width:40px; height:40px; flex-shrink:0; transition:width .25s ease, height .25s ease;}
+  .brand-mark{width:40px; height:40px; flex-shrink:0; transition:width .25s ease, height .25s ease, transform .1s linear;}
   .brand h1{
     font-size:22px; margin:0; transition:font-size .25s ease;
     background: linear-gradient(90deg, #F8F3E4 0%, #9FE6D8 60%, #D8CCFF 100%);
@@ -104,6 +106,17 @@
   @keyframes cardRiseIn{ from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:translateY(0);} }
   .reveal-on-scroll{ opacity:0; transform:translateY(18px); transition:opacity .6s cubic-bezier(.16,.8,.3,1), transform .6s cubic-bezier(.16,.8,.3,1); }
   .reveal-on-scroll.revealed{ opacity:1; transform:translateY(0); }
+
+  /* ===== FAQ / Ajuda em accordion ===== */
+  .faq-list{ border-top:1px solid var(--line); margin-top:6px; }
+  .faq-item{ border-bottom:1px solid var(--line); }
+  .faq-q{ width:100%; text-align:left; background:none; border:none; padding:14px 2px; display:flex; justify-content:space-between; align-items:center; gap:10px; cursor:pointer; font-size:13.5px; font-weight:600; color:var(--text); transition:color .15s ease; }
+  .faq-q:hover{ color:var(--brass); }
+  .faq-q .chevron{ transition:transform .3s cubic-bezier(.16,.8,.3,1); color:var(--text-soft); font-size:12px; flex-shrink:0; }
+  .faq-item.open .faq-q .chevron{ transform:rotate(180deg); color:var(--brass); }
+  .faq-a{ max-height:0; overflow:hidden; transition:max-height .35s cubic-bezier(.16,.8,.3,1); }
+  .faq-a p{ padding:0 2px 14px; margin:0; font-size:13px; color:var(--text-soft); line-height:1.65; }
+  .faq-item.open .faq-a{ max-height:420px; }
   .card-rise-in{ animation:cardRiseIn .45s cubic-bezier(.16,.8,.3,1) both; }
   @keyframes patrimonioGlow{ 0%,100%{ opacity:0.25; } 50%{ opacity:0.55; } }
   .stat-card.highlight::after{ animation:patrimonioGlow 4s ease-in-out infinite; }
@@ -149,8 +162,9 @@
   .pill-fixa{background:var(--amber-bg); color:var(--amber-text);}
   .pill-variavel{background:var(--surface-2); color:var(--text-soft);}
   .amt{font-family:'IBM Plex Mono', monospace; font-weight:600;}
-  .del-btn{border:none; background:transparent; color:var(--rust); cursor:pointer; font-size:16px; padding:4px 8px; border-radius:6px;}
+  .del-btn{border:none; background:transparent; color:var(--rust); cursor:pointer; font-size:16px; padding:4px 8px; border-radius:6px; transition:transform .12s ease, background .15s ease;}
   .del-btn:hover{background:var(--rust-bg);}
+  .del-btn:active{transform:scale(0.85);}
   .empty-row td{text-align:center; color:var(--text-soft); padding:22px 12px; font-style:italic;}
 
   .form-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-top:14px; }
@@ -162,6 +176,10 @@
   .field input:focus, .field select:focus{border-color:var(--accent2); box-shadow:0 0 0 3px rgba(14,156,140,0.15);}
   .btn{ border:none; border-radius:7px; padding:10px 16px; font-size:13.5px; font-weight:600; cursor:pointer; transition:transform .12s ease, opacity .15s ease, box-shadow .15s ease; min-height:40px; }
   .btn:hover{ transform:translateY(-1px); box-shadow:0 4px 10px -4px rgba(22,35,28,0.3); }
+  .btn-cta-shimmer{ position:relative; overflow:hidden; }
+  .btn-cta-shimmer::after{ content:""; position:absolute; top:0; left:-60%; width:40%; height:100%; background:linear-gradient(115deg, transparent, rgba(255,255,255,0.35), transparent); transform:skewX(-20deg); }
+  .btn-cta-shimmer:hover::after{ animation:btnShimmer 1s ease; }
+  @keyframes btnShimmer{ from{ left:-60%; } to{ left:130%; } }
   .btn:active{transform:translateY(1px);}
   .btn-primary{background:var(--surface-dark); color:#F4EFDF;}
   .btn-primary:hover{ box-shadow:var(--glow-accent2), 0 4px 10px -4px rgba(22,35,28,0.3); }
@@ -189,7 +207,8 @@
   .goal-card, .card-item, .debt-item{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-bottom:12px; transition:box-shadow .2s ease, transform .2s ease;}
   .goal-card:hover, .debt-item:hover{ box-shadow:var(--shadow); transform:translateY(-1px); }
   .goal-top, .item-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; gap:10px; flex-wrap:wrap;}
-  .goal-name, .item-name{font-family:'Fraunces', serif; font-weight:600; font-size:16px;}
+  .goal-name, .item-name{font-family:'Fraunces', serif; font-weight:600; font-size:16px; transition:transform .25s cubic-bezier(.16,.8,.3,1); display:inline-block;}
+  .debt-item:hover .item-name{ transform:translateX(2px); }
   .goal-track, .item-track{height:10px; background:var(--surface-2); border-radius:999px; overflow:hidden;}
   .goal-fill{height:100%; background:var(--grad-accent); border-radius:999px; transition:width .7s cubic-bezier(.16,.8,.3,1);}
   .fill-warn{background:linear-gradient(90deg, var(--amber), var(--rust)) !important;}
@@ -255,9 +274,11 @@
   .rate-dot{display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:5px; vertical-align:middle;}
   .rate-dot.live{background:#7FD68A;} .rate-dot.offline{background:#D8A67A;}
 
-  .dica-card{ background: var(--grad-hero); color:#F4EFDF; border-radius:var(--radius); padding:18px 18px 16px; margin-bottom:22px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; position:relative; overflow:hidden; }
+  .dica-card{ background: var(--grad-hero); color:#F4EFDF; border-radius:var(--radius); padding:18px 18px 16px; margin-bottom:22px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; position:relative; overflow:hidden; transition:box-shadow .2s ease; }
+  .dica-card:hover{ box-shadow:var(--glow-accent2); }
   .dica-card::before{content:""; position:absolute; left:-20px; bottom:-20px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle, rgba(167,139,250,0.22), transparent 70%);}
-  .dica-icon{width:34px; height:34px; flex-shrink:0;}
+  .dica-icon{width:34px; height:34px; flex-shrink:0; transition:transform .3s cubic-bezier(.16,.8,.3,1);}
+  .dica-card:hover .dica-icon{ transform:scale(1.15) rotate(8deg); }
   .dica-body{flex:1; min-width:200px;}
   .dica-label{font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:#C9BFA0; margin-bottom:4px;}
   .dica-text{font-family:'Fraunces', serif; font-size:15.5px; line-height:1.45;}
@@ -307,7 +328,8 @@
   .cc-card::after{content:""; position:absolute; right:-40px; top:-40px; width:160px; height:160px; border-radius:50%; background:radial-gradient(circle, rgba(217,189,130,0.18), transparent 70%);}
   .cc-card::before{content:""; position:absolute; left:-30px; bottom:-30px; width:130px; height:130px; border-radius:50%; background:radial-gradient(circle, rgba(63,224,200,0.16), transparent 70%);}
   .cc-top{display:flex; justify-content:space-between; align-items:flex-start;}
-  .cc-name{font-family:'Fraunces', serif; font-size:17px; font-weight:600;}
+  .cc-name{font-family:'Fraunces', serif; font-size:17px; font-weight:600; transition:transform .25s cubic-bezier(.16,.8,.3,1); display:inline-block;}
+  .cc-card:hover .cc-name{ transform:translateX(2px); }
   .cc-del{border:none; background:rgba(255,255,255,0.1); color:#F4EFDF; border-radius:6px; padding:4px 9px; cursor:pointer; font-size:13px;}
   .cc-number{font-family:'IBM Plex Mono', monospace; letter-spacing:3px; font-size:15px; margin:18px 0 14px; color:#D9BD82;}
   .cc-row{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;}
@@ -412,6 +434,16 @@
     body{ background:#fff; color:#000; padding-bottom:0; }
     .page{ box-shadow:none; border:none; }
   }
+
+  /* ===== Touch-friendly fallback: em telas sem hover real (celular/tablet),
+     usa :active para dar o mesmo feedback visual imediato do :hover no desktop ===== */
+  @media (hover:none){
+    .stat-card:active, .cc-card:active, .acct-card:active, .goal-card:active, .debt-item:active,
+    .tip-item:active, .year-card:active{ transform:translateY(-1px) scale(0.995); box-shadow:var(--shadow); }
+    .btn:active{ transform:scale(0.96); }
+    body{ overflow-x:hidden; }
+  }
+  html{ overflow-x:hidden; }
 </style>
 </head>
 <body>
@@ -419,6 +451,7 @@
 <div class="toast" id="toast"></div>
 
 <header class="cover">
+  <div id="scrollProgressBar"></div>
   <div class="cover-inner">
     <div class="brand">
       <svg class="brand-mark" viewBox="0 0 40 40" fill="none">
@@ -924,7 +957,7 @@
         <button class="btn btn-ghost btn-sm" id="exportCsvBtn">Exportar Excel (CSV)</button>
         <button class="btn btn-ghost btn-sm" id="importBtn">Importar backup</button>
         <input type="file" id="importFile" accept="application/json">
-        <button class="btn btn-ghost btn-sm" id="printBtn">Gerar relatório (PDF)</button>
+        <button class="btn btn-primary btn-sm btn-cta-shimmer" id="printBtn">📄 Gerar relatório (PDF)</button>
         <button class="btn btn-ghost btn-sm" id="resetBtn">Limpar dados</button>
       </div>
     </div>
@@ -967,41 +1000,56 @@
   <div class="modal-box">
     <h2>Ajuda</h2>
 
-    <h3>Como meus dados são salvos?</h3>
-    <p>Tudo fica salvo apenas neste navegador (localStorage), neste computador. Nada é enviado para a internet. Isso significa privacidade total, mas também que <strong>você</strong> é responsável pelo backup.</p>
-
-    <h3>Como faço backup?</h3>
-    <p>Clique em "Exportar backup" no rodapé. Isso baixa um arquivo .json. Guarde-o em local seguro (Google Drive, e-mail para você mesmo, etc.). Para restaurar, use "Importar backup".</p>
-
-    <h3>Perdi meus dados, e agora?</h3>
-    <p>Se você tinha um backup exportado, use "Importar backup". Sem um backup, infelizmente os dados não podem ser recuperados — por isso a recomendação de exportar regularmente.</p>
-
-    <h3>O painel funciona offline?</h3>
-    <p>Sim, quase tudo. Só as taxas Selic/CDI na aba Educação precisam de internet para atualizar — sem conexão, mostram um valor de referência.</p>
-
-    <h3>O que significa cada aba?</h3>
-    <p><strong>Dashboard</strong>: visão geral do mês. <strong>Rendimentos/Despesas</strong>: seu fluxo de caixa. <strong>Cartões/Dívidas</strong>: suas obrigações. <strong>Investimentos</strong>: suas aplicações e rendimentos reais. <strong>Projeções</strong>: simulação futura. <strong>Metas</strong>: objetivos financeiros. <strong>Análises</strong>: gráficos e tendências. <strong>Educação</strong>: dicas e taxas de mercado.</p>
-
-    <h3>Como funciona o Património líquido?</h3>
-    <p>É calculado como <strong>dinheiro acumulado + investimentos − dívidas e faturas em aberto</strong>. Ao cadastrar um financiamento (ex.: de um imóvel), o valor total entra <strong>imediatamente</strong> como dívida, então o número pode ficar bem negativo no início — isso é esperado, pois representa tudo que ainda deve. O valor do bem em si (o imóvel, o carro) não é somado automaticamente; se quiser refletir isso, cadastre-o como uma conta em Investimentos.</p>
-
-    <h3>O que são os alertas do Dashboard?</h3>
-    <p>São avisos automáticos sobre saldo, uso do cartão, dívidas atrasadas, orçamento estourado e progresso de investimento, coloridos por gravidade: <strong style="color:var(--moss);">verde</strong> = ok, <strong style="color:var(--amber);">âmbar</strong> = atenção, <strong style="color:var(--rust);">vermelho</strong> = requer ação.</p>
-
-    <h3>Como funcionam as cores da distribuição de renda?</h3>
-    <p>No Dashboard, as barras de Essenciais, Não essenciais e Investido mudam de cor conforme a porcentagem da renda: <strong style="color:var(--moss);">verde</strong> dentro do limite saudável, <strong style="color:var(--amber);">âmbar</strong> perto do limite, <strong style="color:var(--rust);">vermelho</strong> fora do recomendado. Para Investido a lógica é invertida — quanto mais, melhor.</p>
-
-    <h3>Como faço login?</h3>
-    <p>O acesso é feito com o e-mail e a senha que você define na tela de login — não há mais PIN dentro do painel. Esqueceu a senha? Use a opção "Esqueci minha senha" na tela de login para redefini-la.</p>
-
-    <h3>Editar ou excluir um lançamento</h3>
-    <p>Em Rendimentos, Despesas, Cartões, Dívidas e Investimentos, cada linha tem ícones de editar (✎) e excluir. Excluir mostra um aviso de "desfazer" por alguns segundos, caso tenha sido engano.</p>
-
-    <h3>Como funciona o relatório em PDF?</h3>
-    <p>Em "Gerar relatório (PDF)" no rodapé, escolha o mês (ou "todos os meses") e o painel monta um relatório com capa, resumo executivo, despesas por categoria, orçamento, cartões/dívidas, investimentos e metas — pronto para salvar como PDF pela tela de impressão do navegador.</p>
-
-    <h3>Como funcionam as Projeções e Metas?</h3>
-    <p>Projeções simulam sua evolução futura com base no padrão atual de receitas, despesas e investimento. Metas permitem definir um objetivo com valor e prazo, acompanhando o progresso automaticamente conforme você registra aportes.</p>
+    <div class="faq-list" id="helpFaqList">
+      <div class="faq-item">
+        <button class="faq-q" type="button">Como meus dados são salvos?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Tudo fica salvo apenas neste navegador (localStorage), neste computador. Nada é enviado para a internet. Isso significa privacidade total, mas também que <strong>você</strong> é responsável pelo backup.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">Como faço backup?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Clique em "Exportar backup" no rodapé. Isso baixa um arquivo .json. Guarde-o em local seguro (Google Drive, e-mail para você mesmo, etc.). Para restaurar, use "Importar backup".</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">Perdi meus dados, e agora?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Se você tinha um backup exportado, use "Importar backup". Sem um backup, infelizmente os dados não podem ser recuperados — por isso a recomendação de exportar regularmente.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">O painel funciona offline?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Sim, quase tudo. Só as taxas Selic/CDI na aba Educação precisam de internet para atualizar — sem conexão, mostram um valor de referência.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">O que significa cada aba?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p><strong>Dashboard</strong>: visão geral do mês. <strong>Rendimentos/Despesas</strong>: seu fluxo de caixa. <strong>Cartões/Dívidas</strong>: suas obrigações. <strong>Investimentos</strong>: suas aplicações e rendimentos reais. <strong>Projeções</strong>: simulação futura. <strong>Metas</strong>: objetivos financeiros. <strong>Análises</strong>: gráficos e tendências. <strong>Educação</strong>: dicas e taxas de mercado.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">Como funciona o Património líquido?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>É calculado como <strong>dinheiro acumulado + investimentos − dívidas e faturas em aberto</strong>. Ao cadastrar um financiamento (ex.: de um imóvel), o valor total entra <strong>imediatamente</strong> como dívida, então o número pode ficar bem negativo no início — isso é esperado, pois representa tudo que ainda deve. O valor do bem em si (o imóvel, o carro) não é somado automaticamente; se quiser refletir isso, cadastre-o como uma conta em Investimentos.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">O que são os alertas do Dashboard?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>São avisos automáticos sobre saldo, uso do cartão, dívidas atrasadas, orçamento estourado e progresso de investimento, coloridos por gravidade: <strong style="color:var(--moss);">verde</strong> = ok, <strong style="color:var(--amber);">âmbar</strong> = atenção, <strong style="color:var(--rust);">vermelho</strong> = requer ação.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">Como funcionam as cores da distribuição de renda?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>No Dashboard, as barras de Essenciais, Não essenciais e Investido mudam de cor conforme a porcentagem da renda: <strong style="color:var(--moss);">verde</strong> dentro do limite saudável, <strong style="color:var(--amber);">âmbar</strong> perto do limite, <strong style="color:var(--rust);">vermelho</strong> fora do recomendado. Para Investido a lógica é invertida — quanto mais, melhor.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">Como faço login?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>O acesso é feito com o e-mail e a senha que você define na tela de login — não há mais PIN dentro do painel. Esqueceu a senha? Use a opção "Esqueci minha senha" na tela de login para redefini-la.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">Editar ou excluir um lançamento<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Em Rendimentos, Despesas, Cartões, Dívidas e Investimentos, cada linha tem ícones de editar (✎) e excluir. Excluir mostra um aviso de "desfazer" por alguns segundos, caso tenha sido engano.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">Como funciona o relatório em PDF?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Em "Gerar relatório (PDF)" no rodapé, escolha o mês (ou "todos os meses") e o painel monta um relatório com capa, resumo executivo, despesas por categoria, orçamento, cartões/dívidas, investimentos e metas — pronto para salvar como PDF pela tela de impressão do navegador.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" type="button">Como funcionam as Projeções e Metas?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Projeções simulam sua evolução futura com base no padrão atual de receitas, despesas e investimento. Metas permitem definir um objetivo com valor e prazo, acompanhando o progresso automaticamente conforme você registra aportes.</p></div>
+      </div>
+    </div>
 
     <p class="callout" style="margin-top:16px;">Precisa de mais explicações, exemplos práticos e dicas de organização financeira? A aba <strong>Educação</strong> tem um guia completo, com a regra 50/30/20, reserva de emergência, percentuais por perfil de investidor e erros comuns de quem está começando.</p>
 
@@ -1217,10 +1265,21 @@
   /* Cabeçalho reage ao scroll: encolhe e ganha sombra, como um produto premium. */
   (function initStickyHeaderScroll(){
     var coverEl = document.querySelector(".cover");
+    var brandMarkEl = document.querySelector(".brand-mark");
+    var progressEl = document.getElementById("scrollProgressBar");
     if(!coverEl) return;
     var ticking = false;
     function updateScrolled(){
-      coverEl.classList.toggle("scrolled", window.scrollY > 12);
+      var y = window.scrollY;
+      coverEl.classList.toggle("scrolled", y > 12);
+      if(!PREFERS_REDUCED_MOTION && brandMarkEl){
+        brandMarkEl.style.transform = "translateY(" + Math.min(y*0.08, 6) + "px)";
+      }
+      if(progressEl){
+        var doc = document.documentElement;
+        var max = (doc.scrollHeight - doc.clientHeight) || 1;
+        progressEl.style.width = Math.min(100, (y/max)*100) + "%";
+      }
       ticking = false;
     }
     window.addEventListener("scroll", function(){
@@ -1448,7 +1507,7 @@
       target.classList.remove("tab-fade-in");
       void target.offsetWidth;
       target.classList.add("tab-fade-in");
-      staggerIn(target, ".stat-card, .cc-card, .acct-card, .debt-item, .tip-item, .year-card, .guide-block");
+      staggerIn(target, ".stat-card, .cc-card, .acct-card, .debt-item, .tip-item, .year-card");
     }
   }
 
@@ -1507,6 +1566,14 @@
   document.getElementById("sealImgHelp").src = SEAL_DATA_URI;
   document.getElementById("helpToggle").addEventListener("click", function(){ document.getElementById("helpOverlay").classList.remove("hidden"); });
   document.getElementById("helpCloseBtn").addEventListener("click", function(){ document.getElementById("helpOverlay").classList.add("hidden"); });
+  document.querySelectorAll("#helpFaqList .faq-q").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var item = btn.closest(".faq-item");
+      var wasOpen = item.classList.contains("open");
+      document.querySelectorAll("#helpFaqList .faq-item.open").forEach(function(o){ o.classList.remove("open"); });
+      if(!wasOpen) item.classList.add("open");
+    });
+  });
 
   var ownerInput = document.getElementById("ownerName");
   ownerInput.value = state.owner || "";
@@ -1771,7 +1838,7 @@
 
       var card = document.createElement("div"); card.className="cc-card";
       card.innerHTML =
-        '<div class="cc-top"><div class="cc-name">'+escapeHtml(c.nome)+'</div><button class="cc-del" data-id="'+c.id+'" aria-label="Excluir cartão">✕</button></div>'+
+        '<div class="cc-top"><div class="cc-name">💳 '+escapeHtml(c.nome)+'</div><button class="cc-del" data-id="'+c.id+'" aria-label="Excluir cartão">✕</button></div>'+
         '<div class="cc-number">•••• •••• •••• ••••</div>'+
         '<div class="cc-row">'+
           '<div class="cc-metric"><div class="k">Fatura atual (em aberto)</div><div class="v">'+fmtMoney(fatura)+'</div></div>'+
@@ -1971,7 +2038,7 @@
     var actionBtn = quitada
       ? '<button class="btn btn-ghost btn-sm debt-reativar-btn" data-debt="'+d.id+'">Reativar dívida</button>'
       : '<button class="btn btn-ghost btn-sm debt-quitar-btn" data-debt="'+d.id+'">Quitar restante agora</button>';
-    item.innerHTML = '<div class="item-top"><div class="item-name">'+escapeHtml(d.nome)+(quitada?' <span class="cat-pill" style="background:var(--moss-bg); color:var(--moss-text);">quitada</span>':'')+'</div><button class="del-btn" data-id="'+d.id+'" aria-label="Excluir dívida">✕</button></div>'+
+    item.innerHTML = '<div class="item-top"><div class="item-name">📉 '+escapeHtml(d.nome)+(quitada?' <span class="cat-pill" style="background:var(--moss-bg); color:var(--moss-text);">quitada</span>':'')+'</div><button class="del-btn" data-id="'+d.id+'" aria-label="Excluir dívida">✕</button></div>'+
       '<div class="item-track"><div class="goal-fill" style="width:'+pct+'%;"></div></div>'+
       '<div class="item-meta"><span>'+fmtMoney(pago)+' pago de '+fmtMoney(d.valorTotal)+' ('+pct.toFixed(0)+'%) · '+numPagas+'/'+d.numParcelas+' parcelas</span><span>Restam '+fmtMoney(restante)+' · '+d.taxa+'% a.m.</span></div>'+
       '<div class="parcelas-grid">'+chips+'</div>'+
@@ -3355,6 +3422,10 @@
   renderDicaDoDia();
   loadLiveRates();
   observeReveal(".guide-block");
+  observeReveal(".chart-card");
+  observeReveal(".rates-panel");
+  observeReveal(".dica-card");
+  observeReveal(".proj-params");
 
   // expose for automated testing only
   window.__app = {
