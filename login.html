@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -41,6 +42,7 @@
       text-align: center;
       color: #666;
       margin-bottom: 30px;
+      line-height: 1.5;
     }
 
     label {
@@ -74,16 +76,12 @@
       cursor: not-allowed;
     }
 
-    #message {
-      margin-top: 18px;
-      text-align: center;
-      font-size: 14px;
-    }
-
+    #message,
     #recoveryMessage {
       margin-top: 18px;
       text-align: center;
       font-size: 14px;
+      line-height: 1.5;
     }
 
     .forgot {
@@ -94,12 +92,18 @@
       text-decoration: none;
       font-size: 14px;
     }
+
+    .forgot:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 
 <body>
 
+  <!-- LOGIN NORMAL -->
   <div class="login-box" id="loginBox">
+
     <h1>Bússola Financeira YS</h1>
 
     <div class="subtitle">
@@ -109,6 +113,7 @@
     <form id="loginForm">
 
       <label for="email">E-mail</label>
+
       <input
         type="email"
         id="email"
@@ -117,6 +122,7 @@
       >
 
       <label for="password">Palavra-passe</label>
+
       <input
         type="password"
         id="password"
@@ -135,20 +141,26 @@
     </a>
 
     <div id="message"></div>
+
   </div>
 
-  <!-- Ecrã de definição de nova senha, mostrado apenas quando o utilizador chega
-       através do link de recuperação de senha do Supabase (type=recovery). -->
+
+  <!-- CRIAÇÃO DA PRIMEIRA PALAVRA-PASSE -->
   <div class="login-box" id="recoveryBox" style="display:none;">
+
     <h1>Bússola Financeira YS</h1>
 
     <div class="subtitle">
-      Defina a sua nova palavra-passe
+      A sua compra foi confirmada.<br>
+      Crie agora a sua palavra-passe para acessar a sua conta.
     </div>
 
     <form id="recoveryForm">
 
-      <label for="newPassword">Nova palavra-passe</label>
+      <label for="newPassword">
+        Criar palavra-passe
+      </label>
+
       <input
         type="password"
         id="newPassword"
@@ -157,164 +169,435 @@
         required
       >
 
-      <label for="confirmPassword">Confirmar nova palavra-passe</label>
+      <label for="confirmPassword">
+        Confirmar palavra-passe
+      </label>
+
       <input
         type="password"
         id="confirmPassword"
-        placeholder="Repita a nova palavra-passe"
+        placeholder="Repita a sua palavra-passe"
         minlength="6"
         required
       >
 
       <button type="submit" id="recoveryButton">
-        Guardar nova palavra-passe
+        Criar minha palavra-passe
       </button>
 
     </form>
 
     <div id="recoveryMessage"></div>
+
   </div>
 
+
 <script>
-  const SUPABASE_URL = "https://acjbjocmwukmtocxudwg.supabase.co";
 
-  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_bGaSjpWnKibqowcO1LWTaA_lEKRwx4U";
+  // --------------------------------------------------
+  // SUPABASE
+  // --------------------------------------------------
 
-  const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
+  const SUPABASE_URL =
+    "https://acjbjocmwukmtocxudwg.supabase.co";
 
-  const loginBox = document.getElementById("loginBox");
-  const recoveryBox = document.getElementById("recoveryBox");
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_bGaSjpWnKibqowcO1LWTaA_lEKRwx4U";
 
-  const form = document.getElementById("loginForm");
-  const button = document.getElementById("loginButton");
-  const message = document.getElementById("message");
+  const supabaseClient =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
 
-  const recoveryForm = document.getElementById("recoveryForm");
-  const recoveryButton = document.getElementById("recoveryButton");
-  const recoveryMessage = document.getElementById("recoveryMessage");
 
-  // Mostra o ecrã de "definir nova senha" e esconde o login normal.
+  // --------------------------------------------------
+  // ELEMENTOS
+  // --------------------------------------------------
+
+  const loginBox =
+    document.getElementById("loginBox");
+
+  const recoveryBox =
+    document.getElementById("recoveryBox");
+
+  const form =
+    document.getElementById("loginForm");
+
+  const button =
+    document.getElementById("loginButton");
+
+  const message =
+    document.getElementById("message");
+
+  const recoveryForm =
+    document.getElementById("recoveryForm");
+
+  const recoveryButton =
+    document.getElementById("recoveryButton");
+
+  const recoveryMessage =
+    document.getElementById("recoveryMessage");
+
+
+  // --------------------------------------------------
+  // MOSTRAR TELA DE CRIAÇÃO DE SENHA
+  // --------------------------------------------------
+
   function showRecoveryScreen() {
+
     loginBox.style.display = "none";
+
     recoveryBox.style.display = "block";
+
   }
 
-  // Deteção imediata pela URL (evita o "flash" do formulário de login
-  // enquanto o Supabase ainda está a processar o token em segundo plano).
-  // O Supabase pode devolver o parâmetro type=recovery tanto na hash
-  // (#access_token=...&type=recovery) como na query (?type=recovery&code=...),
-  // dependendo do fluxo, por isso verificamos os dois.
-  (function checkRecoveryInUrl() {
-    const hash = window.location.hash ? window.location.hash.substring(1) : "";
-    const hashParams = new URLSearchParams(hash);
-    const queryParams = new URLSearchParams(window.location.search);
 
-    if (hashParams.get("type") === "recovery" || queryParams.get("type") === "recovery") {
-      showRecoveryScreen();
+  // --------------------------------------------------
+  // VERIFICAR SE A URL É DE RECOVERY
+  // --------------------------------------------------
+
+  function isRecoveryUrl() {
+
+    const hash =
+      window.location.hash
+        ? window.location.hash.substring(1)
+        : "";
+
+    const hashParams =
+      new URLSearchParams(hash);
+
+    const queryParams =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    return (
+      hashParams.get("type") === "recovery" ||
+      queryParams.get("type") === "recovery"
+    );
+
+  }
+
+
+  // --------------------------------------------------
+  // DETECÇÃO IMEDIATA
+  // --------------------------------------------------
+
+  const recoveryUrl =
+    isRecoveryUrl();
+
+  if (recoveryUrl) {
+
+    showRecoveryScreen();
+
+  }
+
+
+  // --------------------------------------------------
+  // MONITORAR AUTENTICAÇÃO
+  // --------------------------------------------------
+
+  supabaseClient.auth.onAuthStateChange(
+    async (event, session) => {
+
+      console.log(
+        "AUTH EVENT:",
+        event
+      );
+
+      // Quando o Supabase confirma que o link
+      // é de recuperação de senha.
+      if (
+        event === "PASSWORD_RECOVERY"
+      ) {
+
+        showRecoveryScreen();
+
+        return;
+
+      }
+
+      // IMPORTANTE:
+      // Durante recovery não redirecionar
+      // automaticamente para o dashboard.
+      if (recoveryUrl) {
+
+        return;
+
+      }
+
     }
-  })();
+  );
 
-  // Confirmação "oficial" do Supabase: quando o token de recuperação da URL
-  // é processado, o cliente cria uma sessão e dispara o evento PASSWORD_RECOVERY.
-  // É só a partir daqui que updateUser({ password }) pode ser chamado com sucesso.
-  supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (event === "PASSWORD_RECOVERY") {
-      showRecoveryScreen();
-    }
-  });
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
+  // --------------------------------------------------
+  // LOGIN NORMAL
+  // --------------------------------------------------
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+  form.addEventListener(
+    "submit",
+    async (event) => {
 
-    button.disabled = true;
-    button.textContent = "A entrar...";
-    message.textContent = "";
+      event.preventDefault();
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email,
-      password
-    });
+      const email =
+        document
+          .getElementById("email")
+          .value
+          .trim();
 
-    if (error) {
-      message.textContent = error.message;
-      button.disabled = false;
-      button.textContent = "Entrar";
-      return;
-    }
+      const password =
+        document
+          .getElementById("password")
+          .value;
 
-    window.location.href = "/";
-  });
+      button.disabled = true;
 
-  document.getElementById("forgotPassword").addEventListener("click", async (event) => {
-    event.preventDefault();
+      button.textContent =
+        "A entrar...";
 
-    const email = document.getElementById("email").value.trim();
+      message.textContent = "";
 
-    if (!email) {
-      message.textContent = "Digite o seu e-mail primeiro.";
-      return;
-    }
 
-    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + "/login.html"
-    });
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth
+          .signInWithPassword({
+            email,
+            password
+          });
 
-    if (error) {
-      message.textContent = error.message;
-      return;
-    }
 
-    message.textContent = "Enviámos um e-mail para redefinir a sua palavra-passe.";
-  });
+      if (error) {
 
-  recoveryForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
+        console.error(
+          "Erro no login:",
+          error
+        );
 
-    const newPassword = document.getElementById("newPassword").value;
-    const confirmPassword = document.getElementById("confirmPassword").value;
+        message.textContent =
+          "E-mail ou palavra-passe incorretos.";
 
-    recoveryMessage.textContent = "";
+        button.disabled = false;
 
-    if (newPassword.length < 6) {
-      recoveryMessage.textContent = "A nova palavra-passe deve ter pelo menos 6 caracteres.";
-      return;
-    }
+        button.textContent =
+          "Entrar";
 
-    if (newPassword !== confirmPassword) {
-      recoveryMessage.textContent = "As palavras-passe não coincidem.";
-      return;
-    }
+        return;
 
-    recoveryButton.disabled = true;
-    recoveryButton.textContent = "A guardar...";
+      }
 
-    const { error } = await supabaseClient.auth.updateUser({
-      password: newPassword
-    });
 
-    if (error) {
-      recoveryMessage.textContent = error.message;
-      recoveryButton.disabled = false;
-      recoveryButton.textContent = "Guardar nova palavra-passe";
-      return;
-    }
+      console.log(
+        "Login realizado:",
+        data.user?.email
+      );
 
-    recoveryMessage.textContent = "Palavra-passe atualizada com sucesso! A entrar...";
 
-    // Depois de definir a nova senha, a sessão de recovery já está ativa,
-    // por isso seguimos direto para a aplicação, onde a verificação normal
-    // de access_active (no index.html) continua a acontecer como sempre.
-    setTimeout(() => {
+      // Login normal:
+      // segue para a aplicação.
       window.location.href = "/";
-    }, 1200);
-  });
+
+    }
+  );
+
+
+  // --------------------------------------------------
+  // ESQUECI A PALAVRA-PASSE
+  // --------------------------------------------------
+
+  document
+    .getElementById("forgotPassword")
+    .addEventListener(
+      "click",
+      async (event) => {
+
+        event.preventDefault();
+
+        const email =
+          document
+            .getElementById("email")
+            .value
+            .trim();
+
+
+        if (!email) {
+
+          message.textContent =
+            "Digite o seu e-mail primeiro.";
+
+          return;
+
+        }
+
+
+        const {
+          error
+        } =
+          await supabaseClient.auth
+            .resetPasswordForEmail(
+              email,
+              {
+                redirectTo:
+                  window.location.origin +
+                  "/login.html"
+              }
+            );
+
+
+        if (error) {
+
+          console.error(
+            "Erro ao enviar recuperação:",
+            error
+          );
+
+          message.textContent =
+            "Não foi possível enviar o e-mail. Tente novamente.";
+
+          return;
+
+        }
+
+
+        message.textContent =
+          "Enviámos um e-mail para criar uma nova palavra-passe.";
+
+      }
+    );
+
+
+  // --------------------------------------------------
+  // CRIAR / ALTERAR PALAVRA-PASSE
+  // --------------------------------------------------
+
+  recoveryForm.addEventListener(
+    "submit",
+    async (event) => {
+
+      event.preventDefault();
+
+
+      const newPassword =
+        document
+          .getElementById("newPassword")
+          .value;
+
+      const confirmPassword =
+        document
+          .getElementById("confirmPassword")
+          .value;
+
+
+      recoveryMessage.textContent =
+        "";
+
+
+      // --------------------------------------------------
+      // VALIDAR TAMANHO
+      // --------------------------------------------------
+
+      if (newPassword.length < 6) {
+
+        recoveryMessage.textContent =
+          "A palavra-passe deve ter pelo menos 6 caracteres.";
+
+        return;
+
+      }
+
+
+      // --------------------------------------------------
+      // CONFIRMAR SENHAS
+      // --------------------------------------------------
+
+      if (
+        newPassword !==
+        confirmPassword
+      ) {
+
+        recoveryMessage.textContent =
+          "As palavras-passe não coincidem.";
+
+        return;
+
+      }
+
+
+      recoveryButton.disabled =
+        true;
+
+      recoveryButton.textContent =
+        "A criar palavra-passe...";
+
+
+      // --------------------------------------------------
+      // ATUALIZAR SENHA NO SUPABASE
+      // --------------------------------------------------
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth
+          .updateUser({
+            password:
+              newPassword
+          });
+
+
+      if (error) {
+
+        console.error(
+          "Erro ao criar palavra-passe:",
+          error
+        );
+
+        recoveryMessage.textContent =
+          "Não foi possível criar a palavra-passe. O link pode ter expirado. Solicite um novo e-mail.";
+
+        recoveryButton.disabled =
+          false;
+
+        recoveryButton.textContent =
+          "Criar minha palavra-passe";
+
+        return;
+
+      }
+
+
+      console.log(
+        "PALAVRA-PASSE CRIADA COM SUCESSO"
+      );
+
+
+      recoveryMessage.textContent =
+        "Palavra-passe criada com sucesso! A entrar na sua conta...";
+
+
+      // --------------------------------------------------
+      // IR PARA O DASHBOARD
+      // --------------------------------------------------
+
+      setTimeout(
+        () => {
+
+          window.location.href =
+            "/";
+
+        },
+        1200
+      );
+
+    }
+  );
+
 </script>
 
 </body>
 </html>
+```
