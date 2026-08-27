@@ -1753,14 +1753,70 @@
 
       try {
 
-        const {
-          error
-        } =
-          await supabaseClient.auth
-            .updateUser({
-              password:
-                newPassword
-            });
+let {
+  data: sessionData,
+  error: sessionError
+} =
+  await supabaseClient.auth.getSession();
+
+
+if (sessionError) {
+
+  console.error(
+    "Erro ao obter sessão de recuperação:",
+    sessionError
+  );
+
+}
+
+
+if (!sessionData?.session) {
+
+  await new Promise(
+    resolve => setTimeout(resolve, 800)
+  );
+
+  const {
+    data: retrySessionData
+  } =
+    await supabaseClient.auth.getSession();
+
+  sessionData =
+    retrySessionData;
+
+}
+
+
+if (!sessionData?.session) {
+
+  console.error(
+    "Sessão de recuperação não encontrada."
+  );
+
+  showMessage(
+    recoveryMessage,
+    "A sessão de recuperação ainda não está pronta. Aguarde alguns segundos e tente novamente.",
+    "error"
+  );
+
+  recoveryButton.disabled = false;
+
+  recoveryButton.textContent =
+    "Criar nova palavra-passe";
+
+  return;
+
+}
+
+
+const {
+  error
+} =
+  await supabaseClient.auth
+    .updateUser({
+      password:
+        newPassword
+    });
 
 
         if (error) {
