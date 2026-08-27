@@ -218,6 +218,9 @@
   .btn-cta-shimmer:hover::after{ animation:btnShimmer 1s ease; }
   @keyframes btnShimmer{ from{ left:-60%; } to{ left:130%; } }
   .btn:active{transform:translateY(1px);}
+  .btn:disabled{ opacity:0.6; cursor:default; transform:none !important; box-shadow:none !important; }
+  @keyframes btnSuccessFlash{ 0%{ box-shadow:0 0 0 0 rgba(14,159,110,0.5); } 70%{ box-shadow:0 0 0 8px rgba(14,159,110,0); } 100%{ box-shadow:0 0 0 0 rgba(14,159,110,0); } }
+  .btn-success-flash{ animation:btnSuccessFlash .6s ease-out; border-color:var(--moss) !important; }
   .btn-primary{background:var(--surface-dark); color:#F4EFDF;}
   .btn-primary:hover{ box-shadow:var(--glow-accent2), 0 4px 10px -4px rgba(22,35,28,0.3); }
   .btn-primary:hover{opacity:0.88;}
@@ -570,6 +573,11 @@
   .auth-seal-title{ font-size:11.5px; font-weight:700; color:var(--text); text-transform:uppercase; letter-spacing:0.04em; }
   .auth-seal-sub{ font-size:11px; color:var(--text-soft); margin-top:1px; }
 
+  .backup-callout{ display:flex; gap:14px; align-items:flex-start; background:var(--accent2-bg); border:1px solid var(--accent2); border-radius:var(--radius); padding:16px 18px; margin-top:22px; }
+  .bc-icon{ font-size:22px; flex-shrink:0; line-height:1.3; }
+  .bc-title{ font-weight:700; font-size:13.5px; color:var(--accent2-text); margin-bottom:4px; }
+  .bc-text{ font-size:12px; color:var(--text-soft); line-height:1.6; max-width:640px; }
+  .bc-status{ font-size:12px; font-weight:600; margin-top:8px; }
   .util-bar{display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:0; flex-wrap:wrap; gap:10px;}
   .util-bar .left{font-size:11.5px; color:var(--text-soft);}
   .util-actions{display:flex; gap:8px; flex-wrap:wrap;}
@@ -1280,14 +1288,22 @@
       </div>
     </div>
 
+    <div class="backup-callout">
+      <div class="bc-icon">🔒</div>
+      <div class="bc-body">
+        <div class="bc-title">Seus dados estão seguros no seu dispositivo</div>
+        <div class="bc-text">A Bússola guarda seus dados financeiros apenas neste navegador, com privacidade total — nada é enviado para nenhum servidor. Isso também significa que eles não aparecem automaticamente em outro computador ou navegador: se você limpar os dados do navegador, trocar de dispositivo ou tiver algum problema local, poderá perdê-los. Por isso, manter um backup atualizado é a sua principal proteção.</div>
+        <div class="bc-status" id="backupStatusNote">Seus dados ficam salvos apenas neste navegador. Exporte um backup com frequência.</div>
+      </div>
+    </div>
+
     <div class="util-bar">
       <div class="left">
-        <span id="backupStatusNote">Seus dados ficam salvos apenas neste navegador. Exporte um backup com frequência.</span>
-        · Bússola Financeira v<span id="appVersionLabel"></span>
+        Bússola Financeira v<span id="appVersionLabel"></span>
       </div>
       <div class="util-actions">
         <button class="btn btn-ghost btn-sm" id="sampleBtn">Carregar dados de exemplo</button>
-        <button class="btn btn-ghost btn-sm" id="exportBtn">Exportar backup</button>
+        <button class="btn btn-primary btn-sm" id="exportBtn">Exportar backup</button>
         <button class="btn btn-ghost btn-sm" id="exportCsvBtn">Exportar Excel (CSV)</button>
         <button class="btn btn-ghost btn-sm" id="importBtn">Importar backup</button>
         <input type="file" id="importFile" accept="application/json">
@@ -1888,6 +1904,19 @@
       var v = parseMoneyStr(el.value);
       el.value = v===0 ? "" : v.toLocaleString("pt-BR", {minimumFractionDigits:2, maximumFractionDigits:2});
     });
+  }
+
+  /* Microinteração padrão para botões de ação rápida: desabilita brevemente, mostra
+     um pulso verde de confirmação no próprio botão, e reabilita — sem bloquear a UI. */
+  function withButtonFeedback(btn, delayMs){
+    btn.disabled = true;
+    setTimeout(function(){
+      btn.disabled = false;
+      btn.classList.remove("btn-success-flash");
+      void btn.offsetWidth;
+      btn.classList.add("btn-success-flash");
+      setTimeout(function(){ btn.classList.remove("btn-success-flash"); }, 650);
+    }, delayMs || 150);
   }
 
   function showToast(msg, type){
@@ -5004,6 +5033,7 @@
   document.getElementById("sampleBtn").addEventListener("click", function(){
     if(!confirm("Isso vai substituir os dados atuais por um exemplo de demonstração. Continuar?")) return;
     loadSampleData();
+    withButtonFeedback(this);
     showToast("Dados de exemplo carregados.");
   });
 
@@ -5139,6 +5169,7 @@
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     state.lastBackupDate = todayISO(); saveState();
     renderAll();
+    withButtonFeedback(this);
     showToast("Backup exportado.");
   });
 
@@ -5161,6 +5192,7 @@
     var namePart = (state.owner || "meus-dados").toLowerCase().replace(/\s+/g,"-");
     a.href = url; a.download = "bussola-financeira-"+namePart+".csv";
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    withButtonFeedback(document.getElementById("exportCsvBtn"));
     showToast("CSV exportado — abre direto no Excel ou Google Sheets.");
   });
 
@@ -5405,13 +5437,15 @@
         var parsed = JSON.parse(reader.result);
         state = Object.assign(JSON.parse(JSON.stringify(defaultState)), parsed);
         saveState(); ownerInput.value = state.owner||""; renderAll();
+        withButtonFeedback(document.getElementById("importBtn"));
         showToast("Backup importado com sucesso.");
       }catch(e){ showToast("Arquivo inválido.", "error"); }
     };
     reader.readAsText(file); ev.target.value="";
   });
   document.getElementById("resetBtn").addEventListener("click", function(){
-    if(confirm("Isso vai apagar todos os dados deste painel neste navegador. Deseja continuar?")){
+    var ok = confirm("Isso vai apagar PERMANENTEMENTE todos os dados financeiros deste painel neste navegador (rendimentos, despesas, investimentos, metas, tudo).\n\nEssa ação não pode ser desfeita. Seus backups já exportados (arquivos .json salvos no seu computador) não são afetados.\n\nDeseja continuar?");
+    if(ok){
       state = JSON.parse(JSON.stringify(defaultState));
       saveState(); ownerInput.value=""; renderAll();
       showToast("Dados apagados.");
