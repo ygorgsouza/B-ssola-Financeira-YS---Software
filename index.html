@@ -64,6 +64,10 @@
   .cover-inner{ max-width:1320px; margin:0 auto; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; padding-bottom:18px; border-bottom:2px solid var(--brass); }
   .brand{display:flex; align-items:center; gap:12px;}
   .brand-mark{width:40px; height:40px; flex-shrink:0; transition:width .25s ease, height .25s ease, transform .1s linear;}
+  .brand-needle{ transform-origin:20px 20px; animation:compassSway 5s ease-in-out infinite; transition:transform .3s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes compassSway{ 0%,100%{transform:rotate(-6deg);} 50%{transform:rotate(6deg);} }
+  .brand-mark:hover .brand-needle{ animation-play-state:paused; transform:rotate(18deg); }
+  @media (prefers-reduced-motion:reduce){ .brand-needle{animation:none;} }
   .brand h1{
     font-size:22px; margin:0; transition:font-size .25s ease;
     background: linear-gradient(90deg, #F8F3E4 0%, #9FE6D8 60%, #D8CCFF 100%);
@@ -78,7 +82,7 @@
   .theme-toggle:hover{ transform:translateY(-1px); background:rgba(255,255,255,0.14); }
   .bell-toggle{position:relative;}
   .bell-badge{position:absolute; top:-4px; right:-4px; background:var(--rust); color:#fff; font-size:10px; font-weight:700; min-width:16px; height:16px; border-radius:999px; display:flex; align-items:center; justify-content:center; padding:0 3px; line-height:1;}
-  .info-dot{width:15px; height:15px; border-radius:50%; border:1px solid currentColor; background:none; color:inherit; font-size:9.5px; font-weight:700; cursor:pointer; padding:0; line-height:1; opacity:0.65; vertical-align:middle; margin-left:2px;}
+  .info-dot{width:15px; height:15px; border-radius:50%; border:1px solid currentColor; background:none; color:inherit; font-size:9.5px; font-weight:700; cursor:pointer; padding:0; line-height:1; opacity:0.9; vertical-align:middle; margin-left:2px;}
   .info-dot:hover{ opacity:1; }
   .health-card{border-radius:var(--radius); border:1px solid var(--line); padding:18px 20px; background:var(--surface);}
   .health-top{display:flex; align-items:center; gap:12px; margin-bottom:12px;}
@@ -237,6 +241,11 @@
   .hero-patrimonio-label{font-size:13px; text-transform:uppercase; letter-spacing:0.06em; color:#C9BFA0; font-weight:600;}
   .hero-patrimonio-value{font-size:clamp(34px, 6vw, 52px); font-weight:700; line-height:1.05; margin-top:8px; font-family:'Fraunces', serif; white-space:normal; word-break:break-word;}
   .hero-patrimonio-sub{font-size:12px; color:#C9BFA0; margin-top:10px; max-width:520px; line-height:1.5;}
+  .hero-ap-row{display:flex; gap:20px; margin-top:16px; padding-top:14px; border-top:1px solid rgba(244,239,223,0.15); flex-wrap:wrap;}
+  .hero-ap-item{}
+  .hero-ap-item .k{font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:#C9BFA0; margin-bottom:3px;}
+  .hero-ap-item .v{font-family:'IBM Plex Mono', monospace; font-size:15px; font-weight:600; color:#F4EFDF;}
+  .hero-ap-item.passivo .v{color:#F5C2AE;}
   .hero-patrimonio .stat-trend{margin-top:10px;}
   .chart-card-hero{padding:20px 18px; min-height:300px;}
   .insight-bussola-card{ border-radius:var(--radius); border:1px solid var(--line); padding:18px 20px; background:var(--surface); border-left:3px solid var(--accent3); display:flex; flex-direction:column; gap:10px; }
@@ -359,8 +368,9 @@
   .chart-tooltip{
     position:absolute; transform:translate(-50%,-135%); background:var(--surface-dark); color:var(--on-dark);
     padding:8px 12px; border-radius:8px; font-size:11.5px; font-family:'IBM Plex Mono', monospace; font-weight:600;
-    white-space:nowrap; pointer-events:none; opacity:0; transition:opacity .12s ease; z-index:20; max-width:none;
+    white-space:nowrap; pointer-events:none; opacity:0; transition:opacity .12s ease; z-index:20; max-width:min(260px, 90%); overflow:hidden; text-overflow:ellipsis;
   }
+  .chart-tooltip .ctt-title, .chart-tooltip .ctt-row{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .chart-tooltip.show{opacity:1;}
   .chart-tooltip::after{
     content:""; position:absolute; left:50%; top:100%; transform:translateX(-50%); border:5px solid transparent; border-top-color:var(--surface-dark);
@@ -536,13 +546,22 @@
   @media (max-width:700px){ .proj-summary{grid-template-columns:1fr;} .proj-summary .stat-value{font-size:24px;} }
 
   .guide-block{margin-bottom:24px; transition:transform .2s ease;}
+  .guide-toggle{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .guide-chevron{font-size:13px; color:var(--text-soft); transition:transform .25s cubic-bezier(.16,.8,.3,1); flex-shrink:0;}
+  .guide-toggle.open .guide-chevron{transform:rotate(180deg); color:var(--brass);}
+  .guide-body{overflow:hidden; max-height:2000px; transition:max-height .3s ease, opacity .3s ease; opacity:1;}
+  .guide-body.guide-collapsed{max-height:0; opacity:0;}
+  .edu-progress-row{display:flex; justify-content:space-between; font-size:12px; color:var(--text-soft); margin-bottom:6px;}
+  .edu-smart-card{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; background:var(--accent3-bg); border:1px solid var(--accent3); color:var(--accent3-text); border-radius:var(--radius); padding:12px 16px; margin-bottom:8px; font-size:13px;}
+  .edu-smart-cta{font-size:12px; font-weight:700; background:var(--accent3); color:#fff; border:none; padding:6px 14px; border-radius:999px; cursor:pointer; flex-shrink:0; transition:transform .15s ease;}
+  .edu-smart-cta:hover{ transform:translateY(-1px); }
   .guide-block:hover{ transform:translateX(3px); }
   .guide-block h3{font-size:16.5px; margin:0 0 8px; display:flex; align-items:center; gap:8px;}
   .guide-block h3 .idx{display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; background:var(--brass); color:#fff; font-size:12px; font-family:'IBM Plex Mono', monospace; flex-shrink:0;}
   .guide-block p, .guide-block li{font-size:13.8px; line-height:1.65; color:var(--text-soft);}
   .rule-table{width:100%; border-collapse:collapse; margin-top:10px; font-size:13px;}
   .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch;}
-  .rule-table th{background:var(--surface-2); text-align:left; padding:8px 10px; font-size:11.5px; text-transform:uppercase; letter-spacing:0.04em;}
+  .rule-table th{background:var(--surface-2); color:var(--text); text-align:left; padding:8px 10px; font-size:11.5px; text-transform:uppercase; letter-spacing:0.04em;}
   .rule-table td{padding:8px 10px; border-bottom:1px solid var(--line);}
   .callout{background:var(--amber-bg); border-left:3px solid var(--amber); border-radius:0 8px 8px 0; padding:12px 14px; font-size:13.3px; color:var(--amber-text); margin-top:10px;}
 
@@ -555,7 +574,7 @@
   .util-bar .left{font-size:11.5px; color:var(--text-soft);}
   .util-actions{display:flex; gap:8px; flex-wrap:wrap;}
   #importFile{display:none;}
-  .toast{ position:fixed; bottom:76px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--surface-dark); color:#F4EFDF; padding:10px 18px; border-radius:8px; font-size:13px; opacity:0; pointer-events:none; transition:all .25s ease; z-index:60; white-space:nowrap; display:flex; align-items:center; gap:8px; border-left:3px solid var(--moss); }
+  .toast{ position:fixed; bottom:76px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--surface-dark); color:#F4EFDF; padding:10px 18px; border-radius:8px; font-size:13px; opacity:0; pointer-events:none; transition:all .25s ease; z-index:60; white-space:normal; max-width:min(420px, calc(100vw - 32px)); display:flex; align-items:center; gap:8px; border-left:3px solid var(--moss); }
   .toast.type-error, .toast.type-warn{ border-left-color:var(--rust); }
   .toast-icon{ font-size:14px; flex-shrink:0; }
   .toast.show{ pointer-events:auto; }
@@ -583,27 +602,64 @@
   .modal-box h3{font-size:14.5px; margin:16px 0 6px;}
   .modal-box p, .modal-box li{font-size:13.5px; line-height:1.6; color:var(--text-soft);}
   .modal-close-row{display:flex; justify-content:flex-end; gap:8px; margin-top:18px;}
-  .onboard-step{display:none;}
+  .onboard-step{display:none; animation:tabFadeIn .3s ease;}
   .onboard-step.active{display:block;}
-  .onboard-dots{display:flex; gap:6px; justify-content:center; margin:16px 0;}
-  .onboard-dot{width:7px; height:7px; border-radius:50%; background:var(--line);}
-  .onboard-dot.active{background:var(--brass);}
+  .onboard-box{max-width:440px;}
+  .onboard-progress-wrap{margin-bottom:18px;}
+  .onboard-progress-label{display:flex; justify-content:space-between; font-size:11.5px; color:var(--text-soft); font-weight:600; margin-bottom:6px;}
+  .onboard-num{font-family:'Fraunces', serif; font-size:13px; font-weight:700; color:var(--brass); letter-spacing:0.04em; margin-bottom:4px;}
+  .onboard-roadmap{display:flex; flex-direction:column; gap:6px; margin-top:16px; padding:12px 14px; background:var(--surface-2); border-radius:8px;}
+  .onboard-roadmap-item{font-size:12.5px; font-weight:600; color:var(--text-soft);}
 
   .print-report-header{ display:none; }
 
+  #printReportRoot{ display:none; }
+
   @media print{
-    header, .fab, .util-bar, .tabs-wrap, .form-card, .cc-actions, .acct-entry-form, .acct-adjust-btn, .del-btn, .cc-del,
-    .cat-manage-btn, .cat-manage-panel, .btn, #expSearch, #recurringList, .acct-ledger .del-btn, .acct-edit-btn,
-    .goal-input, .parcela-chip, #tab-cartoes, #tab-dividas, #tab-metas, #tab-projecoes, #tab-analises, #tab-guia,
-    #tab-rendimentos { display:none !important; }
-    main section{ display:none !important; }
-    main section#tab-dashboard, main section#tab-despesas, main section#tab-investimentos{ display:block !important; page-break-before:always; }
-    main section#tab-dashboard{ page-break-before:auto; }
-    .print-report-header{ display:block; margin-bottom:14px; }
-    .print-report-header .title{ font-family:'Fraunces', serif; font-size:20px; font-weight:600; }
-    .print-report-header .sub{ font-size:12px; color:#555; margin-top:2px; }
-    body{ background:#fff; color:#000; padding-bottom:0; }
-    .page{ box-shadow:none; border:none; }
+    body *{ visibility:hidden; }
+    #printReportRoot, #printReportRoot *{ visibility:visible; }
+    #printReportRoot{ display:block; position:absolute; left:0; top:0; width:100%; }
+    @page{ margin:16mm 14mm; }
+    body{ background:#fff; color:#0E1B2E; }
+
+    .rp-page{ page-break-after:always; position:relative; min-height:240mm; padding-bottom:14mm; }
+    .rp-page:last-child{ page-break-after:auto; }
+    .rp-header{ display:flex; justify-content:space-between; align-items:baseline; border-bottom:2px solid #1B4D89; padding-bottom:6px; margin-bottom:16px; font-size:10px; color:#57667A; text-transform:uppercase; letter-spacing:0.04em; }
+    .rp-footer{ position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; font-size:9px; color:#8A97A6; border-top:1px solid #DCE3EC; padding-top:6px; }
+    .rp-footer .rp-pagenum::after{ counter-increment:rp-page-counter; content:counter(rp-page-counter); }
+    #printReportRoot{ counter-reset:rp-page-counter; }
+
+    .rp-cover{ display:flex; flex-direction:column; justify-content:center; align-items:flex-start; height:230mm; background:linear-gradient(135deg, #0A1628 0%, #0E3B52 100%); color:#F4EFDF; margin:-16mm -14mm 0; padding:16mm 14mm; }
+    .rp-cover .rp-cover-brand{ font-size:13px; text-transform:uppercase; letter-spacing:0.08em; color:#9FE6D8; margin-bottom:24px; }
+    .rp-cover h1{ font-family:'Fraunces', serif; font-size:34px; font-weight:700; margin:0 0 10px; line-height:1.15; }
+    .rp-cover .rp-cover-period{ font-size:18px; color:#D9BD82; margin-bottom:30px; }
+    .rp-cover .rp-cover-meta{ font-size:12px; color:#C9BFA0; line-height:1.8; }
+
+    .rp-h2{ font-family:'Fraunces', serif; font-size:22px; font-weight:700; color:#0E1B2E; margin:0 0 4px; }
+    .rp-h2-sub{ font-size:12px; color:#57667A; margin-bottom:20px; }
+    .rp-h3{ font-size:13px; font-weight:700; color:#1B4D89; text-transform:uppercase; letter-spacing:0.04em; margin:20px 0 8px; }
+    .rp-kpi-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:12px 0 8px; }
+    .rp-kpi{ border:1px solid #DCE3EC; border-radius:6px; padding:10px 12px; }
+    .rp-kpi .k{ font-size:9.5px; text-transform:uppercase; letter-spacing:0.04em; color:#57667A; margin-bottom:4px; }
+    .rp-kpi .v{ font-family:'IBM Plex Mono', monospace; font-size:16px; font-weight:700; color:#0E1B2E; }
+    .rp-kpi .v.neg{ color:#C0392B; } .rp-kpi .v.pos{ color:#0E9F6E; }
+    .rp-table{ width:100%; border-collapse:collapse; font-size:11px; margin:8px 0 4px; }
+    .rp-table th{ text-align:left; background:#EDF1F6; color:#0E1B2E; padding:6px 8px; font-size:9.5px; text-transform:uppercase; letter-spacing:0.03em; border-bottom:1px solid #DCE3EC; }
+    .rp-table td{ padding:6px 8px; border-bottom:1px solid #EEF1F6; }
+    .rp-table td.num, .rp-table th.num{ text-align:right; font-family:'IBM Plex Mono', monospace; }
+    .rp-bar-row{ display:flex; align-items:center; gap:8px; margin-bottom:6px; font-size:10.5px; }
+    .rp-bar-label{ width:110px; flex-shrink:0; color:#57667A; }
+    .rp-bar-track{ flex:1; height:7px; background:#EDF1F6; border-radius:99px; overflow:hidden; }
+    .rp-bar-fill{ height:100%; background:#1B4D89; border-radius:99px; }
+    .rp-bar-val{ width:80px; text-align:right; flex-shrink:0; font-family:'IBM Plex Mono', monospace; }
+    .rp-empty{ font-size:11px; color:#8A97A6; font-style:italic; padding:8px 0; }
+    .rp-callout{ background:#E1F1F9; border-left:3px solid #2C8FC9; padding:10px 12px; font-size:11px; color:#12495F; margin:10px 0; border-radius:0 6px 6px 0; }
+    .rp-diag-item{ display:flex; gap:8px; padding:8px 0; border-bottom:1px solid #EEF1F6; font-size:11px; }
+    .rp-diag-item .tag{ font-size:9.5px; font-weight:700; color:#1B4D89; flex-shrink:0; min-width:78px; }
+    .rp-action-item{ display:flex; gap:10px; padding:10px 0; border-bottom:1px solid #EEF1F6; font-size:12px; align-items:flex-start; }
+    .rp-action-num{ font-family:'Fraunces', serif; font-weight:700; font-size:16px; color:#0E9F6E; flex-shrink:0; }
+
+    header, .fab, .util-bar, .tabs-wrap, .modal-overlay, .toast, #scrollProgressBar{ display:none !important; }
   }
 
   /* ===== Touch-friendly fallback: em telas sem hover real (celular/tablet),
@@ -625,11 +681,13 @@
   <div id="scrollProgressBar"></div>
   <div class="cover-inner">
     <div class="brand">
-      <svg class="brand-mark" viewBox="0 0 40 40" fill="none">
+      <svg class="brand-mark" viewBox="0 0 40 40" fill="none" id="brandMarkSvg">
         <circle cx="20" cy="20" r="18" stroke="#D9BD82" stroke-width="1.5"/>
         <circle cx="20" cy="20" r="1.6" fill="#D9BD82"/>
-        <path d="M20 6 L23 19 L20 22 L17 19 Z" fill="#D9BD82"/>
-        <path d="M20 34 L18 21 L20 19 L22 21 Z" fill="#4C5C4F"/>
+        <g class="brand-needle">
+          <path d="M20 6 L23 19 L20 22 L17 19 Z" fill="#D9BD82"/>
+          <path d="M20 34 L18 21 L20 19 L22 21 Z" fill="#4C5C4F"/>
+        </g>
       </svg>
       <div>
         <h1>Bússola Financeira</h1>
@@ -670,10 +728,6 @@
 
 <main>
   <div class="page">
-    <div class="print-report-header">
-      <div class="title" id="printTitle">Relatório mensal</div>
-      <div class="sub" id="printSub"></div>
-    </div>
 
     <!-- ===== DASHBOARD ===== -->
     <section id="tab-dashboard">
@@ -683,7 +737,8 @@
         <div class="hero-patrimonio-label">Sua situação financeira <button type="button" class="info-dot" data-help-cat="Património" title="Como isso é calculado?">?</button></div>
         <div class="hero-patrimonio-value num" id="statPatrimonio">—</div>
         <div id="statPatrimonioTrend"></div>
-        <div class="hero-patrimonio-sub" id="statPatrimonioTooltip">= dinheiro acumulado + investimentos − dívidas e faturas em aberto</div>
+        <div class="hero-patrimonio-sub" id="statPatrimonioTooltip">= Ativos (caixa acumulado + investimentos) − Passivos (dívidas + faturas de cartão em aberto)</div>
+        <div class="hero-ap-row" id="heroAtivosPassivos"></div>
       </div>
 
       <div class="dash-section-head" style="margin-top:32px;"><h3>Este mês</h3></div>
@@ -1139,10 +1194,13 @@
       <p class="section-hint">Feito a partir dos seus próprios números — não é genérico. Some mais meses de histórico e ele fica mais preciso.</p>
       <div id="personalDiagnosis" class="tip-grid" style="margin-top:12px;"></div>
 
+      <div id="eduSmartCards" style="margin-top:16px;"></div>
+
       <div class="tip-filters" id="tipFilters"></div>
       <div class="tip-grid" id="tipGrid"></div>
 
       <h3 style="margin-top:10px; font-size:15px;">Aprofunde-se</h3>
+      <div id="eduProgress" style="margin:12px 0 16px;"></div>
       <div class="guide-block" style="margin-top:14px;">
         <h3><span class="idx">1</span> A regra 50/30/20</h3>
         <p>É um ponto de partida simples para dividir a renda mensal: <strong>50% para essenciais</strong> (moradia, alimentação, transporte, saúde), <strong>30% para desejos</strong> (lazer, compras, assinaturas) e <strong>20% para investir</strong> ou guardar. Use como referência, não como regra rígida.</p>
@@ -1222,7 +1280,10 @@
     </div>
 
     <div class="util-bar">
-      <div class="left">Seus dados ficam salvos apenas neste navegador. Exporte um backup com frequência. · Bússola Financeira v<span id="appVersionLabel"></span></div>
+      <div class="left">
+        <span id="backupStatusNote">Seus dados ficam salvos apenas neste navegador. Exporte um backup com frequência.</span>
+        · Bússola Financeira v<span id="appVersionLabel"></span>
+      </div>
       <div class="util-actions">
         <button class="btn btn-ghost btn-sm" id="sampleBtn">Carregar dados de exemplo</button>
         <button class="btn btn-ghost btn-sm" id="exportBtn">Exportar backup</button>
@@ -1239,28 +1300,78 @@
 
 <button class="fab" id="fabBtn" aria-label="Adicionar gasto rápido">+</button>
 
+<div class="modal-overlay hidden" id="reportOverlay">
+  <div class="modal-box" style="max-width:400px;">
+    <h2>Relatório Financeiro Mensal</h2>
+    <p>Escolha o mês que deseja analisar. O relatório é montado com os dados reais desse período.</p>
+    <div class="field" style="margin-top:12px;">
+      <label for="reportMonthSelect">Mês</label>
+      <select id="reportMonthSelect"></select>
+    </div>
+    <div class="modal-close-row">
+      <button class="btn btn-ghost btn-sm" id="reportCancelBtn">Cancelar</button>
+      <button class="btn btn-primary btn-sm" id="reportGenerateBtn">Gerar relatório</button>
+    </div>
+  </div>
+</div>
+
+<div id="printReportRoot"></div>
+
 <div class="modal-overlay hidden" id="onboardOverlay">
-  <div class="modal-box">
+  <div class="modal-box onboard-box">
+    <div class="onboard-progress-wrap">
+      <div class="onboard-progress-label"><span id="onboardStepLabel">Passo 1 de 6</span><span id="onboardStepPct">0%</span></div>
+      <div class="bar-track"><div class="bar-fill" id="onboardProgressFill" style="background:var(--moss); width:0%;"></div></div>
+    </div>
+
     <div class="onboard-step active" data-step="1">
-      <h2>Bem-vindo(a) ao Bússola Financeira 👋</h2>
-      <p>Esse painel te ajuda a organizar renda, gastos, cartões, dívidas, investimentos e metas — tudo salvo só no seu navegador, sem depender de internet.</p>
-      <p>São só 4 passos rápidos pra você começar bem.</p>
+      <h2 id="onboardGreeting">Olá 👋</h2>
+      <p>Bem-vindo(a) à sua Bússola Financeira. Vamos organizar sua vida financeira em poucos passos — leva menos de 2 minutos.</p>
+      <p style="font-size:12px; color:var(--text-soft); margin-top:8px;">💾 Seus dados ficam salvos apenas neste navegador, sem depender de internet — use "Exportar backup" no rodapé com frequência para não os perder.</p>
+      <div class="field" style="max-width:280px; margin:14px 0 4px;">
+        <label for="onboardNameInput">Como podemos te chamar?</label>
+        <input type="text" id="onboardNameInput" placeholder="Seu nome">
+      </div>
+      <div class="onboard-roadmap">
+        <div class="onboard-roadmap-item">01 — Receitas</div>
+        <div class="onboard-roadmap-item">02 — Despesas</div>
+        <div class="onboard-roadmap-item">03 — Investimentos</div>
+        <div class="onboard-roadmap-item">04 — Metas</div>
+        <div class="onboard-roadmap-item">05 — Património</div>
+      </div>
     </div>
     <div class="onboard-step" data-step="2">
-      <h2>1. Registre sua renda e despesas</h2>
-      <p>Comece pelas abas <strong>Rendimentos</strong> e <strong>Despesas</strong>. Marque cada gasto como Fixo ou Variável — isso alimenta os relatórios automáticos.</p>
+      <div class="onboard-num">01</div>
+      <h2>Receitas</h2>
+      <p>Comece registrando sua renda do mês na aba <strong>Rendimentos</strong> — salário, freelas, o que entrar. É a base de todo o resto do painel.</p>
+      <button type="button" class="btn btn-ghost btn-sm onboard-jump" data-jump="rendimentos">Ir para Rendimentos →</button>
     </div>
     <div class="onboard-step" data-step="3">
-      <h2>2. Cadastre cartões, dívidas e investimentos</h2>
-      <p>Em <strong>Cartões</strong> e <strong>Dívidas</strong>, mantenha os valores atualizados — o Dashboard usa isso pra calcular seu património líquido de verdade.</p>
-      <p>Em <strong>Investimentos</strong>, crie uma conta por aplicação e registre o saldo real de vez em quando — o rendimento é calculado sozinho.</p>
+      <div class="onboard-num">02</div>
+      <h2>Despesas</h2>
+      <p>Depois, anote seus gastos em <strong>Despesas</strong>, marcando cada um como Fixo ou Variável — isso alimenta os alertas e análises automáticos.</p>
+      <button type="button" class="btn btn-ghost btn-sm onboard-jump" data-jump="despesas">Ir para Despesas →</button>
     </div>
     <div class="onboard-step" data-step="4">
-      <h2>3. Faça backup com frequência</h2>
-      <p>Seus dados existem <strong>apenas neste navegador</strong>. Use "Exportar backup" no rodapé regularmente — se limpar o cache ou trocar de computador sem isso, os dados se perdem.</p>
-      <p>Quer testar tudo antes de usar com seus dados reais? Use "Carregar dados de exemplo" no rodapé.</p>
+      <div class="onboard-num">03</div>
+      <h2>Investimentos</h2>
+      <p>Em <strong>Investimentos</strong>, crie uma conta por aplicação (reserva, renda fixa, ações...) e registre o saldo real de vez em quando — o rendimento é calculado sozinho.</p>
+      <button type="button" class="btn btn-ghost btn-sm onboard-jump" data-jump="investimentos">Ir para Investimentos →</button>
     </div>
-    <div class="onboard-dots" id="onboardDots"></div>
+    <div class="onboard-step" data-step="5">
+      <div class="onboard-num">04</div>
+      <h2>Metas</h2>
+      <p>Em <strong>Metas</strong>, defina um objetivo com valor e simule quanto precisa investir por mês para chegar lá no prazo que quiser.</p>
+      <button type="button" class="btn btn-ghost btn-sm onboard-jump" data-jump="metas">Ir para Metas →</button>
+    </div>
+    <div class="onboard-step" data-step="6">
+      <div class="onboard-num">05</div>
+      <h2>Património</h2>
+      <p>Com cartões e dívidas atualizados em suas abas, o Dashboard calcula seu <strong>património líquido</strong> de verdade — e mostra sua evolução mês a mês.</p>
+      <p style="margin-top:14px; font-weight:600; color:var(--moss-text);" id="onboardClosingMsg">Perfeito. Sua Bússola está pronta para começar a mostrar sua evolução.</p>
+      <p style="font-size:12px; color:var(--text-soft); margin-top:6px;">Quer testar tudo antes com dados fictícios? Use "Carregar dados de exemplo" no rodapé a qualquer momento.</p>
+    </div>
+
     <div class="modal-close-row">
       <button class="btn btn-ghost btn-sm" id="onboardSkip">Pular</button>
       <button class="btn btn-primary btn-sm" id="onboardNext">Próximo</button>
@@ -1328,6 +1439,33 @@
         <div class="faq-a"><p>Defina um teto mensal por categoria em Despesas → "Orçamento por categoria". O painel compara o gasto real do mês com esse teto e avisa (inclusive nos Alertas) quando você ultrapassa.</p></div>
       </div>
 
+      <div class="faq-item" data-cat="Cartões">
+        <button class="faq-q" type="button">Como funciona a fatura do cartão?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>A "Fatura atual (em aberto)" é acumulada — soma tudo que você lançou menos tudo que já pagou, sem depender do mês visualizado. Já o "Gasto em [mês]" mostra só as compras feitas naquele mês específico, para você não confundir os dois números.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Cartões">
+        <button class="faq-q" type="button">O que acontece quando pago a fatura?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Ao registrar um pagamento, ele reduz a fatura em aberto do cartão e vira uma despesa na categoria "Cartão de Crédito", datada do dia em que você pagou — é isso que finalmente entra na "Despesa do mês" do Dashboard.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Cartões">
+        <button class="faq-q" type="button">Como o limite e o vencimento são usados?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>O painel calcula o % da fatura em aberto sobre o limite cadastrado (alerta acima de 80%) e conta os dias até o dia de vencimento definido, para avisar quando estiver perto — tudo automático, a partir do que você cadastrou ao criar o cartão.</p></div>
+      </div>
+
+      <div class="faq-item" data-cat="Dívidas">
+        <button class="faq-q" type="button">Como as parcelas e vencimentos são calculados?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>A data de cada parcela é calculada a partir do dia do mês da data de início do financiamento — a 1ª parcela vence nesse dia no mês seguinte, a 2ª um mês depois, e assim por diante. A "previsão de quitação" é a data da última parcela ainda não paga.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Dívidas">
+        <button class="faq-q" type="button">Quando uma dívida fica "atrasada"?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>A Bússola compara quantas parcelas já deveriam ter sido pagas (contando os meses desde o início até o mês que você está visualizando) com quantas você realmente marcou como pagas. Se for menos, ela marca como atrasada — mesmo navegando por meses diferentes, o cálculo respeita o mês em tela.</p></div>
+      </div>
+
+      <div class="faq-item" data-cat="Geral">
+        <button class="faq-q" type="button">O que é o "Saldo" do mês?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p><strong>Saldo = Renda − Despesas − Investido</strong> do mês selecionado. É o que sobrou (ou faltou) depois de pagar as contas e investir — positivo significa que o mês fechou no azul.</p></div>
+      </div>
+
       <div class="faq-item" data-cat="Investimentos">
         <button class="faq-q" type="button">O que é um aporte?<span class="chevron">▾</span></button>
         <div class="faq-a"><p>É dinheiro que você coloca numa conta de investimento. Ao registrar um "Aporte", o painel já atualiza o saldo real automaticamente somando esse valor — você não precisa lançar o Aporte e depois o Saldo separadamente.</p></div>
@@ -1347,11 +1485,15 @@
 
       <div class="faq-item" data-cat="Património">
         <button class="faq-q" type="button">O que é património líquido?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>É tudo que você possui (dinheiro em caixa + investimentos) menos tudo que você deve (dívidas + faturas de cartão em aberto). Em outras palavras: se você vendesse tudo e pagasse tudo o que deve hoje, quanto sobraria.</p></div>
+        <div class="faq-a"><p>É a diferença entre seus <strong>ativos</strong> (tudo que você possui: dinheiro em caixa + investimentos) e seus <strong>passivos</strong> (tudo que você deve: dívidas + faturas de cartão em aberto). Em outras palavras: se você vendesse tudo e pagasse tudo o que deve hoje, quanto sobraria.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Património">
+        <button class="faq-q" type="button">Bens como carro ou imóvel entram no património?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Não automaticamente. A Bússola não classifica um carro ou imóvel como investimento só para fazê-lo aparecer no património — isso distorceria o cálculo. Se quiser refletir o valor de um bem físico, cadastre-o manualmente como uma conta em Investimentos, com o valor que você atribui a ele.</p></div>
       </div>
       <div class="faq-item" data-cat="Património">
         <button class="faq-q" type="button">Como é calculado exatamente?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p><strong>Património líquido = caixa acumulado (soma de todo saldo mensal desde o início) + saldo atual dos investimentos − dívidas restantes − faturas de cartão em aberto.</strong> É recalculado no valor de hoje, não muda retroativamente para meses passados.</p></div>
+        <div class="faq-a"><p><strong>Património líquido = Ativos − Passivos.</strong><br><strong>Ativos</strong> = caixa acumulado (soma de todo saldo mensal desde o início) + saldo atual dos investimentos.<br><strong>Passivos</strong> = dívidas restantes + faturas de cartão em aberto.<br>Exemplo: se seus ativos somam R$ 30.000,00 e seus passivos R$ 8.000,00, o património líquido é R$ 22.000,00. É recalculado no valor de hoje, não muda retroativamente para meses passados.</p></div>
       </div>
       <div class="faq-item" data-cat="Património">
         <button class="faq-q" type="button">O que aumenta o património?<span class="chevron">▾</span></button>
@@ -1374,6 +1516,10 @@
         <button class="faq-q" type="button">O que significam os insights automáticos?<span class="chevron">▾</span></button>
         <div class="faq-a"><p>São observações geradas a partir dos seus próprios dados (nunca inventadas) comparando o mês atual com sua média recente — por exemplo, se as despesas subiram bem acima do normal. Só aparecem quando há dados suficientes (mínimo de 3 meses).</p></div>
       </div>
+      <div class="faq-item" data-cat="Análises">
+        <button class="faq-q" type="button">Como funciona "Comparar períodos"?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Escolha entre "Este mês vs. anterior", "3 meses vs. 3 anteriores", "6 meses vs. 6 anteriores" ou "Ano atual vs. anterior" — o painel soma Renda, Despesas, Investido e Saldo de cada período e mostra lado a lado, com a variação percentual.</p></div>
+      </div>
 
       <div class="faq-item" data-cat="Metas">
         <button class="faq-q" type="button">Como criar uma meta?<span class="chevron">▾</span></button>
@@ -1385,7 +1531,11 @@
       </div>
       <div class="faq-item" data-cat="Metas">
         <button class="faq-q" type="button">Como saber quanto preciso investir por mês?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>A Bússola não calcula isso automaticamente na aba Metas hoje — mas você pode usar a aba <strong>Projeções</strong> para simular: ajuste o "Aporte mensal" e o "Prazo" até o "Saldo projetado" bater perto do valor da sua meta.</p></div>
+        <div class="faq-a"><p>Cada meta tem um simulador embutido: alterne entre "Definir aporte mensal" (você diz quanto vai investir e a Bússola calcula o tempo estimado) ou "Definir prazo desejado" (você diz em quantos meses quer chegar lá e ela calcula o valor mensal necessário). Tudo atualiza em tempo real, sem sair da aba Metas.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Metas">
+        <button class="faq-q" type="button">O que é o indicador de ritmo (🟢/🟡/🔴)?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Para metas vinculadas a uma conta de investimento, a Bússola compara o quanto você realmente aportou nos últimos 3 meses com o valor que você definiu no simulador: 🟢 acima do planejado, 🟡 dentro do esperado, 🔴 abaixo — para você perceber rápido se está no caminho certo.</p></div>
       </div>
 
       <div class="faq-item" data-cat="Projeções">
@@ -1399,6 +1549,14 @@
       <div class="faq-item" data-cat="Projeções">
         <button class="faq-q" type="button">Por que o resultado pode mudar?<span class="chevron">▾</span></button>
         <div class="faq-a"><p>É uma <strong>simulação</strong>, não uma promessa — o CDI real varia ao longo do tempo, e seus aportes futuros podem ser diferentes do valor simulado. Trate o resultado como uma estimativa ilustrativa para planejamento, não como garantia de rendimento.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Projeções">
+        <button class="faq-q" type="button">O que são os cenários Conservador/Base/Otimista?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Usam o mesmo aporte e prazo definidos, mas variam a rentabilidade em ±3 pontos percentuais em relação à taxa que você configurou — para você ver a faixa de resultados possíveis, sem tratar nenhum deles como garantido.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Projeções">
+        <button class="faq-q" type="button">Como Projeções conversa com Metas?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Usando o aporte mensal definido no simulador, a Bússola mostra para cada meta pendente em quantos meses ela seria atingida naquele ritmo — sem você precisar sair da aba para calcular manualmente.</p></div>
       </div>
 
       <div class="faq-item" data-cat="Geral">
@@ -1419,7 +1577,15 @@
       </div>
       <div class="faq-item" data-cat="Geral">
         <button class="faq-q" type="button">O que são os alertas do Dashboard?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>São avisos automáticos e acionáveis sobre saldo, uso do cartão, dívidas atrasadas, orçamento estourado, tendências de várias meses e progresso de investimento — cada um com um botão que leva direto à aba relevante.</p></div>
+        <div class="faq-a"><p>São avisos automáticos e acionáveis sobre saldo, uso do cartão, dívidas atrasadas, orçamento estourado, tendências de vários meses e progresso de investimento — cada um com um botão que leva direto à aba relevante. Na Dashboard aparecem só os mais importantes do mês.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Geral">
+        <button class="faq-q" type="button">O que é a Central de Alertas (🔔)?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>O sino no cabeçalho reúne tudo o que a Bússola identificou, organizado em Precisa da sua atenção, Oportunidades, Evolução e Educação — sem precisar ir à Dashboard. O número no sino mostra quantos itens realmente precisam de atenção agora.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Geral">
+        <button class="faq-q" type="button">O que são as Conquistas?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Marcos discretos (primeiro mês registrado, primeira meta, primeiro investimento, 3 e 6 meses acompanhados, entre outros) desbloqueados automaticamente com base nos seus próprios dados — sem afetar nenhum cálculo, é só um acompanhamento visual do seu progresso. Ficam na aba Metas.</p></div>
       </div>
       <div class="faq-item" data-cat="Geral">
         <button class="faq-q" type="button">Como funcionam as cores da distribuição de renda?<span class="chevron">▾</span></button>
@@ -1478,6 +1644,7 @@
     projSettings:{meses:12, aporte:0, extra:0, cdi:10.65, ir:false},
     lastBackupDate:null,
     unlockedAchievements:[],
+    exploredTopics:[],
     onboarded:false
   };
 
@@ -1949,29 +2116,39 @@
 
   /* ===== Onboarding ===== */
   var onboardStep = 1;
-  var TOTAL_ONBOARD_STEPS = 4;
-  function renderOnboardDots(){
-    var wrap = document.getElementById("onboardDots"); wrap.innerHTML="";
-    for(var i=1;i<=TOTAL_ONBOARD_STEPS;i++){
-      var d = document.createElement("span"); d.className="onboard-dot"+(i===onboardStep?" active":"");
-      wrap.appendChild(d);
-    }
-  }
+  var TOTAL_ONBOARD_STEPS = 6;
   function showOnboardStep(n){
     onboardStep = n;
     document.querySelectorAll(".onboard-step").forEach(function(s){ s.classList.toggle("active", parseInt(s.dataset.step,10)===n); });
-    document.getElementById("onboardNext").textContent = n===TOTAL_ONBOARD_STEPS ? "Começar" : "Próximo";
-    renderOnboardDots();
+    document.getElementById("onboardNext").textContent = n===TOTAL_ONBOARD_STEPS ? "Concluir e começar" : "Próximo";
+    document.getElementById("onboardStepLabel").textContent = "Passo "+n+" de "+TOTAL_ONBOARD_STEPS;
+    var pct = Math.round((n/TOTAL_ONBOARD_STEPS)*100);
+    document.getElementById("onboardStepPct").textContent = pct+"%";
+    var fill = document.getElementById("onboardProgressFill");
+    requestAnimationFrame(function(){ fill.style.width = pct+"%"; });
   }
   function closeOnboarding(){
     document.getElementById("onboardOverlay").classList.add("hidden");
     state.onboarded = true; saveState();
   }
+  document.getElementById("onboardNameInput").addEventListener("input", function(){
+    var name = this.value.trim();
+    document.getElementById("onboardGreeting").textContent = name ? ("Olá, "+name+" 👋") : "Olá 👋";
+    document.getElementById("onboardClosingMsg").textContent = "Perfeito"+(name?", "+name:"")+". Sua Bússola está pronta para começar a mostrar sua evolução.";
+  });
   document.getElementById("onboardNext").addEventListener("click", function(){
+    if(onboardStep===1){
+      var name = document.getElementById("onboardNameInput").value.trim();
+      if(name){ state.owner = name; ownerInput.value = name; saveState(); }
+    }
     if(onboardStep>=TOTAL_ONBOARD_STEPS){ closeOnboarding(); } else { showOnboardStep(onboardStep+1); }
   });
   document.getElementById("onboardSkip").addEventListener("click", closeOnboarding);
+  document.querySelectorAll(".onboard-jump").forEach(function(btn){
+    btn.addEventListener("click", function(){ closeOnboarding(); activateTab(btn.dataset.jump); });
+  });
   if(!state.onboarded){
+    if(state.owner){ document.getElementById("onboardNameInput").value = state.owner; document.getElementById("onboardGreeting").textContent = "Olá, "+state.owner+" 👋"; }
     document.getElementById("onboardOverlay").classList.remove("hidden");
     showOnboardStep(1);
   }
@@ -1994,7 +2171,7 @@
   });
   var setHelpCategory = function(){}; // substituída abaixo por initHelpCategoryFilters
   (function initHelpCategoryFilters(){
-    var CAT_ORDER = ["Todos","Começando","Receitas","Despesas","Investimentos","Património","Análises","Metas","Projeções","Geral"];
+    var CAT_ORDER = ["Todos","Começando","Receitas","Despesas","Cartões","Dívidas","Investimentos","Património","Análises","Metas","Projeções","Geral"];
     var present = Array.from(new Set(Array.from(document.querySelectorAll("#helpFaqList .faq-item")).map(function(el){return el.dataset.cat;})));
     var cats = ["Todos"].concat(CAT_ORDER.filter(function(c){return c!=="Todos" && present.indexOf(c)!==-1;}));
     var current = "Todos";
@@ -3002,13 +3179,32 @@
     return {income:inc, expense:exp, invest:inv, saldo: inc-exp-inv};
   }
 
+  /* Património líquido = ATIVOS − PASSIVOS.
+     ATIVOS  = caixa acumulado (soma do saldo mensal desde o início) + saldo atual investido.
+     PASSIVOS = dívidas restantes + faturas de cartão em aberto.
+     Não classificamos bens físicos (carro, imóvel) como investimento automaticamente —
+     eles só entram se o usuário cadastrar seu valor manualmente como uma conta de investimento. */
   function netWorth(){
+    var months = allMonthsSorted();
+    var cashAccumulated = months.reduce(function(s,m){ return s + monthTotals(m).saldo; }, 0);
+    var totalSaldoInvest = state.investmentAccounts.reduce(function(s,a){ return s + accountTotals(a).saldoAtual; }, 0);
+    var ativos = cashAccumulated + totalSaldoInvest;
+    var totalDebt = state.debts.reduce(function(s,d){ var pago=d.parcelas.filter(function(p){return p.paga;}).reduce(function(a,p){return a+p.valor;},0); return s+Math.max(0,d.valorTotal-pago); },0);
+    var totalCardBalance = state.cards.reduce(function(s,c){return s+cardFatura(c);},0);
+    var passivos = totalDebt + totalCardBalance;
+    return ativos - passivos;
+  }
+  /* Mesmos números de netWorth(), mas devolvidos separados — usado para exibir a composição
+     Ativos/Passivos de forma transparente ao usuário (ex.: card "Sua situação financeira"). */
+  function netWorthBreakdown(){
     var months = allMonthsSorted();
     var cashAccumulated = months.reduce(function(s,m){ return s + monthTotals(m).saldo; }, 0);
     var totalSaldoInvest = state.investmentAccounts.reduce(function(s,a){ return s + accountTotals(a).saldoAtual; }, 0);
     var totalDebt = state.debts.reduce(function(s,d){ var pago=d.parcelas.filter(function(p){return p.paga;}).reduce(function(a,p){return a+p.valor;},0); return s+Math.max(0,d.valorTotal-pago); },0);
     var totalCardBalance = state.cards.reduce(function(s,c){return s+cardFatura(c);},0);
-    return cashAccumulated + totalSaldoInvest - totalDebt - totalCardBalance;
+    var ativos = cashAccumulated + totalSaldoInvest;
+    var passivos = totalDebt + totalCardBalance;
+    return {cashAccumulated:cashAccumulated, totalSaldoInvest:totalSaldoInvest, ativos:ativos, totalDebt:totalDebt, totalCardBalance:totalCardBalance, passivos:passivos, liquido:ativos-passivos};
   }
 
   /* ===== Motivação: conquistas + dicas por categoria ===== */
@@ -3498,6 +3694,10 @@
     var pat = netWorth();
     var patEl = document.getElementById("statPatrimonio");
     animateMoneyValue(patEl, pat);
+    var apBrk = netWorthBreakdown();
+    document.getElementById("heroAtivosPassivos").innerHTML =
+      '<div class="hero-ap-item"><div class="k">Ativos (caixa + investido)</div><div class="v">'+fmtMoney(apBrk.ativos)+'</div></div>'+
+      '<div class="hero-ap-item passivo"><div class="k">Passivos (dívidas + faturas)</div><div class="v">− '+fmtMoney(apBrk.passivos)+'</div></div>';
     var capSeriesForTrend = computeCapitalAccumSeries();
     var patTrendHtml = "";
     if(capSeriesForTrend.length>=7){
@@ -4252,9 +4452,92 @@
     renderMembroBars();
     renderPersonalDiagnosis("personalDiagnosis");
     renderPersonalDiagnosis("personalDiagnosisAnalises");
+    renderEducationSmartCards();
   }
 
   /* ===== Diagnóstico personalizado (aba Educação) ===== */
+  /* ===== Educação: guias colapsáveis com progresso + cards contextuais inteligentes ===== */
+  function initGuideAccordion(){
+    document.querySelectorAll(".guide-block").forEach(function(block, idx){
+      var h3 = block.querySelector("h3");
+      if(!h3 || block.dataset.accordionReady) return;
+      block.dataset.accordionReady = "1";
+      var id = "guide-"+(idx+1);
+      block.id = id;
+      var body = document.createElement("div");
+      body.className = "guide-body guide-collapsed";
+      var toMove = [];
+      var sib = h3.nextSibling;
+      while(sib){ toMove.push(sib); sib = sib.nextSibling; }
+      toMove.forEach(function(n){ body.appendChild(n); });
+      block.appendChild(body);
+      h3.classList.add("guide-toggle");
+      var chevron = document.createElement("span"); chevron.className = "guide-chevron"; chevron.textContent = "▾";
+      h3.appendChild(chevron);
+      h3.addEventListener("click", function(){
+        var opening = body.classList.contains("guide-collapsed");
+        body.classList.toggle("guide-collapsed");
+        h3.classList.toggle("open", opening);
+        if(opening && state.exploredTopics.indexOf(id)===-1){
+          state.exploredTopics.push(id);
+          saveState();
+          renderEducationProgress();
+        }
+      });
+    });
+  }
+  function expandGuideTopic(id){
+    var block = document.getElementById(id);
+    if(!block) return;
+    var body = block.querySelector(".guide-body");
+    var h3 = block.querySelector("h3");
+    if(body && body.classList.contains("guide-collapsed")){ h3.click(); }
+    if(typeof block.scrollIntoView === "function"){
+      block.scrollIntoView({behavior: PREFERS_REDUCED_MOTION ? "auto" : "smooth", block:"center"});
+    }
+  }
+  function renderEducationProgress(){
+    var wrap = document.getElementById("eduProgress");
+    if(!wrap) return;
+    var total = document.querySelectorAll(".guide-block").length;
+    var explored = state.exploredTopics.length;
+    var pct = total>0 ? Math.min(100,(explored/total)*100) : 0;
+    wrap.innerHTML = '<div class="edu-progress-row"><span>Seu progresso de aprendizagem</span><span>'+explored+' de '+total+' temas explorados</span></div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%; background:var(--moss); transition:width .5s ease;"></div></div>';
+  }
+  function renderEducationSmartCards(){
+    var wrap = document.getElementById("eduSmartCards");
+    if(!wrap) return;
+    var cards = [];
+    var t = monthTotals(state.viewMonth);
+    var essTotal = 0;
+    monthEntries(state.expenses, state.viewMonth).forEach(function(e){ if(ESSENCIAIS.indexOf(e.cat)!==-1) essTotal+=e.valor; });
+    if(t.income>0 && (essTotal/t.income)>0.5){
+      cards.push({text:"Você está gastando "+((essTotal/t.income)*100).toFixed(0)+"% da sua renda com essenciais este mês.", cta:"Entender a regra 50/30/20", action:function(){ activateTab("guia"); expandGuideTopic("guide-1"); }});
+    }
+    if(state.investmentAccounts.length===0){
+      cards.push({text:"Você ainda não possui investimentos registrados.", cta:"Aprender por onde começar", action:function(){ activateTab("guia"); expandGuideTopic("guide-2"); }});
+    }
+    if(state.goals.length===0){
+      cards.push({text:"Você ainda não definiu nenhuma meta financeira.", cta:"Ver aba Metas", action:function(){ activateTab("metas"); }});
+    }
+    var monthsHist = allMonthsSorted();
+    if(monthsHist.length>=4){
+      var last3 = monthsHist.slice(-4,-1);
+      var avgPrev = last3.reduce(function(s,m){return s+monthTotals(m).expense;},0)/Math.max(1,last3.length);
+      if(avgPrev>0 && t.expense > avgPrev*1.15){
+        cards.push({text:"Suas despesas aumentaram em relação à sua média recente.", cta:"Aprender a analisar seus gastos", action:function(){ activateTab("analises"); }});
+      }
+    }
+    if(state.debts.some(debtIsAtrasada)){
+      cards.push({text:"Você tem dívidas atrasadas no momento.", cta:"Ver como sair de dívidas caras", action:function(){ activateTab("guia"); expandGuideTopic("guide-7"); }});
+    }
+    if(cards.length===0){ wrap.innerHTML=""; return; }
+    wrap.innerHTML = cards.slice(0,3).map(function(c,i){ return '<div class="edu-smart-card"><span>'+escapeHtml(c.text)+'</span><button type="button" class="edu-smart-cta" data-smart-idx="'+i+'">'+escapeHtml(c.cta)+' →</button></div>'; }).join("");
+    wrap.querySelectorAll(".edu-smart-cta").forEach(function(btn){
+      btn.addEventListener("click", function(){ cards[parseInt(btn.dataset.smartIdx,10)].action(); });
+    });
+  }
+
   function renderPersonalDiagnosis(targetId){
     var wrap = document.getElementById(targetId || "personalDiagnosis");
     if(!wrap) return;
@@ -4636,6 +4919,7 @@
     renderAnalytics();
     syncAporteFromHistory();
     renderProjections();
+    renderBackupStatusNote();
   }
 
   /* ===== FAB quick add ===== */
@@ -4755,6 +5039,26 @@
   }
 
   /* ===== Backup / restore ===== */
+  function renderBackupStatusNote(){
+    var el = document.getElementById("backupStatusNote");
+    if(!el) return;
+    var hasData = state.incomes.length>0 || state.expenses.length>0 || state.investmentAccounts.length>0;
+    if(!hasData){
+      el.textContent = "Seus dados ficam salvos apenas neste navegador. Exporte um backup com frequência.";
+      el.className = ""; el.style.color = "";
+      return;
+    }
+    if(!state.lastBackupDate){
+      el.textContent = "Você ainda não exportou um backup — seus dados existem só neste navegador.";
+      el.style.color = "var(--amber-text)";
+      return;
+    }
+    var dias = Math.floor((new Date(todayISO()) - new Date(state.lastBackupDate)) / 86400000);
+    if(dias<=0){ el.textContent = "✓ Backup em dia (exportado hoje)."; el.style.color = "var(--moss-text)"; }
+    else if(dias<=2){ el.textContent = "Último backup: há "+dias+" dia"+(dias===1?"":"s")+"."; el.style.color = ""; }
+    else if(dias<=6){ el.textContent = "Último backup: há "+dias+" dias — considere atualizar."; el.style.color = "var(--amber-text)"; }
+    else { el.textContent = "⚠️ Último backup: há "+dias+" dias — faça um novo backup em breve."; el.style.color = "var(--rust-text)"; }
+  }
   document.getElementById("exportBtn").addEventListener("click", function(){
     var blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
     var url = URL.createObjectURL(blob);
@@ -4789,11 +5093,236 @@
     showToast("CSV exportado — abre direto no Excel ou Google Sheets.");
   });
 
+  /* ===== Relatório Financeiro Mensal — documento de verdade, não impressão da tela =====
+     Constrói páginas dedicadas (capa, resumo, receitas, despesas, orçamento, investimentos,
+     cartões e dívidas, metas, diagnóstico, plano de ação) a partir dos dados reais do mês
+     escolhido. Nunca inventa números; quando uma seção não tem dado, mostra aviso claro. */
+  function rpKpi(label, value, cls){
+    return '<div class="rp-kpi"><div class="k">'+label+'</div><div class="v'+(cls?" "+cls:"")+'">'+value+'</div></div>';
+  }
+  function rpTable(headers, rows, numCols){
+    numCols = numCols || [];
+    var thead = '<tr>'+headers.map(function(h,i){ return '<th'+(numCols.indexOf(i)!==-1?' class="num"':'')+'>'+h+'</th>'; }).join("")+'</tr>';
+    var tbody = rows.map(function(r){ return '<tr>'+r.map(function(c,i){ return '<td'+(numCols.indexOf(i)!==-1?' class="num"':'')+'>'+c+'</td>'; }).join("")+'</tr>'; }).join("");
+    return '<table class="rp-table"><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table>';
+  }
+  function rpBarRow(label, pct, valueText){
+    return '<div class="rp-bar-row"><span class="rp-bar-label">'+escapeHtml(label)+'</span><span class="rp-bar-track"><span class="rp-bar-fill" style="width:'+Math.max(0,Math.min(100,pct))+'%;"></span></span><span class="rp-bar-val">'+valueText+'</span></div>';
+  }
+  function rpHeaderFooter(pageLabel, month){
+    return {
+      header: '<div class="rp-header"><span>Bússola Financeira YS</span><span>'+escapeHtml(pageLabel)+' · '+escapeHtml(monthLabel(month))+'</span></div>',
+      footer: '<div class="rp-footer"><span>Relatório gerado em '+new Date().toLocaleDateString("pt-BR")+(state.owner?" para "+escapeHtml(state.owner):"")+'</span><span>Página <span class="rp-pagenum"></span></span></div>'
+    };
+  }
+
+  function buildPrintReport(month){
+    var root = document.getElementById("printReportRoot");
+    var t = monthTotals(month);
+    var tPrev = monthTotals(shiftMonth(month, -1));
+    var pages = [];
+
+    // ===== CAPA =====
+    pages.push(
+      '<div class="rp-page"><div class="rp-cover">'+
+        '<div class="rp-cover-brand">🧭 Bússola Financeira YS</div>'+
+        '<h1>Relatório Financeiro Mensal</h1>'+
+        '<div class="rp-cover-period">'+monthLabel(month)+'</div>'+
+        '<div class="rp-cover-meta">'+(state.owner?"Preparado para "+escapeHtml(state.owner)+"<br>":"")+"Gerado em "+new Date().toLocaleDateString("pt-BR")+'</div>'+
+      '</div></div>'
+    );
+
+    // ===== RESUMO EXECUTIVO =====
+    var hf1 = rpHeaderFooter("Resumo executivo", month);
+    var apBrk = netWorthBreakdown();
+    var pctPoupanca = t.income>0 ? (t.invest/t.income)*100 : 0;
+    pages.push('<div class="rp-page">'+hf1.header+
+      '<div class="rp-h2">Resumo executivo</div><div class="rp-h2-sub">Visão geral de '+monthLabel(month)+'</div>'+
+      '<div class="rp-kpi-grid">'+
+        rpKpi("Património líquido", fmtMoney(netWorth()), netWorth()>=0?"pos":"neg")+
+        rpKpi("Renda do mês", fmtMoney(t.income))+
+        rpKpi("Despesas do mês", fmtMoney(t.expense))+
+        rpKpi("Investido no mês", fmtMoney(t.invest))+
+        rpKpi("Saldo do mês", fmtMoney(t.saldo), t.saldo>=0?"pos":"neg")+
+        rpKpi("Taxa de poupança", pctPoupanca.toFixed(1)+"%")+
+      '</div>'+
+      '<div class="rp-h3">Principais indicadores</div>'+
+      '<p style="font-size:11.5px; color:#57667A; line-height:1.7;">Ativos (caixa + investimentos): <strong>'+fmtMoney(apBrk.ativos)+'</strong>. Passivos (dívidas + faturas em aberto): <strong>'+fmtMoney(apBrk.passivos)+'</strong>. '+
+      (tPrev.income>0 ? ("Renda "+(t.income>=tPrev.income?"cresceu":"caiu")+" "+Math.abs(((t.income-tPrev.income)/tPrev.income)*100).toFixed(1)+"% em relação ao mês anterior. ") : "")+
+      (tPrev.expense>0 ? ("Despesas "+(t.expense>=tPrev.expense?"aumentaram":"diminuíram")+" "+Math.abs(((t.expense-tPrev.expense)/tPrev.expense)*100).toFixed(1)+"% em relação ao mês anterior.") : "")+
+      '</p>'+
+      hf1.footer+'</div>'
+    );
+
+    // ===== RECEITAS =====
+    var hf2 = rpHeaderFooter("Receitas", month);
+    var incomes = monthEntries(state.incomes, month);
+    var incBody = "";
+    if(incomes.length===0){ incBody = '<div class="rp-empty">Sem dados registrados para este período.</div>'; }
+    else{
+      var byTipo = {}; incomes.forEach(function(i){ byTipo[i.tipo]=(byTipo[i.tipo]||0)+i.valor; });
+      var tiposOrdenados = Object.keys(byTipo).sort(function(a,b){return byTipo[b]-byTipo[a];});
+      incBody = rpTable(["Fonte","Valor","% da renda"], tiposOrdenados.map(function(tp){
+        return [escapeHtml(tp), fmtMoney(byTipo[tp]), t.income>0 ? ((byTipo[tp]/t.income)*100).toFixed(0)+"%" : "—"];
+      }), [1,2]);
+    }
+    pages.push('<div class="rp-page">'+hf2.header+
+      '<div class="rp-h2">Receitas</div><div class="rp-h2-sub">Total: '+fmtMoney(t.income)+'</div>'+
+      incBody+
+      hf2.footer+'</div>'
+    );
+
+    // ===== DESPESAS =====
+    var hf3 = rpHeaderFooter("Despesas", month);
+    var expenses = monthEntries(state.expenses, month);
+    var expBody = "";
+    if(expenses.length===0){ expBody = '<div class="rp-empty">Sem dados registrados para este período.</div>'; }
+    else{
+      var byCat = {}, fixTotal=0, varTotal=0;
+      expenses.forEach(function(e){ byCat[e.cat]=(byCat[e.cat]||0)+e.valor; if(e.tipo==="Fixa") fixTotal+=e.valor; else varTotal+=e.valor; });
+      var catsOrdenadas = Object.keys(byCat).sort(function(a,b){return byCat[b]-byCat[a];});
+      var maxCat = byCat[catsOrdenadas[0]]||1;
+      expBody = '<div class="rp-kpi-grid" style="grid-template-columns:repeat(2,1fr);">'+
+        rpKpi("Despesas fixas", fmtMoney(fixTotal))+rpKpi("Despesas variáveis", fmtMoney(varTotal))+
+      '</div>'+
+      '<div class="rp-h3">Por categoria</div>'+
+      catsOrdenadas.map(function(c){ return rpBarRow(c, (byCat[c]/maxCat)*100, fmtMoney(byCat[c])); }).join("")+
+      '<div class="rp-h3">Maiores lançamentos</div>'+
+      rpTable(["Descrição","Categoria","Valor"], expenses.slice().sort(function(a,b){return b.valor-a.valor;}).slice(0,8).map(function(e){
+        return [escapeHtml(e.desc), escapeHtml(e.cat), fmtMoney(e.valor)];
+      }), [2]);
+    }
+    pages.push('<div class="rp-page">'+hf3.header+
+      '<div class="rp-h2">Despesas</div><div class="rp-h2-sub">Total: '+fmtMoney(t.expense)+'</div>'+
+      expBody+
+      hf3.footer+'</div>'
+    );
+
+    // ===== ORÇAMENTO 50/30/20 =====
+    var hf4 = rpHeaderFooter("Orçamento", month);
+    var essTotal=0, naoEssTotal=0;
+    monthEntries(state.expenses, month).forEach(function(e){ if(ESSENCIAIS.indexOf(e.cat)!==-1) essTotal+=e.valor; else naoEssTotal+=e.valor; });
+    var pctEss = t.income>0?(essTotal/t.income)*100:0, pctNao = t.income>0?(naoEssTotal/t.income)*100:0, pctInv = t.income>0?(t.invest/t.income)*100:0;
+    var orcBody = t.income<=0 ? '<div class="rp-empty">Sem dados registrados para este período.</div>' :
+      rpBarRow("Essenciais (meta ≤50%)", pctEss, pctEss.toFixed(0)+"%")+
+      rpBarRow("Não essenciais (meta ≤30%)", pctNao, pctNao.toFixed(0)+"%")+
+      rpBarRow("Investido (meta ≥20%)", pctInv, pctInv.toFixed(0)+"%")+
+      '<div class="rp-callout">'+(pctEss>60?"Essenciais bem acima da referência — vale revisar despesas fixas.":pctInv>=20?"Você está investindo dentro (ou acima) da meta de referência.":"Ainda dá para aumentar a fatia investida da renda.")+'</div>';
+    pages.push('<div class="rp-page">'+hf4.header+
+      '<div class="rp-h2">Orçamento — regra 50/30/20</div><div class="rp-h2-sub">Distribuição real da renda do mês</div>'+
+      orcBody+
+      hf4.footer+'</div>'
+    );
+
+    // ===== INVESTIMENTOS =====
+    var hf5 = rpHeaderFooter("Investimentos", month);
+    var invBody = "";
+    if(state.investmentAccounts.length===0){ invBody = '<div class="rp-empty">Sem dados registrados para este período.</div>'; }
+    else{
+      var totalAportado=0, totalSaldoInv=0, totalRendInv=0;
+      state.investmentAccounts.forEach(function(a){ var at=accountTotals(a); totalAportado+=at.aportado; totalSaldoInv+=at.saldoAtual; totalRendInv+=at.rendimento; });
+      var rendaPassivaMedia = state.investmentAccounts.reduce(function(s,a){ var at=accountTotals(a); return s + (at.monthlyYieldPct!==null && at.saldoAtual>0 ? at.saldoAtual*(at.monthlyYieldPct/100) : 0); },0);
+      invBody = '<div class="rp-kpi-grid">'+
+        rpKpi("Total aportado", fmtMoney(totalAportado))+rpKpi("Saldo atual", fmtMoney(totalSaldoInv))+rpKpi("Rendimentos recebidos", fmtMoney(totalRendInv))+
+      '</div>'+
+      '<div class="rp-h3">Renda passiva média mensal: '+fmtMoney(rendaPassivaMedia)+'/mês</div>'+
+      '<div class="rp-h3">Composição por conta</div>'+
+      rpTable(["Conta","Categoria","Saldo atual","Rendimento"], state.investmentAccounts.map(function(a){ var at=accountTotals(a); return [escapeHtml(a.nome), escapeHtml(a.categoria), fmtMoney(at.saldoAtual), fmtMoney(at.rendimento)]; }), [2,3]);
+    }
+    pages.push('<div class="rp-page">'+hf5.header+
+      '<div class="rp-h2">Investimentos</div><div class="rp-h2-sub">Onde está o seu dinheiro e quanto está gerando</div>'+
+      invBody+
+      hf5.footer+'</div>'
+    );
+
+    // ===== CARTÕES E DÍVIDAS =====
+    var hf6 = rpHeaderFooter("Cartões e dívidas", month);
+    var ccBody = "";
+    if(state.cards.length===0 && state.debts.length===0){ ccBody = '<div class="rp-empty">Sem dados registrados para este período.</div>'; }
+    else{
+      if(state.cards.length>0){
+        ccBody += '<div class="rp-h3">Cartões</div>'+rpTable(["Cartão","Limite","Fatura em aberto","Uso"], state.cards.map(function(c){
+          var f=cardFatura(c); var pct=c.limite>0?(f/c.limite)*100:0; return [escapeHtml(c.nome), fmtMoney(c.limite), fmtMoney(f), pct.toFixed(0)+"%"];
+        }), [1,2,3]);
+      }
+      if(state.debts.length>0){
+        ccBody += '<div class="rp-h3">Dívidas</div>'+rpTable(["Dívida","Total","Pago","Restante","Situação"], state.debts.map(function(d){
+          var pago=debtPago(d); var situacao = debtIsQuitada(d)?"Quitada":(debtIsAtrasada(d)?"Atrasada":"Em dia");
+          return [escapeHtml(d.nome), fmtMoney(d.valorTotal), fmtMoney(pago), fmtMoney(Math.max(0,d.valorTotal-pago)), situacao];
+        }), [1,2,3]);
+      }
+    }
+    pages.push('<div class="rp-page">'+hf6.header+
+      '<div class="rp-h2">Cartões e dívidas</div><div class="rp-h2-sub">Faturas em aberto e situação das dívidas</div>'+
+      ccBody+
+      hf6.footer+'</div>'
+    );
+
+    // ===== METAS =====
+    var hf7 = rpHeaderFooter("Metas", month);
+    var metasBody = "";
+    if(state.goals.length===0){ metasBody = '<div class="rp-empty">Sem dados registrados para este período.</div>'; }
+    else{
+      metasBody = rpTable(["Meta","Atual","Objetivo","Progresso"], state.goals.map(function(g){
+        var cur=goalCurrentValue(g); var pct=g.target>0?Math.min(100,(cur/g.target)*100):0;
+        return [escapeHtml(g.name), fmtMoney(cur), fmtMoney(g.target), pct.toFixed(0)+"%"];
+      }), [1,2,3]);
+    }
+    pages.push('<div class="rp-page">'+hf7.header+
+      '<div class="rp-h2">Metas</div><div class="rp-h2-sub">Progresso dos seus objetivos</div>'+
+      metasBody+
+      hf7.footer+'</div>'
+    );
+
+    // ===== DIAGNÓSTICO E PLANO DE AÇÃO =====
+    var hf8 = rpHeaderFooter("Diagnóstico e plano de ação", month);
+    var months = allMonthsSorted();
+    var diagItems = [];
+    var actionItems = [];
+    if(months.length<2){
+      diagItems.push({tag:"Aviso", text:"Registre pelo menos 2 meses de dados para desbloquear um diagnóstico comparativo mais completo."});
+    } else {
+      if(t.saldo<0){ diagItems.push({tag:"Atenção", text:"O saldo do mês ficou negativo ("+fmtMoney(t.saldo)+")."}); actionItems.push("Revise as maiores categorias de despesa do mês e identifique onde cortar."); }
+      else{ diagItems.push({tag:"Positivo", text:"O mês fechou com saldo positivo de "+fmtMoney(t.saldo)+"."}); }
+      if(pctInv>=20){ diagItems.push({tag:"Positivo", text:"Taxa de investimento de "+pctInv.toFixed(0)+"% está dentro da meta de referência (20%)."}); }
+      else if(t.income>0){ diagItems.push({tag:"Atenção", text:"Taxa de investimento de "+pctInv.toFixed(0)+"% está abaixo da meta de referência (20%)."}); actionItems.push("Avalie aumentar o aporte mensal, mesmo que gradualmente."); }
+      if(state.debts.some(debtIsAtrasada)){ diagItems.push({tag:"Atenção", text:"Há dívidas atrasadas em relação ao esperado."}); actionItems.push("Priorize colocar as parcelas atrasadas em dia antes de novos compromissos."); }
+      var pendentesMeta = state.goals.filter(function(g){ return g.target>0 && goalCurrentValue(g)<g.target; });
+      if(pendentesMeta.length>0){ actionItems.push("Revise o ritmo de aporte das metas em andamento na aba Metas."); }
+    }
+    if(actionItems.length===0){ actionItems.push("Continue registrando seus dados com regularidade para o diagnóstico ficar cada vez mais preciso."); }
+    pages.push('<div class="rp-page">'+hf8.header+
+      '<div class="rp-h2">Diagnóstico</div><div class="rp-h2-sub">Interpretação com base nos seus dados reais</div>'+
+      diagItems.map(function(d){ return '<div class="rp-diag-item"><span class="tag">'+escapeHtml(d.tag)+'</span><span>'+escapeHtml(d.text)+'</span></div>'; }).join("")+
+      '<div class="rp-h3" style="margin-top:26px;">Plano de ação — prioridades para o próximo mês</div>'+
+      actionItems.slice(0,3).map(function(a,i){ return '<div class="rp-action-item"><span class="rp-action-num">'+(i+1)+'</span><span>'+escapeHtml(a)+'</span></div>'; }).join("")+
+      '<p style="font-size:9.5px; color:#8A97A6; margin-top:20px;">Este relatório é gerado automaticamente a partir dos dados que você registrou na Bússola Financeira YS. Não constitui aconselhamento financeiro profissional.</p>'+
+      hf8.footer+'</div>'
+    );
+
+    root.innerHTML = pages.join("");
+  }
+
   document.getElementById("printBtn").addEventListener("click", function(){
-    activateTab("dashboard");
-    document.getElementById("printTitle").textContent = "Relatório financeiro — "+monthLabel(state.viewMonth);
-    document.getElementById("printSub").textContent = (state.owner?state.owner+" · ":"")+"Gerado em "+new Date().toLocaleDateString("pt-BR");
-    setTimeout(function(){ window.print(); }, 100);
+    var sel = document.getElementById("reportMonthSelect");
+    var months = allMonthsSorted().slice().reverse();
+    sel.innerHTML = months.map(function(m){ return '<option value="'+m+'"'+(m===state.viewMonth?' selected':'')+'>'+monthLabel(m)+'</option>'; }).join("");
+    document.getElementById("reportOverlay").classList.remove("hidden");
+  });
+  document.getElementById("reportCancelBtn").addEventListener("click", function(){
+    document.getElementById("reportOverlay").classList.add("hidden");
+  });
+  document.getElementById("reportGenerateBtn").addEventListener("click", function(){
+    var btn = this;
+    var month = document.getElementById("reportMonthSelect").value;
+    var originalHtml = btn.innerHTML;
+    btn.disabled = true; btn.innerHTML = "Preparando…";
+    buildPrintReport(month);
+    document.getElementById("reportOverlay").classList.add("hidden");
+    setTimeout(function(){
+      window.print();
+      btn.disabled = false; btn.innerHTML = originalHtml;
+    }, 200);
   });
 
   document.getElementById("importBtn").addEventListener("click", function(){ document.getElementById("importFile").click(); });
@@ -4836,6 +5365,8 @@
   renderTipGrid();
   renderDicaDoDia();
   loadLiveRates();
+  initGuideAccordion();
+  renderEducationProgress();
   observeReveal(".guide-block");
   observeReveal(".chart-card");
   observeReveal(".rates-panel");
