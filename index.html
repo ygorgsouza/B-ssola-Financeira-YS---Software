@@ -698,6 +698,7 @@
       <button id="bellToggle" class="theme-toggle bell-toggle" aria-label="Central de alertas" title="Central de alertas e insights">🔔<span class="bell-badge" id="bellBadge" style="display:none;">0</span></button>
       <button id="helpToggle" class="theme-toggle" aria-label="Ajuda" title="Ajuda / manual rápido">?</button>
       <button id="themeToggle" class="theme-toggle" aria-label="Alternar modo claro/escuro" title="Alternar modo claro/escuro">☀️</button>
+      <button id="logoutToggle" class="theme-toggle" aria-label="Sair da conta" title="Sair da conta">🚪</button>
       <div class="month-nav">
         <button id="prevMonth" aria-label="Mês anterior">‹</button>
         <div class="month-label" id="monthLabel">—</div>
@@ -2240,24 +2241,86 @@
     showUndoToast("Rendimento excluído.", function(){ state.incomes.push(item); saveState(); renderAll(); });
   }
 
+  var incomePeriodFilter = "12"; // "3"|"6"|"12"|"year"|"prevyear"|"all"
+  function incomeMonthsForPeriod(filter){
+    filter = filter || incomePeriodFilter;
+    var all = allMonthsSorted();
+    if(filter==="all") return all;
+    if(filter==="year"){
+      var year = parseInt(state.viewMonth.slice(0,4),10);
+      var months=[]; for(var m=1;m<=12;m++){ months.push(year+"-"+String(m).padStart(2,"0")); } return months;
+    }
+    if(filter==="prevyear"){
+      var year2 = parseInt(state.viewMonth.slice(0,4),10)-1;
+      var months2=[]; for(var m=1;m<=12;m++){ months2.push(year2+"-"+String(m).padStart(2,"0")); } return months2;
+    }
+    return all.slice(-parseInt(filter,10));
+  }
+  /* Meses do período imediatamente anterior ao selecionado, para a comparação
+     "este período vs. o anterior" — mesma duração, sem sobrepor. */
+  function incomeComparisonMonths(filter){
+    filter = filter || incomePeriodFilter;
+    if(filter==="all") return null;
+    if(filter==="year"){ var y=parseInt(state.viewMonth.slice(0,4),10)-1; var m=[]; for(var i=1;i<=12;i++){m.push(y+"-"+String(i).padStart(2,"0"));} return m; }
+    if(filter==="prevyear"){ var y2=parseInt(state.viewMonth.slice(0,4),10)-2; var m2=[]; for(var i=1;i<=12;i++){m2.push(y2+"-"+String(i).padStart(2,"0"));} return m2; }
+    var n = parseInt(filter,10);
+    var cur = incomeMonthsForPeriod(filter);
+    if(cur.length===0) return null;
+    var cursor = cur[0]; var prevMonths=[];
+    for(var i=0;i<n;i++){ cursor = shiftMonth(cursor,-1); prevMonths.unshift(cursor); }
+    return prevMonths;
+  }
   function renderIncomeSummary(){
     var wrap = document.getElementById("incomeSummary");
     if(!wrap) return;
     var t = monthTotals(state.viewMonth);
-    var months = allMonthsSorted();
-    var totalHistorico = state.incomes.reduce(function(s,i){return s+i.valor;},0);
-    var mediaMensal = months.length>0 ? totalHistorico/months.length : 0;
+    var months = incomeMonthsForPeriod();
+    var monthlyTotals = months.map(function(m){ return {m:m, total: monthEntries(state.incomes, m).reduce(function(s,i){return s+i.valor;},0)}; });
+    var totalPeriodo = monthlyTotals.reduce(function(s,x){return s+x.total;},0);
+    var mediaMensal = months.length>0 ? totalPeriodo/months.length : 0;
+    var comDados = monthlyTotals.filter(function(x){return x.total>0;});
+    var maior = comDados.length>0 ? comDados.reduce(function(a,b){return b.total>a.total?b:a;}) : null;
+    var menor = comDados.length>0 ? comDados.reduce(function(a,b){return b.total<a.total?b:a;}) : null;
+    var evolucaoTxt = "—";
+    if(months.length>=2){
+      var metade = Math.floor(months.length/2);
+      var p1 = monthlyTotals.slice(0,metade), p2 = monthlyTotals.slice(metade);
+      var m1 = p1.reduce(function(s,x){return s+x.total;},0)/Math.max(1,p1.length);
+      var m2 = p2.reduce(function(s,x){return s+x.total;},0)/Math.max(1,p2.length);
+      if(m1>0){ var pct=((m2/m1-1)*100); evolucaoTxt = (pct>=0?"▲ +":"▼ −")+Math.abs(pct).toFixed(0)+"%"; }
+    }
+    var prevMonths = incomeComparisonMonths();
+    var comparativoTxt = "—";
+    if(prevMonths){
+      var totalPrev = prevMonths.reduce(function(s,m){return s+monthEntries(state.incomes,m).reduce(function(a,i){return a+i.valor;},0);},0);
+      if(totalPrev>0){ var pctc=((totalPeriodo/totalPrev-1)*100); comparativoTxt = (pctc>=0?"▲ +":"▼ −")+Math.abs(pctc).toFixed(0)+"% vs. período anterior"; }
+      else if(totalPeriodo>0){ comparativoTxt = "sem base no período anterior"; }
+    }
     var byTipo = {};
     monthEntries(state.incomes).forEach(function(i){ byTipo[i.tipo]=(byTipo[i.tipo]||0)+i.valor; });
     var maiorFonte = Object.keys(byTipo).sort(function(a,b){return byTipo[b]-byTipo[a];})[0];
+    var periodOptions = [
+      {v:"3", label:"3 meses"}, {v:"6", label:"6 meses"}, {v:"12", label:"12 meses"},
+      {v:"year", label:"Este ano"}, {v:"prevyear", label:"Ano anterior"}, {v:"all", label:"Tudo"}
+    ];
     wrap.innerHTML = '<div class="hero-invest">'+
       '<div class="hero-invest-label">Renda em '+escapeHtml(monthLabel(state.viewMonth))+'</div>'+
       '<div class="hero-invest-value num" style="color:var(--moss);">'+fmtMoney(t.income)+'</div>'+
-      '<div class="hero-invest-row">'+
-        '<div class="hi-stat"><div class="k">Total histórico</div><div class="v">'+fmtMoney(totalHistorico)+'</div></div>'+
+      '<div class="pf-pills" id="incomePeriodPills" style="margin-top:14px;">'+
+        periodOptions.map(function(o){ return '<button type="button" class="pf-pill'+(incomePeriodFilter===o.v?' active':'')+'" data-inc-period="'+o.v+'">'+o.label+'</button>'; }).join("")+
+      '</div>'+
+      '<div class="hero-invest-row" style="margin-top:16px;">'+
+        '<div class="hi-stat"><div class="k">Total recebido no período</div><div class="v">'+fmtMoney(totalPeriodo)+'</div></div>'+
         '<div class="hi-stat"><div class="k">Média mensal</div><div class="v">'+fmtMoney(mediaMensal)+'</div></div>'+
+        '<div class="hi-stat"><div class="k">Evolução (1ª vs 2ª metade)</div><div class="v" style="font-size:15px;">'+evolucaoTxt+'</div></div>'+
+        '<div class="hi-stat"><div class="k">Comparado ao período anterior</div><div class="v" style="font-size:14px;">'+comparativoTxt+'</div></div>'+
+        '<div class="hi-stat"><div class="k">Maior mês</div><div class="v" style="font-size:14px;">'+(maior?monthLabel(maior.m)+" · "+fmtMoney(maior.total):"—")+'</div></div>'+
+        '<div class="hi-stat"><div class="k">Menor mês</div><div class="v" style="font-size:14px;">'+(menor?monthLabel(menor.m)+" · "+fmtMoney(menor.total):"—")+'</div></div>'+
         '<div class="hi-stat"><div class="k">Maior fonte no mês</div><div class="v" style="font-size:15px;">'+(maiorFonte?escapeHtml(maiorFonte):"—")+'</div></div>'+
       '</div></div>';
+    wrap.querySelectorAll("#incomePeriodPills .pf-pill").forEach(function(btn){
+      btn.addEventListener("click", function(){ incomePeriodFilter = btn.dataset.incPeriod; renderIncomeSummary(); });
+    });
   }
   function renderIncomes(){
     renderIncomeSummary();
@@ -3898,9 +3961,17 @@
   function drawLineChart(container, series, keys, colors, opts){
     opts = opts || {};
     var isMulti = keys.length > 1;
-    // Regra global: gráficos com mais de uma série NUNCA mostram valores permanentes
-    // (evita a sobreposição de números) — só um tooltip único ao interagir.
-    var labelMode = isMulti ? "none" : (opts.labelMode || "all");
+    var requestedLabelMode = opts.labelMode || "all";
+    // Regra global e absoluta: NUNCA permitir valores permanentes demais para o espaço
+    // disponível — é isso que causa números sobrepostos. Multi-série nunca mostra valores
+    // fixos (só tooltip único). Para série única, se houver muitos pontos, o modo pedido
+    // pelo chamador é ignorado e o gráfico cai automaticamente para "somente tooltip" —
+    // a interação por hover/toque já existe de qualquer forma, então nada se perde.
+    var MAX_POINTS_FOR_PERMANENT_LABELS = 8;
+    var labelMode;
+    if(isMulti){ labelMode = "none"; }
+    else if(series.length > MAX_POINTS_FOR_PERMANENT_LABELS){ labelMode = "none"; }
+    else{ labelMode = requestedLabelMode; }
     var keyLabels = opts.keyLabels || keys;
     var fmtLabel = opts.fmtLabel || function(v){ return fmtMoney(v); };
     container.innerHTML = "";
@@ -5441,6 +5512,16 @@
     // Se chegou aqui, o utilizador tem acesso
     console.log("Acesso autorizado.");
   }
+
+  /* Logout: encerra só a sessão de autenticação (Supabase) — nunca apaga dados financeiros,
+     backups ou qualquer coisa salva no localStorage. "Sair" e "Limpar dados" são ações
+     conceitualmente separadas de propósito. */
+  document.getElementById("logoutToggle").addEventListener("click", async function(){
+    var ok = confirm("Deseja sair da sua conta?\n\nIsso encerra sua sessão de login, mas NÃO apaga nenhum dos seus dados financeiros nem backups salvos neste navegador.");
+    if(!ok) return;
+    try{ await supabaseClient.auth.signOut(); }catch(e){ /* mesmo se falhar, ainda redireciona */ }
+    window.location.href = "/login.html";
+  });
 
   checkAccess();
 </script>
