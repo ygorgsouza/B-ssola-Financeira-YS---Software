@@ -1602,7 +1602,7 @@
                 {
                   redirectTo:
                     window.location.origin +
-                    "/login.html"
+                    "/login"
                 }
               );
 
@@ -1856,13 +1856,17 @@ const {
              SENHA IGUAL À ANTERIOR
           */
 
-          if (
-            errorMessage.includes("same password") ||
-            errorMessage.includes("different")
-          ) {
+if (
+  errorMessage.includes("same password") ||
+  errorMessage.includes("password should be different") ||
+  errorMessage.includes("new password should be different") ||
+  errorMessage.includes("password is the same") ||
+  errorMessage.includes("reuse") ||
+  errorMessage.includes("previous password")
+) {
 
-            text =
-              "Escolha uma palavra-passe diferente da que estava a utilizar anteriormente.";
+  text =
+    "Esta palavra-passe já foi utilizada anteriormente. Escolha uma palavra-passe diferente.";
 
           }
 
