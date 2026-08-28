@@ -147,10 +147,10 @@
   .section-hint{font-size:13px; color:var(--text-soft); margin:0 0 20px;}
 
   .grid{display:grid; gap:16px;}
-  .grid-2{grid-template-columns:1fr 1fr;}
-  .grid-3{grid-template-columns:repeat(3,1fr);}
-  .grid-4{grid-template-columns:repeat(4,1fr); align-items:start;}
-  @media (max-width:820px){ .grid-4{grid-template-columns:1fr 1fr;} .grid-3{grid-template-columns:1fr 1fr;} }
+  .grid-2{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+  .grid-3{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .grid-4{grid-template-columns:repeat(4,minmax(0,1fr)); align-items:start;}
+  @media (max-width:820px){ .grid-4{grid-template-columns:minmax(0,1fr) minmax(0,1fr);} .grid-3{grid-template-columns:minmax(0,1fr) minmax(0,1fr);} }
   @media (max-width:560px){ .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;} }
 
   .stat-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 18px 16px; transition:transform .18s ease, box-shadow .18s ease; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; min-height:96px; }
@@ -205,9 +205,9 @@
   .empty-row td{text-align:center; color:var(--text-soft); padding:22px 12px; font-style:italic;}
 
   .form-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-top:14px; }
-  .form-row{display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr auto; gap:10px; align-items:end;}
-  .form-row.cols-6{grid-template-columns:1.2fr 1fr 1fr 1fr 1fr auto;}
-  @media (max-width:820px){ .form-row, .form-row.cols-6{grid-template-columns:1fr 1fr;} }
+  .form-row{display:grid; grid-template-columns:1.4fr minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto; gap:10px; align-items:end;}
+  .form-row.cols-6{grid-template-columns:1.2fr minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto;}
+  @media (max-width:820px){ .form-row, .form-row.cols-6{grid-template-columns:minmax(0,1fr) minmax(0,1fr);} }
   .field label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-soft); margin-bottom:5px;}
   .field input, .field select{ width:100%; padding:10px 10px; border:1px solid var(--line); border-radius:7px; background:var(--bg); font-size:14px; font-family:inherit; color:var(--text); min-height:40px; }
   .field input:focus, .field select:focus{border-color:var(--accent2); box-shadow:0 0 0 3px rgba(14,156,140,0.15);}
@@ -236,7 +236,7 @@
   .hero-invest{ background:var(--surface); border:1px solid var(--line); border-radius:calc(var(--radius) + 4px); padding:26px 24px 22px; }
   .hero-invest-label{font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-soft); font-weight:600;}
   .hero-invest-value{font-size:clamp(28px, 5vw, 42px); font-weight:700; color:var(--moss-text); margin-top:6px; font-family:'Fraunces', serif;}
-  .hero-invest-row{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px; padding-top:18px; border-top:1px solid var(--line);}
+  .hero-invest-row{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:20px; padding-top:18px; border-top:1px solid var(--line);}
   @media (max-width:640px){ .hero-invest-row{grid-template-columns:1fr;} }
   .hi-stat .k{font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-soft); font-weight:600; margin-bottom:4px;}
   .hi-stat .v{font-family:'IBM Plex Mono', monospace; font-size:18px; font-weight:600; color:var(--text);}
@@ -306,6 +306,8 @@
   .alert-card.ok{border-left:3px solid var(--moss);} .alert-card.ok .ac-title{color:var(--moss-text);}
 
   .bar-row{display:flex; align-items:center; gap:10px; margin-bottom:10px; min-width:0;}
+  .bar-row-clickable{cursor:pointer; border-radius:6px; padding:2px 4px; margin-left:-4px; transition:background .15s ease;}
+  .bar-row-clickable:hover{background:var(--surface-2);}
   .bars-grid{display:grid; grid-template-columns:1fr 1fr; gap:0 28px;}
   @media (max-width:760px){ .bars-grid{grid-template-columns:1fr;} }
   .bar-label{width:100px; font-size:12.5px; color:var(--text-soft); flex-shrink:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
@@ -368,6 +370,9 @@
   .legend-dot{width:9px; height:9px; border-radius:2px; flex-shrink:0;}
   .chart-svg{width:100%; height:auto; overflow:visible;}
   .chart-interactive{position:relative;}
+  .chart-svg{ animation:chartFadeIn .35s ease; }
+  @keyframes chartFadeIn{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:translateY(0); } }
+  @media (prefers-reduced-motion:reduce){ .chart-svg{ animation:none; } }
   .chart-tooltip{
     position:absolute; transform:translate(-50%,-135%); background:var(--surface-dark); color:var(--on-dark);
     padding:8px 12px; border-radius:8px; font-size:11.5px; font-family:'IBM Plex Mono', monospace; font-weight:600;
@@ -391,6 +396,7 @@
   .insight-item.neutral{color:var(--text-soft); font-style:italic;}
 
   .period-filter-bar{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:18px 0 22px; padding:12px 14px; background:var(--surface-2); border-radius:var(--radius);}
+  .period-range-label{ font-size:12.5px; font-weight:600; color:var(--brass); margin:-10px 0 20px; }
   .an-section-num{width:26px; height:26px; border-radius:50%; background:var(--grad-accent); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-top:34px;}
   .an-narrative{ background:var(--grad-hero); border-radius:calc(var(--radius) + 4px); padding:22px 24px; margin:20px 0 28px; }
   .compare-bar{margin-top:10px;}
@@ -479,14 +485,14 @@
   .acct-card:hover{ box-shadow:var(--shadow); transform:translateY(-1px); }
   .acct-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
   .acct-name{font-family:'Fraunces', serif; font-weight:600; font-size:16px;}
-  .acct-stats{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:10px 0 12px;}
-  @media (max-width:700px){ .acct-stats{grid-template-columns:1fr 1fr;} }
+  .acct-stats{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:10px 0 12px;}
+  @media (max-width:700px){ .acct-stats{grid-template-columns:minmax(0,1fr) minmax(0,1fr);} }
   .acct-stat{background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:8px 10px;}
   .acct-stat .k{font-size:10px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-soft);}
   .acct-stat .v{font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; margin-top:3px;}
   .acct-stat .v.moss{color:var(--moss);} .acct-stat .v.rust{color:var(--rust);}
-  .acct-entry-form{display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:8px; margin-bottom:10px;}
-  @media (max-width:700px){ .acct-entry-form{grid-template-columns:1fr 1fr;} }
+  .acct-entry-form{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto; gap:8px; margin-bottom:10px;}
+  @media (max-width:700px){ .acct-entry-form{grid-template-columns:minmax(0,1fr) minmax(0,1fr);} }
   .acct-entry-form select, .acct-entry-form input{padding:8px 9px; border:1px solid var(--line); border-radius:7px; background:var(--bg); font-size:13px; font-family:inherit;}
   .acct-ledger{max-height:220px; overflow-y:auto; border-top:1px dashed var(--line); padding-top:8px;}
   .acct-ledger-filters{display:flex; gap:6px; flex-wrap:wrap; margin:10px 0 8px;}
@@ -1098,6 +1104,7 @@
         </div>
         <select id="analisePeriodo" class="pf-year-select"><option value="recent">(usar pills de período acima)</option></select>
       </div>
+      <div id="analysisPeriodLabel" class="period-range-label">—</div>
 
       <div id="analisesNarrative"></div>
 
@@ -1410,6 +1417,8 @@
     <h2>Central de Ajuda</h2>
     <p class="section-hint" style="margin-bottom:14px;">Tudo sobre como a Bússola funciona e como cada valor é calculado.</p>
 
+    <button type="button" class="btn btn-ghost btn-sm" id="reopenOnboardingBtn" style="margin-bottom:14px;">↻ Rever apresentação inicial (onboarding)</button>
+
     <div class="help-cat-filters" id="helpCatFilters"></div>
 
     <div class="faq-list" id="helpFaqList">
@@ -1521,6 +1530,10 @@
         <div class="faq-a"><p>Gastar mais do que ganha, contrair uma nova dívida ou financiamento (entra imediatamente como dívida integral), e deixar faturas de cartão em aberto acumularem.</p></div>
       </div>
 
+      <div class="faq-item" data-cat="Análises">
+        <button class="faq-q" type="button">O que significa "Total do período"?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Sempre que você vê um valor total em Análises ou Rendimentos, o intervalo exato de meses usado aparece logo acima, por exemplo "Últimos 3 meses · Jun–Ago 2026" — nunca é um número solto sem dizer a que período se refere.</p></div>
+      </div>
       <div class="faq-item" data-cat="Análises">
         <button class="faq-q" type="button">Como interpretar os gráficos de Análises?<span class="chevron">▾</span></button>
         <div class="faq-a"><p>Cada gráfico responde uma pergunta específica (ex.: "Despesas por mês" mostra a evolução dos seus gastos totais). Passe o mouse (ou toque) sobre qualquer ponto para ver o valor exato daquele mês.</p></div>
@@ -1774,6 +1787,16 @@
     v = Number(v)||0;
     try{ return new Intl.NumberFormat("pt-BR", {style:"currency", currency:"BRL"}).format(v); }
     catch(e){ return "R$ " + v.toFixed(2); }
+  }
+  /* Versão curta para caber no eixo Y dos gráficos: R$5k, R$12,3k, R$1,2M — nunca inventa,
+     só abrevia o mesmo valor real para não competir por espaço com o gráfico. */
+  function fmtMoneyCompact(v){
+    v = Number(v)||0;
+    var sign = v<0 ? "-" : "";
+    var abs = Math.abs(v);
+    if(abs>=1000000){ return sign+"R$"+(abs/1000000).toFixed(abs>=10000000?0:1).replace(".",",")+"M"; }
+    if(abs>=1000){ return sign+"R$"+(abs/1000).toFixed(abs>=10000?0:1).replace(".",",")+"k"; }
+    return sign+"R$"+Math.round(abs);
   }
 
   /* ===== Animação de contagem nos números do Dashboard ===== */
@@ -2182,6 +2205,13 @@
     document.getElementById("onboardOverlay").classList.remove("hidden");
     showOnboardStep(1);
   }
+  /* Rever onboarding a qualquer momento — nunca apaga dados, só reabre a apresentação. */
+  document.getElementById("reopenOnboardingBtn").addEventListener("click", function(){
+    document.getElementById("helpOverlay").classList.add("hidden");
+    if(state.owner){ document.getElementById("onboardNameInput").value = state.owner; document.getElementById("onboardGreeting").textContent = "Olá, "+state.owner+" 👋"; }
+    document.getElementById("onboardOverlay").classList.remove("hidden");
+    showOnboardStep(1);
+  });
 
   /* ===== Ajuda ===== */
   document.getElementById("helpVersionLabel").textContent = APP_VERSION;
@@ -3925,6 +3955,20 @@
     // ano específico (ex.: "2025")
     return all.filter(function(m){ return m.slice(0,4)===analisePeriodo; });
   }
+  /* Torna explícito, em texto, qual intervalo de meses o período selecionado representa —
+     nunca deixar "Total do período" sem dizer qual período é esse. */
+  function periodRangeLabel(months){
+    if(!months || months.length===0) return "sem dados no período";
+    if(months.length===1) return monthLabel(months[0]);
+    return monthLabel(months[0])+" – "+monthLabel(months[months.length-1]);
+  }
+  function renderAnalysisPeriodLabel(){
+    var el = document.getElementById("analysisPeriodLabel");
+    if(!el) return;
+    var months = analysisMonthsForPeriod();
+    var prefix = {"3":"Últimos 3 meses","6":"Últimos 6 meses","12":"Últimos 12 meses","all":"Todo o histórico"}[analisePeriodo] || ("Ano de "+analisePeriodo);
+    el.textContent = prefix+" · "+periodRangeLabel(months);
+  }
   document.querySelectorAll("#periodPills .pf-pill").forEach(function(btn){
     btn.addEventListener("click", function(){
       analisePeriodo = btn.dataset.period;
@@ -4005,7 +4049,7 @@
     var fmtLabel = opts.fmtLabel || function(v){ return fmtMoney(v); };
     container.innerHTML = "";
     if(series.length < 2){ container.innerHTML = '<div class="chart-empty">Registre dados em pelo menos 2 meses diferentes para ver a evolução aqui.</div>'; return; }
-    var w=640,h=260,padL=48,padR=16,padT=30,padB=28;
+    var w=640,h=260,padL=52,padR=28,padT=32,padB=28;
     var allVals=[]; series.forEach(function(pt){ keys.forEach(function(k){ if(pt[k]!==null && pt[k]!==undefined) allVals.push(pt[k]); }); });
     var maxV = Math.max.apply(null, allVals.concat([opts.suggestedMax||1]));
     var minV = Math.min(0, Math.min.apply(null, allVals.concat([0])));
@@ -4021,15 +4065,19 @@
       line.setAttribute("x1",padL); line.setAttribute("x2",w-padR); line.setAttribute("y1",gy); line.setAttribute("y2",gy);
       line.setAttribute("stroke-width","1"); line.style.stroke = "var(--line)";
       svg.appendChild(line);
+      // rótulo do eixo Y: valor real (abreviado) de cada linha de grade — sem isso o eixo é "cego"
+      var gVal = maxV - ((maxV-minV)/3)*g;
+      var yLabel = document.createElementNS("http://www.w3.org/2000/svg","text");
+      yLabel.setAttribute("x", padL-6); yLabel.setAttribute("y", gy+3); yLabel.setAttribute("text-anchor","end");
+      yLabel.setAttribute("font-size","8.5"); yLabel.style.fill = "var(--text-soft)"; yLabel.setAttribute("font-family","IBM Plex Mono, monospace");
+      yLabel.textContent = fmtMoneyCompact(gVal);
+      svg.appendChild(yLabel);
     }
-    // linha-guia vertical (some ao passar de ponto em ponto no modo multi-série)
-    var guideLine = null;
-    if(isMulti){
-      guideLine = document.createElementNS("http://www.w3.org/2000/svg","line");
-      guideLine.setAttribute("class","chart-guide-line");
-      guideLine.setAttribute("y1", padT); guideLine.setAttribute("y2", padT+innerH);
-      svg.appendChild(guideLine);
-    }
+    // linha-guia vertical (crosshair) — agora em todos os gráficos com 2+ pontos, não só multi-série
+    var guideLine = document.createElementNS("http://www.w3.org/2000/svg","line");
+    guideLine.setAttribute("class","chart-guide-line");
+    guideLine.setAttribute("y1", padT); guideLine.setAttribute("y2", padT+innerH);
+    svg.appendChild(guideLine);
     var allCircles = []; // [ [circle por série, no índice i], ... ] para destaque no hover multi-série
     keys.forEach(function(key,ki){
       var pts = series.map(function(pt,i){ return (pt[key]===null||pt[key]===undefined) ? null : [x(i),y(pt[key]),pt[key]]; });
@@ -4058,14 +4106,14 @@
           svg.appendChild(t);
         }
         if(!isMulti){
-          // single-série: hit target individual, tooltip simples (comportamento já existente)
+          // single-série: hit target individual, tooltip simples + crosshair vertical no ponto
           var hit = document.createElementNS("http://www.w3.org/2000/svg","circle");
           hit.setAttribute("cx",p[0]); hit.setAttribute("cy",p[1]); hit.setAttribute("r","10");
           hit.setAttribute("fill","transparent"); hit.style.cursor="pointer";
           var tipText = series[i].label + " — " + fmtLabel(p[2]);
-          hit.addEventListener("mouseenter", function(cEl, txt){ return function(){ cEl.setAttribute("r","5.5"); showChartTooltip(container, hit, txt); }; }(c, tipText));
-          hit.addEventListener("mouseleave", function(cEl){ return function(){ cEl.setAttribute("r","3.2"); hideChartTooltip(container); }; }(c));
-          hit.addEventListener("touchstart", function(txt){ return function(){ showChartTooltip(container, hit, txt); }; }(tipText), {passive:true});
+          hit.addEventListener("mouseenter", function(cEl, txt, px){ return function(){ cEl.setAttribute("r","5.5"); showChartTooltip(container, hit, txt); guideLine.setAttribute("x1",px); guideLine.setAttribute("x2",px); guideLine.style.opacity="1"; }; }(c, tipText, p[0]));
+          hit.addEventListener("mouseleave", function(cEl){ return function(){ cEl.setAttribute("r","3.2"); hideChartTooltip(container); guideLine.style.opacity="0"; }; }(c));
+          hit.addEventListener("touchstart", function(txt, px){ return function(){ showChartTooltip(container, hit, txt); guideLine.setAttribute("x1",px); guideLine.setAttribute("x2",px); guideLine.style.opacity="1"; }; }(tipText, p[0]), {passive:true});
           svg.appendChild(hit);
         }
       });
@@ -4501,8 +4549,14 @@
     shown.forEach(function(c){
       var avg = byCat[c].sum/byCat[c].count;
       var pct = maxAvg>0 ? (avg/maxAvg)*100 : 0;
-      var row = document.createElement("div"); row.className="bar-row";
+      var row = document.createElement("div"); row.className="bar-row bar-row-clickable"; row.setAttribute("role","button"); row.tabIndex=0;
       row.innerHTML = '<div class="bar-label" title="'+escapeHtml(c)+'">'+escapeHtml(c)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%; background:var(--brass);"></div></div><div class="bar-val num">'+fmtMoney(avg)+' ('+byCat[c].count+'x)</div>';
+      row.addEventListener("click", function(){
+        selectedCatDrilldown = c;
+        renderCategoryDrilldown();
+        var target = document.getElementById("categoryDrilldown");
+        if(target && typeof target.scrollIntoView === "function"){ target.scrollIntoView({behavior: PREFERS_REDUCED_MOTION ? "auto" : "smooth", block:"center"}); }
+      });
       wrap.appendChild(row);
     });
     if(cats.length>8){
@@ -4537,6 +4591,7 @@
     drawLineChart(document.getElementById("chartIncWrap"), series, ["inc"], ["var(--brass)"]);
     var savingsSeries = series.filter(function(s){return s.savingsPct!==null;});
     drawLineChart(document.getElementById("savingsChartWrap"), savingsSeries.map(function(s){return {label:s.label, pct:s.savingsPct};}), ["pct"], ["var(--moss)"], {suggestedMax:20, labelMode:"all", fmtLabel:function(v){return v.toFixed(0)+"%";}});
+    renderAnalysisPeriodLabel();
     renderAnalisesNarrative();
     renderCompareResult();
     renderInsights(series);
