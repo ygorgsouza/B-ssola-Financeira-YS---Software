@@ -236,6 +236,21 @@
 
   /* ===== Cockpit: hero de património, saudação, insight, meta principal ===== */
   .dash-greeting{font-size:13px; color:var(--text-soft); margin:0 0 6px; text-transform:uppercase; letter-spacing:0.04em; font-weight:600;}
+  .dash-top-row{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  .quick-expense-btn{
+    background:var(--grad-accent); color:#fff; border:none; border-radius:999px; padding:10px 20px; font-size:13.5px; font-weight:700;
+    cursor:pointer; box-shadow:var(--shadow); transition:transform .15s ease, box-shadow .15s ease; min-height:40px; flex-shrink:0;
+  }
+  .quick-expense-btn:hover{ transform:translateY(-2px); box-shadow:0 8px 20px -6px rgba(0,0,0,0.35); }
+  .quick-expense-btn:active{ transform:translateY(0); }
+  .quick-expense-box{ max-width:400px; }
+  .quick-expense-box #quickExpCat{ font-size:16px; padding:14px 12px; min-height:52px; }
+  .quick-expense-value-input{ font-size:26px !important; font-family:'IBM Plex Mono', monospace; font-weight:700; text-align:center; padding:16px 12px !important; min-height:64px !important; }
+  .quick-expense-submit{ width:100%; margin-top:18px; font-size:15px; padding:16px; min-height:54px; }
+  .quick-expense-error{ background:var(--rust-bg); color:var(--rust-text); font-size:12.5px; font-weight:600; padding:8px 12px; border-radius:8px; margin-top:12px; }
+  @keyframes quickExpenseSuccessPulse{ 0%{transform:scale(1);} 40%{transform:scale(1.06);} 100%{transform:scale(1);} }
+  .quick-expense-btn.success-pulse{ animation:quickExpenseSuccessPulse .4s ease; }
+  @media (prefers-reduced-motion:reduce){ .quick-expense-btn.success-pulse{ animation:none; } }
   .hero-patrimonio{ background:var(--grad-hero); border-radius:calc(var(--radius) + 6px); padding:32px 28px 28px; color:#F4EFDF; position:relative; overflow:hidden; }
   .hero-invest{ background:var(--surface); border:1px solid var(--line); border-radius:calc(var(--radius) + 4px); padding:26px 24px 22px; }
   .hero-invest-label{font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-soft); font-weight:600;}
@@ -755,7 +770,10 @@
 
     <!-- ===== DASHBOARD ===== -->
     <section id="tab-dashboard">
-      <p class="dash-greeting" id="dashGreeting">Olá</p>
+      <div class="dash-top-row">
+        <p class="dash-greeting" id="dashGreeting">Olá</p>
+        <button type="button" class="quick-expense-btn" id="quickExpenseBtn">⚡ Despesa rápida</button>
+      </div>
 
       <div class="hero-patrimonio">
         <div class="hero-patrimonio-label">Sua situação financeira <button type="button" class="info-dot" data-help-cat="Património" title="Como isso é calculado?">?</button></div>
@@ -1332,6 +1350,24 @@
 </main>
 
 <button class="fab" id="fabBtn" aria-label="Adicionar gasto rápido">+</button>
+
+<div class="modal-overlay hidden" id="quickExpenseOverlay">
+  <div class="modal-box quick-expense-box">
+    <h2>⚡ Despesa rápida</h2>
+    <p class="section-hint">Categoria, valor e pronto — os outros detalhes (descrição, tipo, membro) continuam disponíveis no lançamento completo em Despesas, se quiser adicioná-los depois.</p>
+    <div class="field" style="margin-top:16px;">
+      <label for="quickExpCat">Categoria</label>
+      <select id="quickExpCat"></select>
+    </div>
+    <div class="field" style="margin-top:14px;">
+      <label for="quickExpValor">Valor</label>
+      <input type="text" id="quickExpValor" class="money-input quick-expense-value-input" placeholder="0,00" inputmode="decimal" autocomplete="off">
+    </div>
+    <div id="quickExpenseError" class="quick-expense-error hidden"></div>
+    <button type="button" class="btn btn-primary quick-expense-submit" id="quickExpenseSubmitBtn">Registrar despesa</button>
+    <button type="button" class="btn btn-ghost btn-sm" id="quickExpenseCancelBtn" style="width:100%; margin-top:8px;">Cancelar</button>
+  </div>
+</div>
 
 <div class="modal-overlay hidden" id="reportOverlay">
   <div class="modal-box" style="max-width:400px;">
@@ -2455,6 +2491,54 @@
     document.getElementById("expRecorrente").checked = false;
     renderAll();
   });
+
+  /* ===== Despesa rápida: categoria + valor, nada mais — usa exatamente a mesma
+     estrutura de dados das despesas normais (mesmo array state.expenses), então
+     depois de salva é indistinguível de uma despesa lançada pelo fluxo completo. ===== */
+  function openQuickExpense(){
+    var sel = document.getElementById("quickExpCat");
+    var cats = state.categories.despesas;
+    sel.innerHTML = cats.map(function(c){ return '<option value="'+escapeHtml(c)+'">'+escapeHtml(c)+'</option>'; }).join("");
+    var valInp = document.getElementById("quickExpValor");
+    valInp.value = "";
+    document.getElementById("quickExpenseError").classList.add("hidden");
+    document.getElementById("quickExpenseOverlay").classList.remove("hidden");
+    setTimeout(function(){ valInp.focus(); }, 50);
+  }
+  function closeQuickExpense(){
+    document.getElementById("quickExpenseOverlay").classList.add("hidden");
+  }
+  document.getElementById("quickExpenseBtn").addEventListener("click", openQuickExpense);
+  document.getElementById("quickExpenseCancelBtn").addEventListener("click", closeQuickExpense);
+  document.getElementById("quickExpenseOverlay").addEventListener("click", function(ev){
+    if(ev.target === this) closeQuickExpense();
+  });
+  attachMoneyMask(document.getElementById("quickExpValor"));
+  function submitQuickExpense(){
+    var cat = document.getElementById("quickExpCat").value;
+    var valorEl = document.getElementById("quickExpValor");
+    var valor = parseMoneyInput(valorEl);
+    var errEl = document.getElementById("quickExpenseError");
+    if(!valorEl.value.trim() || !valor || valor<=0){
+      errEl.textContent = !valorEl.value.trim() ? "Informe um valor." : "Informe um valor válido, maior que zero.";
+      errEl.classList.remove("hidden");
+      valorEl.focus();
+      return;
+    }
+    errEl.classList.add("hidden");
+    state.expenses.push({id:uid(), desc:cat, cat:cat, tipo:"Variável", valor:valor, data:todayISO(), membro:""});
+    saveState();
+    renderAll();
+    closeQuickExpense();
+    var btn = document.getElementById("quickExpenseBtn");
+    btn.classList.remove("success-pulse"); void btn.offsetWidth; btn.classList.add("success-pulse");
+    showToast("Despesa registrada — "+cat+" · "+fmtMoney(valor));
+  }
+  document.getElementById("quickExpenseSubmitBtn").addEventListener("click", submitQuickExpense);
+  document.getElementById("quickExpValor").addEventListener("keydown", function(ev){
+    if(ev.key==="Enter"){ ev.preventDefault(); submitQuickExpense(); }
+  });
+
   function deleteExpense(id){
     var item = state.expenses.find(function(e){return e.id===id;});
     if(!item) return;
