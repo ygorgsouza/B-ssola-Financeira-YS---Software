@@ -427,7 +427,7 @@
   .cat-rank-idx{width:20px; font-size:11px; color:var(--text-soft); font-family:'IBM Plex Mono', monospace; flex-shrink:0;}
   .cat-rank-name{flex:1; font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;}
   .cat-rank-bar-track{flex:2; height:7px; background:var(--surface-2); border-radius:999px; overflow:hidden;}
-  .cat-rank-bar-fill{height:100%; background:var(--brass); border-radius:999px;}
+  .cat-rank-bar-fill{height:100%; background:var(--brass); border-radius:999px; transition:width .7s cubic-bezier(.16,.8,.3,1);}
   .cat-rank-val{font-size:12.5px; font-family:'IBM Plex Mono', monospace; flex-shrink:0; width:90px; text-align:right;}
   .cat-drilldown-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-top:10px;}
 
@@ -1793,6 +1793,19 @@
   function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
   function uid(){ return Math.random().toString(36).slice(2,10); }
 
+  /* Anima o preenchimento de qualquer conjunto de barras horizontais: elas devem ser
+     criadas com width:0% e data-w="<valor real>" no HTML — esta função, chamada logo
+     depois, dispara a transição CSS já existente (.bar-fill{transition:width .7s}),
+     fazendo-as crescer de verdade em vez de aparecerem já no tamanho final. */
+  function animateBarFills(container){
+    if(!container) return;
+    requestAnimationFrame(function(){
+      container.querySelectorAll("[data-w]").forEach(function(el){
+        el.style.width = el.dataset.w + "%";
+      });
+    });
+  }
+
   function fmtMoney(v){
     v = Number(v)||0;
     try{ return new Intl.NumberFormat("pt-BR", {style:"currency", currency:"BRL"}).format(v); }
@@ -2519,9 +2532,10 @@
         var pct = (totals[cat]/maxVal)*100;
         var isEss = ESSENCIAIS.indexOf(cat)!==-1;
         var row = document.createElement("div"); row.className="bar-row";
-        row.innerHTML = '<div class="bar-label">'+cat+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%; background:'+(isEss?'var(--rust)':'var(--amber)')+';"></div></div><div class="bar-val num">'+fmtMoney(totals[cat])+'</div>';
+        row.innerHTML = '<div class="bar-label">'+cat+'</div><div class="bar-track"><div class="bar-fill" data-w="'+pct+'" style="width:0%; background:'+(isEss?'var(--rust)':'var(--amber)')+';"></div></div><div class="bar-val num">'+fmtMoney(totals[cat])+'</div>';
         wrap.appendChild(row);
       });
+      animateBarFills(wrap);
     }
     renderBudgets(totals);
     renderRecurringList();
@@ -2548,9 +2562,10 @@
       var pct = orcado>0 ? Math.min(120,(gasto/orcado)*100) : 0;
       var over = gasto > orcado;
       var row = document.createElement("div"); row.className="bar-row";
-      row.innerHTML = '<div class="bar-label">'+cat+'</div><div class="bar-track"><div class="bar-fill'+(over?' fill-warn':'')+'" style="width:'+Math.min(100,pct)+'%; background:'+(over?'':'var(--brass)')+';"></div></div><div class="bar-val num">'+fmtMoney(gasto)+' / '+fmtMoney(orcado)+'</div>';
+      row.innerHTML = '<div class="bar-label">'+cat+'</div><div class="bar-track"><div class="bar-fill'+(over?' fill-warn':'')+'" data-w="'+Math.min(100,pct)+'" style="width:0%; background:'+(over?'':'var(--brass)')+';"></div></div><div class="bar-val num">'+fmtMoney(gasto)+' / '+fmtMoney(orcado)+'</div>';
       wrap.appendChild(row);
     });
+    animateBarFills(wrap);
   }
 
   /* ===== Cartões ===== */
@@ -4427,8 +4442,9 @@
     var max = byCat[cats[0]];
     wrap.innerHTML = cats.map(function(c, i){
       var pct = max>0 ? (byCat[c]/max)*100 : 0;
-      return '<div class="cat-rank-row" data-cat="'+escapeHtml(c)+'"><span class="cat-rank-idx">#'+(i+1)+'</span><span class="cat-rank-name">'+escapeHtml(c)+'</span><span class="cat-rank-bar-track"><span class="cat-rank-bar-fill" style="width:'+pct+'%;"></span></span><span class="cat-rank-val">'+fmtMoney(byCat[c])+'</span></div>';
+      return '<div class="cat-rank-row" data-cat="'+escapeHtml(c)+'"><span class="cat-rank-idx">#'+(i+1)+'</span><span class="cat-rank-name">'+escapeHtml(c)+'</span><span class="cat-rank-bar-track"><span class="cat-rank-bar-fill" data-w="'+pct+'" style="width:0%;"></span></span><span class="cat-rank-val">'+fmtMoney(byCat[c])+'</span></div>';
     }).join("");
+    animateBarFills(wrap);
     wrap.querySelectorAll(".cat-rank-row").forEach(function(row){
       row.addEventListener("click", function(){
         selectedCatDrilldown = (selectedCatDrilldown===row.dataset.cat) ? null : row.dataset.cat;
@@ -4468,9 +4484,10 @@
     keys.forEach(function(k){
       var pct = max>0 ? (totals[k]/max)*100 : 0;
       var row = document.createElement("div"); row.className="bar-row";
-      row.innerHTML = '<div class="bar-label">'+escapeHtml(k)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%; background:var(--moss);"></div></div><div class="bar-val num">'+fmtMoney(totals[k])+'</div>';
+      row.innerHTML = '<div class="bar-label">'+escapeHtml(k)+'</div><div class="bar-track"><div class="bar-fill" data-w="'+pct+'" style="width:0%; background:var(--moss);"></div></div><div class="bar-val num">'+fmtMoney(totals[k])+'</div>';
       wrap.appendChild(row);
     });
+    animateBarFills(wrap);
   }
 
   function totalMonthlyAporte(){
@@ -4562,7 +4579,7 @@
       var avg = byCat[c].sum/byCat[c].count;
       var pct = maxAvg>0 ? (avg/maxAvg)*100 : 0;
       var row = document.createElement("div"); row.className="bar-row bar-row-clickable"; row.setAttribute("role","button"); row.tabIndex=0;
-      row.innerHTML = '<div class="bar-label" title="'+escapeHtml(c)+'">'+escapeHtml(c)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%; background:var(--brass);"></div></div><div class="bar-val num">'+fmtMoney(avg)+' ('+byCat[c].count+'x)</div>';
+      row.innerHTML = '<div class="bar-label" title="'+escapeHtml(c)+'">'+escapeHtml(c)+'</div><div class="bar-track"><div class="bar-fill" data-w="'+pct+'" style="width:0%; background:var(--brass);"></div></div><div class="bar-val num">'+fmtMoney(avg)+' ('+byCat[c].count+'x)</div>';
       row.addEventListener("click", function(){
         selectedCatDrilldown = c;
         renderCategoryDrilldown();
@@ -4571,6 +4588,7 @@
       });
       wrap.appendChild(row);
     });
+    animateBarFills(wrap);
     if(cats.length>8){
       var more = document.createElement("p");
       more.style.cssText = "font-size:11.5px; color:var(--text-soft); margin-top:4px;";
@@ -4590,9 +4608,10 @@
     membros.forEach(function(m){
       var pct = max>0 ? (byMembro[m]/max)*100 : 0;
       var row = document.createElement("div"); row.className="bar-row";
-      row.innerHTML = '<div class="bar-label" title="'+escapeHtml(m)+'">'+escapeHtml(m)+'</div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%; background:var(--moss);"></div></div><div class="bar-val num">'+fmtMoney(byMembro[m])+'</div>';
+      row.innerHTML = '<div class="bar-label" title="'+escapeHtml(m)+'">'+escapeHtml(m)+'</div><div class="bar-track"><div class="bar-fill" data-w="'+pct+'" style="width:0%; background:var(--moss);"></div></div><div class="bar-val num">'+fmtMoney(byMembro[m])+'</div>';
       wrap.appendChild(row);
     });
+    animateBarFills(wrap);
   }
 
   function renderAnalytics(){
