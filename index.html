@@ -63,11 +63,16 @@
   .cover::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:2px; background:var(--grad-accent); opacity:0.85; }
   .cover-inner{ max-width:1320px; margin:0 auto; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; padding-bottom:18px; border-bottom:2px solid var(--brass); }
   .brand{display:flex; align-items:center; gap:12px;}
-  .brand-mark{width:40px; height:40px; flex-shrink:0; transition:width .25s ease, height .25s ease, transform .1s linear;}
-  .brand-needle{ transform-origin:20px 20px; animation:compassSway 5s ease-in-out infinite; transition:transform .3s cubic-bezier(.34,1.56,.64,1); }
-  @keyframes compassSway{ 0%,100%{transform:rotate(-6deg);} 50%{transform:rotate(6deg);} }
-  .brand-mark:hover .brand-needle{ animation-play-state:paused; transform:rotate(18deg); }
-  @media (prefers-reduced-motion:reduce){ .brand-needle{animation:none;} }
+  .brand-mark{width:40px; height:40px; flex-shrink:0; cursor:pointer; border-radius:50%; transition:width .25s ease, height .25s ease, transform .1s linear, filter .25s ease; }
+  .brand-mark:hover{ filter:drop-shadow(0 0 6px rgba(217,189,130,0.55)); }
+  .brand-mark:focus-visible{ outline:2px solid var(--brass); outline-offset:3px; }
+  .brand-mark:active{ transform:scale(0.92); }
+  .brand-needle{ transform-origin:20px 20px; animation:compassSway 4s ease-in-out infinite; transition:transform .3s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes compassSway{ 0%,100%{transform:rotate(-15deg);} 50%{transform:rotate(15deg);} }
+  .brand-mark:hover .brand-needle{ animation-play-state:paused; transform:rotate(28deg) scale(1.08); }
+  .brand-mark.spinning .brand-needle{ animation:compassSpin .85s cubic-bezier(.22,.98,.26,1.2); }
+  @keyframes compassSpin{ from{transform:rotate(0deg) scale(1);} 60%{transform:rotate(1000deg) scale(1.12);} to{transform:rotate(1080deg) scale(1);} }
+  @media (prefers-reduced-motion:reduce){ .brand-needle{animation:none;} .brand-mark.spinning .brand-needle{animation:none;} }
   .brand h1{
     font-size:22px; margin:0; transition:font-size .25s ease;
     background: linear-gradient(90deg, #F8F3E4 0%, #9FE6D8 60%, #D8CCFF 100%);
@@ -235,7 +240,8 @@
   .dash-section-head{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;}
 
   /* ===== Cockpit: hero de património, saudação, insight, meta principal ===== */
-  .dash-greeting{font-size:13px; color:var(--text-soft); margin:0 0 6px; text-transform:uppercase; letter-spacing:0.04em; font-weight:600;}
+  .dash-greeting{font-size:13px; color:var(--text-soft); margin:0 0 2px; text-transform:uppercase; letter-spacing:0.04em; font-weight:600;}
+  .dash-date{font-size:12.5px; color:var(--text-soft); margin:0; opacity:0.75;}
   .dash-top-row{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
   .quick-expense-btn{
     background:var(--grad-accent); color:#fff; border:none; border-radius:999px; padding:10px 20px; font-size:13.5px; font-weight:700;
@@ -719,7 +725,7 @@
   <div id="scrollProgressBar"></div>
   <div class="cover-inner">
     <div class="brand">
-      <svg class="brand-mark" viewBox="0 0 40 40" fill="none" id="brandMarkSvg">
+      <svg class="brand-mark" viewBox="0 0 40 40" fill="none" id="brandMarkSvg" role="button" tabindex="0" aria-label="Voltar ao início do painel">
         <circle cx="20" cy="20" r="18" stroke="#D9BD82" stroke-width="1.5"/>
         <circle cx="20" cy="20" r="1.6" fill="#D9BD82"/>
         <g class="brand-needle">
@@ -771,7 +777,10 @@
     <!-- ===== DASHBOARD ===== -->
     <section id="tab-dashboard">
       <div class="dash-top-row">
-        <p class="dash-greeting" id="dashGreeting">Olá</p>
+        <div class="dash-greeting-block">
+          <p class="dash-greeting" id="dashGreeting">Olá</p>
+          <p class="dash-date" id="dashDate"></p>
+        </div>
         <button type="button" class="quick-expense-btn" id="quickExpenseBtn">⚡ Despesa rápida</button>
       </div>
 
@@ -1825,6 +1834,15 @@
   }
 
   function todayISO(){ return new Date().toISOString().slice(0,10); }
+  var weekDayNames = ["domingo","segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
+  /* Data de hoje por extenso, em português — usada no saudação do Dashboard para o
+     usuário sempre saber em que dia está abrindo o painel, sem depender do relógio
+     do sistema operacional nem confundir com o mês que está navegando (monthLabel). */
+  function formatTodayLong(){
+    var d = new Date();
+    var dia = weekDayNames[d.getDay()];
+    return dia.charAt(0).toUpperCase()+dia.slice(1)+", "+d.getDate()+" de "+monthNames[d.getMonth()]+" de "+d.getFullYear();
+  }
 
   function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
   function uid(){ return Math.random().toString(36).slice(2,10); }
@@ -1941,6 +1959,28 @@
       if(!ticking){ requestAnimationFrame(updateScrolled); ticking = true; }
     }, {passive:true});
     updateScrolled();
+  })();
+
+  /* Ícone da Bússola clicável: gira (3 voltas com um pequeno "quique" no final) e leva
+     de volta ao Dashboard, no topo da página — o mesmo gesto de clicar na logo em
+     qualquer produto para "ir para o início". */
+  (function initBrandMarkClick(){
+    var brandMarkEl = document.getElementById("brandMarkSvg");
+    if(!brandMarkEl) return;
+    function goHome(){
+      if(!PREFERS_REDUCED_MOTION){
+        brandMarkEl.classList.remove("spinning");
+        void brandMarkEl.offsetWidth; // força reflow pra reiniciar a animação se já estiver girando
+        brandMarkEl.classList.add("spinning");
+      }
+      activateTab("dashboard");
+      window.scrollTo({top:0, behavior: PREFERS_REDUCED_MOTION ? "auto" : "smooth"});
+    }
+    brandMarkEl.addEventListener("animationend", function(){ brandMarkEl.classList.remove("spinning"); });
+    brandMarkEl.addEventListener("click", goHome);
+    brandMarkEl.addEventListener("keydown", function(e){
+      if(e.key==="Enter" || e.key===" "){ e.preventDefault(); goHome(); }
+    });
   })();
 
   /* ===== Animação de "desenhar" as linhas dos gráficos ===== */
@@ -3532,10 +3572,10 @@
     "Educação": ["vale checar bolsas, desconto por pagamento à vista ou cursos gratuitos equivalentes.", "negociar direto com a instituição às vezes abre desconto que não é divulgado."],
     "Outros": ["detalhar melhor essa categoria pode ajudar a identificar exatamente onde o dinheiro está indo."]
   };
-  function computeCategoryTip(){
-    var t = monthTotals(state.viewMonth);
+  function computeCategoryTipForMonth(month){
+    var t = monthTotals(month);
     if(t.income<=0) return null;
-    var items = monthEntries(state.expenses, state.viewMonth);
+    var items = monthEntries(state.expenses, month);
     var byCat = {};
     items.forEach(function(e){ if(e.cat==="Cartão de Crédito"||e.cat==="Dívidas") return; byCat[e.cat]=(byCat[e.cat]||0)+e.valor; });
     var cats = Object.keys(byCat);
@@ -3545,9 +3585,10 @@
     var pct = (byCat[top]/t.income)*100;
     if(pct < 15) return null;
     var tips = CATEGORY_TIPS[top] || CATEGORY_TIPS["Outros"];
-    var idx = parseInt(state.viewMonth.slice(5,7),10) % tips.length;
+    var idx = parseInt(month.slice(5,7),10) % tips.length;
     return {cat:top, pct:pct, valor:byCat[top], tip:tips[idx]};
   }
+  function computeCategoryTip(){ return computeCategoryTipForMonth(state.viewMonth); }
 
   function renderInsightBussola(){
     var wrap = document.getElementById("insightBussolaSection");
@@ -3912,6 +3953,7 @@
     var hour = new Date().getHours();
     var saudacao = hour<12 ? "Bom dia" : (hour<18 ? "Boa tarde" : "Boa noite");
     document.getElementById("dashGreeting").textContent = saudacao + (state.owner ? ", "+state.owner : "") + " 👋";
+    document.getElementById("dashDate").textContent = formatTodayLong();
     var t = monthTotals(state.viewMonth);
     var tPrev = monthTotals(shiftMonth(state.viewMonth, -1));
     animateMoneyValue(document.getElementById("statRenda"), t.income);
@@ -4808,14 +4850,13 @@
     });
   }
 
-  function renderPersonalDiagnosis(targetId){
-    var wrap = document.getElementById(targetId || "personalDiagnosis");
-    if(!wrap) return;
+  /* Núcleo do diagnóstico: calcula os cartões de diagnóstico a partir dos dados reais.
+     Cada cartão carrega, além do texto, um "sentiment" (pos/neg/info) e, quando faz
+     sentido, uma "action" — usados tanto no painel quanto no relatório em PDF, para
+     manter os dois lugares sempre coerentes entre si. */
+  function computeDiagnosisCards(){
     var months = allMonthsSorted();
-    if(months.length===0){
-      wrap.innerHTML = '<div class="tip-item"><span class="tip-tag">Comece por aqui</span>Registre pelo menos um mês de rendimentos e despesas para o painel montar um diagnóstico com base nos seus próprios números.</div>';
-      return;
-    }
+    if(months.length===0) return [];
     var recentMonths = months.slice(-3);
     var cards = [];
 
@@ -4831,7 +4872,11 @@
     if(sumInc>0){
       var pEss=(sumEss/sumInc)*100, pNao=(sumNao/sumInc)*100, pInv=(sumInv/sumInc)*100;
       var essTxt = pEss<=50 ? "dentro do recomendado" : (pEss<=60 ? "um pouco acima do recomendado" : "bem acima do recomendado");
-      cards.push({tag:"50/30/20", text:"Na média dos últimos "+recentMonths.length+" meses, seus essenciais consomem "+pEss.toFixed(0)+"% da renda ("+essTxt+", meta ≤50%), não essenciais "+pNao.toFixed(0)+"% (meta ≤30%) e investido "+pInv.toFixed(0)+"% (meta ≥20%)."});
+      var okRegra = pEss<=50 && pInv>=20;
+      var acao1030 = null;
+      if(pInv<20) acao1030 = "Aumente gradualmente o aporte mensal em investimentos até atingir cerca de 20% da renda.";
+      else if(pEss>50) acao1030 = "Reveja os contratos fixos (moradia, planos, financiamentos) que compõem seus gastos essenciais.";
+      cards.push({tag:"50/30/20", sentiment: okRegra?"pos":"neg", action:acao1030, text:"Na média dos últimos "+recentMonths.length+" meses, seus essenciais consomem "+pEss.toFixed(0)+"% da renda ("+essTxt+", meta ≤50%), não essenciais "+pNao.toFixed(0)+"% (meta ≤30%) e investido "+pInv.toFixed(0)+"% (meta ≥20%)."});
     }
 
     // 2) Reserva de emergência
@@ -4839,11 +4884,11 @@
     var reservaSaldo = reservaAccs.reduce(function(s,a){ return s+accountTotals(a).saldoAtual; }, 0);
     var essenciaisMedioMensal = recentMonths.length>0 ? (sumEss/recentMonths.length) : 0;
     if(reservaAccs.length===0){
-      cards.push({tag:"Reserva de emergência", text:"Você ainda não tem nenhuma conta marcada como \"Reserva de Emergência\" em Investimentos. É o primeiro degrau antes de qualquer outro investimento — considere criar uma."});
+      cards.push({tag:"Reserva de emergência", sentiment:"neg", action:'Crie uma conta em Investimentos marcada como "Reserva de Emergência" e comece a aportar nela.', text:"Você ainda não tem nenhuma conta marcada como \"Reserva de Emergência\" em Investimentos. É o primeiro degrau antes de qualquer outro investimento — considere criar uma."});
     } else if(essenciaisMedioMensal>0){
       var mesesCobertos = reservaSaldo/essenciaisMedioMensal;
       var reservaTxt = mesesCobertos>=6 ? "está numa faixa confortável (6 meses ou mais)" : (mesesCobertos>=3 ? "já cobre o mínimo recomendado (3 a 6 meses)" : "ainda está abaixo do mínimo recomendado de 3 meses");
-      cards.push({tag:"Reserva de emergência", text:"Sua reserva atual ("+fmtMoney(reservaSaldo)+") cobre cerca de "+mesesCobertos.toFixed(1)+" mês(es) de despesas essenciais — "+reservaTxt+"."});
+      cards.push({tag:"Reserva de emergência", sentiment: mesesCobertos>=3?"pos":"neg", action: mesesCobertos>=3?null:"Priorize aumentar a reserva de emergência até cobrir de 3 a 6 meses de despesas essenciais.", text:"Sua reserva atual ("+fmtMoney(reservaSaldo)+") cobre cerca de "+mesesCobertos.toFixed(1)+" mês(es) de despesas essenciais — "+reservaTxt+"."});
     }
 
     // 3) Maior categoria de gasto recorrente
@@ -4854,7 +4899,7 @@
     var topCat = Object.keys(catTotals).sort(function(a,b){return catTotals[b]-catTotals[a];})[0];
     if(topCat && sumInc>0){
       var topPct = (catTotals[topCat]/sumInc)*100;
-      cards.push({tag:"Maior gasto", text:'"'+topCat+'" foi sua maior categoria de despesa nos últimos meses, somando '+fmtMoney(catTotals[topCat])+' ('+topPct.toFixed(0)+'% da renda do período). Vale revisar se dá para otimizar aí primeiro.'});
+      cards.push({tag:"Maior gasto", sentiment: topPct>40?"neg":"info", action: topPct>40 ? ('Avalie reduzir gastos na categoria "'+topCat+'", hoje sua maior despesa.') : null, text:'"'+topCat+'" foi sua maior categoria de despesa nos últimos meses, somando '+fmtMoney(catTotals[topCat])+' ('+topPct.toFixed(0)+'% da renda do período). Vale revisar se dá para otimizar aí primeiro.'});
     }
 
     // 4) Dívidas
@@ -4862,11 +4907,11 @@
       var atrasadas = state.debts.filter(debtIsAtrasada);
       var altasTaxas = state.debts.filter(function(d){ return d.taxa>=8; });
       if(atrasadas.length>0){
-        cards.push({tag:"Dívidas", text:atrasadas.length+" dívida(s) sua(s) está(ão) atrasada(s) em relação ao esperado. Priorize colocar essas em dia antes de qualquer novo investimento ou compromisso."});
+        cards.push({tag:"Dívidas", sentiment:"neg", action:"Priorize colocar as parcelas atrasadas em dia antes de qualquer novo investimento ou compromisso.", text:atrasadas.length+" dívida(s) sua(s) está(ão) atrasada(s) em relação ao esperado. Priorize colocar essas em dia antes de qualquer novo investimento ou compromisso."});
       } else if(altasTaxas.length>0){
-        cards.push({tag:"Dívidas", text:altasTaxas.length+" dívida(s) sua(s) tem taxa de 8% a.m. ou mais — normalmente compensa quitar essas antes de aumentar aportes em investimentos de renda fixa."});
+        cards.push({tag:"Dívidas", sentiment:"neg", action:"Avalie quitar ou renegociar as dívidas com taxa de 8% a.m. ou mais antes de aumentar aportes em renda fixa.", text:altasTaxas.length+" dívida(s) sua(s) tem taxa de 8% a.m. ou mais — normalmente compensa quitar essas antes de aumentar aportes em investimentos de renda fixa."});
       } else {
-        cards.push({tag:"Dívidas", text:"Suas dívidas estão em dia e sem taxas muito altas — bom momento pra manter o foco no ritmo de investimento."});
+        cards.push({tag:"Dívidas", sentiment:"pos", text:"Suas dívidas estão em dia e sem taxas muito altas — bom momento pra manter o foco no ritmo de investimento."});
       }
     }
 
@@ -4878,7 +4923,7 @@
       var consistTxt = mesesComAporte===months.length ? "Você investiu em todos os meses registrados até agora — esse é o hábito que mais pesa a longo prazo." :
         (mesesComAporte===0 ? "Ainda não há nenhum aporte registrado em Investimentos — comece com um valor pequeno e fixo todo mês, mesmo que simbólico." :
         "Você investiu em "+mesesComAporte+" de "+months.length+" meses registrados. Tente transformar isso num aporte fixo mensal, mesmo pequeno, em vez de esporádico.");
-      cards.push({tag:"Consistência", text:consistTxt});
+      cards.push({tag:"Consistência", sentiment: mesesComAporte===months.length?"pos":"neg", action: mesesComAporte===months.length?null:"Transforme seus aportes em investimentos num valor fixo mensal, mesmo pequeno, em vez de esporádico.", text:consistTxt});
     }
 
     // 6) Evolução da renda (crescimento/estabilidade)
@@ -4892,7 +4937,7 @@
         var rendaTxt = Math.abs(pctRenda)<3 ? "sua renda está estável ao longo do período registrado." :
           (pctRenda>0 ? "sua renda cresceu "+pctRenda.toFixed(0)+"% comparando a primeira e a segunda metade do período registrado." :
           "sua renda caiu "+Math.abs(pctRenda).toFixed(0)+"% comparando a primeira e a segunda metade do período registrado.");
-        cards.push({tag:"Receitas", text: rendaTxt.charAt(0).toUpperCase()+rendaTxt.slice(1)});
+        cards.push({tag:"Receitas", sentiment: pctRenda<-3?"neg":"pos", action: pctRenda<-3?"Avalie fontes de renda extra ou ajuste o orçamento diante da queda de renda no período.":null, text: rendaTxt.charAt(0).toUpperCase()+rendaTxt.slice(1)});
       }
     }
 
@@ -4906,10 +4951,22 @@
       var ritmoRecente = recentMonths.reduce(function(s,m){return s+monthTotals(m).invest;},0)/recentMonths.length;
       if(ritmoRecente>0){
         var mesesNoRitmo = Math.ceil(falta/ritmoRecente);
-        cards.push({tag:"Metas", text:'No ritmo médio de investimento dos últimos '+recentMonths.length+' meses ('+fmtMoney(ritmoRecente)+'/mês), sua meta "'+metaTop.g.name+'" seria atingida em cerca de '+mesesNoRitmo+' meses.'});
+        cards.push({tag:"Metas", sentiment: mesesNoRitmo>36?"neg":"pos", action: mesesNoRitmo>36?('Considere aumentar o aporte mensal destinado à meta "'+metaTop.g.name+'" para reduzir o prazo estimado (hoje ~'+mesesNoRitmo+' meses).'):null, text:'No ritmo médio de investimento dos últimos '+recentMonths.length+' meses ('+fmtMoney(ritmoRecente)+'/mês), sua meta "'+metaTop.g.name+'" seria atingida em cerca de '+mesesNoRitmo+' meses.'});
       }
     }
 
+    return cards;
+  }
+
+  function renderPersonalDiagnosis(targetId){
+    var wrap = document.getElementById(targetId || "personalDiagnosis");
+    if(!wrap) return;
+    var months = allMonthsSorted();
+    if(months.length===0){
+      wrap.innerHTML = '<div class="tip-item"><span class="tip-tag">Comece por aqui</span>Registre pelo menos um mês de rendimentos e despesas para o painel montar um diagnóstico com base nos seus próprios números.</div>';
+      return;
+    }
+    var cards = computeDiagnosisCards();
     if(cards.length===0){
       wrap.innerHTML = '<div class="tip-item"><span class="tip-tag">Continue registrando</span>Assim que houver renda e despesas de pelo menos um mês, este painel mostra um diagnóstico personalizado com base nos seus números.</div>';
       return;
@@ -5388,11 +5445,48 @@
       footer: '<div class="rp-footer"><span>Relatório gerado em '+new Date().toLocaleDateString("pt-BR")+(state.owner?" para "+escapeHtml(state.owner):"")+'</span><span>Página <span class="rp-pagenum"></span></span></div>'
     };
   }
+  // ===== Helpers de conteúdo (comparativos, tendências e dicas) — sempre a partir
+  // de dados reais já registrados, nunca números inventados =====
+  function rpShortMonth(ym){ var p=ym.split("-"); return monthNames[parseInt(p[1],10)-1].slice(0,3)+"/"+p[0].slice(2); }
+  function rpDeltaText(cur, prev){
+    if(prev===0){ return cur===0 ? "sem variação" : "novo neste mês"; }
+    var pct = ((cur-prev)/Math.abs(prev))*100;
+    if(Math.abs(pct)<1) return "estável";
+    return (pct>0?"+":"")+pct.toFixed(0)+"% vs. mês anterior";
+  }
+  // Para métricas que passam perto de zero (como o saldo), % pode virar um número
+  // absurdo (ex.: R$21 → R$928 vira "+4319%") — nesses casos é mais claro mostrar
+  // a diferença em reais.
+  function rpDeltaMoneyText(cur, prev){
+    var diff = cur - prev;
+    if(Math.abs(diff) < 0.01) return "sem variação";
+    return (diff>0?"+":"-")+fmtMoney(Math.abs(diff))+" vs. mês anterior";
+  }
+  function rpTrendChart(title, months, valueFn){
+    var last = months.slice(-6);
+    if(last.length<2) return "";
+    var vals = last.map(valueFn);
+    var max = Math.max.apply(null, vals.concat([1]));
+    return '<div class="rp-h3">'+title+'</div>'+
+      last.map(function(m,i){ return rpBarRow(rpShortMonth(m), max>0?(vals[i]/max)*100:0, fmtMoney(vals[i])); }).join("");
+  }
+  function rpTipCallout(tipObj){
+    if(!tipObj) return "";
+    return '<div class="rp-callout"><strong>💡 Dica personalizada:</strong> '+escapeHtml(tipObj.tip)+'</div>';
+  }
+  function rpGenericTip(cat, month){
+    var pool = TIPS.filter(function(t){ return t.cat===cat; });
+    if(pool.length===0) return null;
+    var idx = parseInt(month.slice(5,7),10) % pool.length;
+    return pool[idx].text;
+  }
 
   function buildPrintReport(month){
     var root = document.getElementById("printReportRoot");
     var t = monthTotals(month);
     var tPrev = monthTotals(shiftMonth(month, -1));
+    var pctPoupanca = t.income>0 ? (t.invest/t.income)*100 : 0;
+    var allMonths = allMonthsSorted();
     var pages = [];
 
     // ===== CAPA =====
@@ -5402,13 +5496,34 @@
         '<h1>Relatório Financeiro Mensal</h1>'+
         '<div class="rp-cover-period">'+monthLabel(month)+'</div>'+
         '<div class="rp-cover-meta">'+(state.owner?"Preparado para "+escapeHtml(state.owner)+"<br>":"")+"Gerado em "+new Date().toLocaleDateString("pt-BR")+'</div>'+
+        '<div style="display:flex; gap:32px; margin-top:36px; flex-wrap:wrap;">'+
+          '<div><div style="font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:#9FE6D8; margin-bottom:4px;">Saldo do mês</div><div style="font-family:\'IBM Plex Mono\',monospace; font-size:21px; font-weight:700;">'+fmtMoney(t.saldo)+'</div></div>'+
+          '<div><div style="font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:#9FE6D8; margin-bottom:4px;">Taxa de poupança</div><div style="font-family:\'IBM Plex Mono\',monospace; font-size:21px; font-weight:700;">'+pctPoupanca.toFixed(0)+'%</div></div>'+
+          '<div><div style="font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:#9FE6D8; margin-bottom:4px;">Património líquido</div><div style="font-family:\'IBM Plex Mono\',monospace; font-size:21px; font-weight:700;">'+fmtMoney(netWorth())+'</div></div>'+
+        '</div>'+
+        '<div style="margin-top:44px; font-size:10.5px; color:#C9BFA0; line-height:1.85; max-width:430px;">Este relatório reúne resumo executivo, receitas, despesas e orçamento, investimentos, cartões e dívidas, metas, diagnóstico financeiro completo e plano de ação — tudo calculado a partir dos dados que você mesmo registrou na Bússola.</div>'+
       '</div></div>'
     );
 
     // ===== RESUMO EXECUTIVO =====
     var hf1 = rpHeaderFooter("Resumo executivo", month);
     var apBrk = netWorthBreakdown();
-    var pctPoupanca = t.income>0 ? (t.invest/t.income)*100 : 0;
+    var compRows = [
+      ["Renda", fmtMoney(t.income), fmtMoney(tPrev.income), rpDeltaText(t.income, tPrev.income)],
+      ["Despesas", fmtMoney(t.expense), fmtMoney(tPrev.expense), rpDeltaText(t.expense, tPrev.expense)],
+      ["Investido", fmtMoney(t.invest), fmtMoney(tPrev.invest), rpDeltaText(t.invest, tPrev.invest)],
+      ["Saldo", fmtMoney(t.saldo), fmtMoney(tPrev.saldo), rpDeltaMoneyText(t.saldo, tPrev.saldo)]
+    ];
+    var topExpCats = "";
+    var expMonthEntries = monthEntries(state.expenses, month);
+    if(expMonthEntries.length>0){
+      var byCatResumo = {};
+      expMonthEntries.forEach(function(e){ byCatResumo[e.cat]=(byCatResumo[e.cat]||0)+e.valor; });
+      var ordCats = Object.keys(byCatResumo).sort(function(a,b){return byCatResumo[b]-byCatResumo[a];}).slice(0,3);
+      var maxC = byCatResumo[ordCats[0]]||1;
+      topExpCats = '<div class="rp-h3">Maiores categorias de despesa do mês</div>'+
+        ordCats.map(function(c){ return rpBarRow(c, (byCatResumo[c]/maxC)*100, fmtMoney(byCatResumo[c])); }).join("");
+    }
     pages.push('<div class="rp-page">'+hf1.header+
       '<div class="rp-h2">Resumo executivo</div><div class="rp-h2-sub">Visão geral de '+monthLabel(month)+'</div>'+
       '<div class="rp-kpi-grid">'+
@@ -5419,11 +5534,12 @@
         rpKpi("Saldo do mês", fmtMoney(t.saldo), t.saldo>=0?"pos":"neg")+
         rpKpi("Taxa de poupança", pctPoupanca.toFixed(1)+"%")+
       '</div>'+
-      '<div class="rp-h3">Principais indicadores</div>'+
-      '<p style="font-size:11.5px; color:#57667A; line-height:1.7;">Ativos (caixa + investimentos): <strong>'+fmtMoney(apBrk.ativos)+'</strong>. Passivos (dívidas + faturas em aberto): <strong>'+fmtMoney(apBrk.passivos)+'</strong>. '+
-      (tPrev.income>0 ? ("Renda "+(t.income>=tPrev.income?"cresceu":"caiu")+" "+Math.abs(((t.income-tPrev.income)/tPrev.income)*100).toFixed(1)+"% em relação ao mês anterior. ") : "")+
-      (tPrev.expense>0 ? ("Despesas "+(t.expense>=tPrev.expense?"aumentaram":"diminuíram")+" "+Math.abs(((t.expense-tPrev.expense)/tPrev.expense)*100).toFixed(1)+"% em relação ao mês anterior.") : "")+
-      '</p>'+
+      '<div class="rp-h3">Comparativo com o mês anterior</div>'+
+      rpTable(["Indicador","Este mês","Mês anterior","Variação"], compRows, [1,2]) +
+      '<p style="font-size:10.5px; color:#57667A; line-height:1.6; margin:6px 0 4px;">Ativos (caixa acumulado + investimentos): <strong>'+fmtMoney(apBrk.ativos)+'</strong> · Passivos (dívidas + faturas em aberto): <strong>'+fmtMoney(apBrk.passivos)+'</strong>. O património líquido é a diferença entre os dois — é o retrato mais completo da sua saúde financeira, mais importante do que olhar só o saldo do mês isolado.</p>'+
+      topExpCats+
+      rpTrendChart("Evolução do saldo — últimos meses", allMonths, function(m){ return monthTotals(m).saldo; })+
+      '<div class="rp-callout">A taxa de poupança mostra qual fatia da sua renda vira investimento em vez de consumo — quanto mais perto (ou acima) de 20%, mais rápido o seu património líquido cresce ao longo do tempo.</div>'+
       hf1.footer+'</div>'
     );
 
@@ -5431,17 +5547,24 @@
     var hf2 = rpHeaderFooter("Receitas", month);
     var incomes = monthEntries(state.incomes, month);
     var incBody = "";
-    if(incomes.length===0){ incBody = '<div class="rp-empty">Sem dados registrados para este período.</div>'; }
+    if(incomes.length===0){
+      incBody = '<div class="rp-empty">Sem dados registrados para este período.</div>'+
+        '<div class="rp-callout">Registrar toda a renda do mês — inclusive extras e rendimentos pontuais — é o que torna o restante do relatório (taxa de poupança, orçamento, diagnóstico) confiável. Vale o hábito de lançar assim que o dinheiro entra.</div>';
+    }
     else{
       var byTipo = {}; incomes.forEach(function(i){ byTipo[i.tipo]=(byTipo[i.tipo]||0)+i.valor; });
       var tiposOrdenados = Object.keys(byTipo).sort(function(a,b){return byTipo[b]-byTipo[a];});
       incBody = rpTable(["Fonte","Valor","% da renda"], tiposOrdenados.map(function(tp){
         return [escapeHtml(tp), fmtMoney(byTipo[tp]), t.income>0 ? ((byTipo[tp]/t.income)*100).toFixed(0)+"%" : "—"];
       }), [1,2]);
+      if(tiposOrdenados.length>1){
+        incBody += '<div class="rp-callout">Ter mais de uma fonte de renda reduz o risco de um imprevisto (perda de emprego, corte de um cliente) derrubar todo o seu orçamento de uma vez.</div>';
+      }
     }
     pages.push('<div class="rp-page">'+hf2.header+
-      '<div class="rp-h2">Receitas</div><div class="rp-h2-sub">Total: '+fmtMoney(t.income)+'</div>'+
+      '<div class="rp-h2">Receitas</div><div class="rp-h2-sub">Total: '+fmtMoney(t.income)+' · Mês anterior: '+fmtMoney(tPrev.income)+' ('+rpDeltaText(t.income, tPrev.income)+')</div>'+
       incBody+
+      rpTrendChart("Evolução da renda — últimos meses", allMonths, function(m){ return monthTotals(m).income; })+
       hf2.footer+'</div>'
     );
 
@@ -5450,9 +5573,12 @@
     var hf3 = rpHeaderFooter("Despesas e orçamento", month);
     var expenses = monthEntries(state.expenses, month);
     var expBody = "";
-    if(expenses.length===0){ expBody = '<div class="rp-empty">Sem dados registrados para este período.</div>'; }
+    var byCat = {};
+    if(expenses.length===0){
+      expBody = '<div class="rp-empty">Sem dados registrados para este período.</div>';
+    }
     else{
-      var byCat = {}, fixTotal=0, varTotal=0;
+      var fixTotal=0, varTotal=0;
       expenses.forEach(function(e){ byCat[e.cat]=(byCat[e.cat]||0)+e.valor; if(e.tipo==="Fixa") fixTotal+=e.valor; else varTotal+=e.valor; });
       var catsOrdenadas = Object.keys(byCat).sort(function(a,b){return byCat[b]-byCat[a];});
       var maxCat = byCat[catsOrdenadas[0]]||1;
@@ -5465,6 +5591,20 @@
       rpTable(["Descrição","Categoria","Valor"], expenses.slice().sort(function(a,b){return b.valor-a.valor;}).slice(0,8).map(function(e){
         return [escapeHtml(e.desc), escapeHtml(e.cat), fmtMoney(e.valor)];
       }), [2]);
+      // Comparativo por categoria com o mês anterior — maiores variações primeiro
+      var byCatPrev = {};
+      monthEntries(state.expenses, shiftMonth(month,-1)).forEach(function(e){ byCatPrev[e.cat]=(byCatPrev[e.cat]||0)+e.valor; });
+      var allCatKeys = Array.from(new Set(catsOrdenadas.concat(Object.keys(byCatPrev))));
+      var catDeltas = allCatKeys.map(function(c){
+        var cur = byCat[c]||0, prev = byCatPrev[c]||0;
+        return {cat:c, cur:cur, prev:prev, diff:cur-prev};
+      }).filter(function(x){ return x.prev>0 && Math.abs(x.diff)>=1; }).sort(function(a,b){ return Math.abs(b.diff)-Math.abs(a.diff); }).slice(0,6);
+      if(catDeltas.length>0){
+        expBody += '<div class="rp-h3">Maiores variações por categoria vs. mês anterior</div>'+
+          rpTable(["Categoria","Este mês","Mês anterior","Variação"], catDeltas.map(function(x){
+            return [escapeHtml(x.cat), fmtMoney(x.cur), fmtMoney(x.prev), rpDeltaText(x.cur, x.prev)];
+          }), [1,2]);
+      }
     }
     var essTotal=0, naoEssTotal=0;
     monthEntries(state.expenses, month).forEach(function(e){ if(ESSENCIAIS.indexOf(e.cat)!==-1) essTotal+=e.valor; else naoEssTotal+=e.valor; });
@@ -5473,10 +5613,13 @@
       rpBarRow("Essenciais (meta ≤50%)", pctEss, pctEss.toFixed(0)+"%")+
       rpBarRow("Não essenciais (meta ≤30%)", pctNao, pctNao.toFixed(0)+"%")+
       rpBarRow("Investido (meta ≥20%)", pctInv, pctInv.toFixed(0)+"%")+
-      '<div class="rp-callout">'+(pctEss>60?"Essenciais bem acima da referência — vale revisar despesas fixas.":pctInv>=20?"Você está investindo dentro (ou acima) da meta de referência.":"Ainda dá para aumentar a fatia investida da renda.")+'</div>';
+      '<div class="rp-callout">'+(pctEss>60?"Essenciais bem acima da referência — vale revisar despesas fixas.":pctInv>=20?"Você está investindo dentro (ou acima) da meta de referência.":"Ainda dá para aumentar a fatia investida da renda.")+'</div>'+
+      '<p style="font-size:10px; color:#8A97A6; line-height:1.6; margin-top:4px;">A regra 50/30/20 é uma referência, não uma obrigação rígida: 50% da renda para essenciais (moradia, alimentação, transporte, saúde, educação, dívidas), 30% para não essenciais e 20% para investir.</p>';
+    var catTip = computeCategoryTipForMonth(month);
     pages.push('<div class="rp-page">'+hf3.header+
-      '<div class="rp-h2">Despesas</div><div class="rp-h2-sub">Total: '+fmtMoney(t.expense)+'</div>'+
+      '<div class="rp-h2">Despesas</div><div class="rp-h2-sub">Total: '+fmtMoney(t.expense)+' · Mês anterior: '+fmtMoney(tPrev.expense)+' ('+rpDeltaText(t.expense, tPrev.expense)+')</div>'+
       expBody+
+      rpTipCallout(catTip)+
       '<div class="rp-h3" style="margin-top:22px;">Orçamento — regra 50/30/20</div>'+
       orcBody+
       hf3.footer+'</div>'
@@ -5485,7 +5628,10 @@
     // ===== INVESTIMENTOS =====
     var hf5 = rpHeaderFooter("Investimentos", month);
     var invBody = "";
-    if(state.investmentAccounts.length===0){ invBody = '<div class="rp-empty">Sem dados registrados para este período.</div>'; }
+    if(state.investmentAccounts.length===0){
+      invBody = '<div class="rp-empty">Sem dados registrados para este período.</div>'+
+        '<div class="rp-callout">'+(rpGenericTip("Investir", month)||"Comece pela reserva de emergência antes de qualquer outro investimento — ela é o que evita que um imprevisto vire dívida.")+'</div>';
+    }
     else{
       var totalAportado=0, totalSaldoInv=0, totalRendInv=0;
       state.investmentAccounts.forEach(function(a){ var at=accountTotals(a); totalAportado+=at.aportado; totalSaldoInv+=at.saldoAtual; totalRendInv+=at.rendimento; });
@@ -5496,6 +5642,31 @@
       '<div class="rp-h3">Renda passiva média mensal: '+fmtMoney(rendaPassivaMedia)+'/mês</div>'+
       '<div class="rp-h3">Composição por conta</div>'+
       rpTable(["Conta","Categoria","Saldo atual","Rendimento"], state.investmentAccounts.map(function(a){ var at=accountTotals(a); return [escapeHtml(a.nome), escapeHtml(a.categoria), fmtMoney(at.saldoAtual), fmtMoney(at.rendimento)]; }), [2,3]);
+      // Alocação por categoria — de onde vem a diversificação real da carteira
+      var alocCat = {};
+      state.investmentAccounts.forEach(function(a){ var s=accountTotals(a).saldoAtual; alocCat[a.categoria]=(alocCat[a.categoria]||0)+s; });
+      if(totalSaldoInv>0){
+        var alocKeys = Object.keys(alocCat).sort(function(a,b){return alocCat[b]-alocCat[a];});
+        invBody += '<div class="rp-h3">Alocação por categoria</div>'+
+          alocKeys.map(function(c){ return rpBarRow(c, (alocCat[c]/totalSaldoInv)*100, ((alocCat[c]/totalSaldoInv)*100).toFixed(0)+"% · "+fmtMoney(alocCat[c])); }).join("");
+      }
+      // Projeção simples com base no ritmo real de aportes e no rendimento médio recente —
+      // mesma lógica de "com base nas suas médias atuais" já usada na aba Projeções.
+      var recentForInv = allMonths.slice(-6);
+      var aporteMedioMensal = recentForInv.length>0 ? recentForInv.reduce(function(s,m){ return s+Math.max(0, monthTotals(m).invest); },0)/recentForInv.length : 0;
+      var yieldMensalPct = totalSaldoInv>0 ? (rendaPassivaMedia/totalSaldoInv) : 0;
+      if(aporteMedioMensal>0 || yieldMensalPct>0){
+        var proj = [12,24,60].map(function(nMeses){
+          var saldo = totalSaldoInv;
+          for(var i=0;i<nMeses;i++){ saldo = saldo*(1+yieldMensalPct) + aporteMedioMensal; }
+          return saldo;
+        });
+        invBody += '<div class="rp-h3">Projeção — mantendo o ritmo atual</div>'+
+          rpTable(["Prazo","Saldo projetado"], [["12 meses", fmtMoney(proj[0])],["24 meses", fmtMoney(proj[1])],["5 anos", fmtMoney(proj[2])]], [1])+
+          '<p style="font-size:9.5px; color:#8A97A6; margin-top:2px;">Estimativa com base no aporte médio mensal dos últimos '+recentForInv.length+' meses ('+fmtMoney(aporteMedioMensal)+') e no rendimento médio mensal atual ('+(yieldMensalPct*100).toFixed(2)+'%). Não é garantia de retorno futuro.</p>';
+      }
+      var investTipTxt = rpGenericTip("Investir", month);
+      if(investTipTxt) invBody += rpTipCallout({tip: investTipTxt});
     }
     pages.push('<div class="rp-page">'+hf5.header+
       '<div class="rp-h2">Investimentos</div><div class="rp-h2-sub">Onde está o seu dinheiro e quanto está gerando</div>'+
@@ -5507,27 +5678,44 @@
     // demais para justificar uma folha inteira) =====
     var hf6 = rpHeaderFooter("Cartões, dívidas e metas", month);
     var ccBody = "";
-    if(state.cards.length===0 && state.debts.length===0){ ccBody = '<div class="rp-empty">Sem dados registrados para este período.</div>'; }
+    if(state.cards.length===0 && state.debts.length===0){
+      ccBody = '<div class="rp-empty">Sem dados registrados para este período.</div>';
+    }
     else{
       if(state.cards.length>0){
+        var limiteTotal=0, faturaTotal=0;
         ccBody += '<div class="rp-h3">Cartões</div>'+rpTable(["Cartão","Limite","Fatura em aberto","Uso"], state.cards.map(function(c){
-          var f=cardFatura(c); var pct=c.limite>0?(f/c.limite)*100:0; return [escapeHtml(c.nome), fmtMoney(c.limite), fmtMoney(f), pct.toFixed(0)+"%"];
+          var f=cardFatura(c); var pct=c.limite>0?(f/c.limite)*100:0; limiteTotal+=c.limite; faturaTotal+=f; return [escapeHtml(c.nome), fmtMoney(c.limite), fmtMoney(f), pct.toFixed(0)+"%"];
         }), [1,2,3]);
+        var usoGeral = limiteTotal>0 ? (faturaTotal/limiteTotal)*100 : 0;
+        if(usoGeral>=70){
+          ccBody += '<div class="rp-callout">Uso geral dos cartões em '+usoGeral.toFixed(0)+'% do limite — acima de 70% costuma pressionar tanto o orçamento quanto a pontuação de crédito. '+(rpGenericTip("Cartões", month)||"")+'</div>';
+        } else if(usoGeral>0){
+          ccBody += '<div class="rp-callout">Uso geral dos cartões em '+usoGeral.toFixed(0)+'% do limite. '+(rpGenericTip("Cartões", month)||"")+'</div>';
+        }
       }
       if(state.debts.length>0){
-        ccBody += '<div class="rp-h3">Dívidas</div>'+rpTable(["Dívida","Total","Pago","Restante","Situação"], state.debts.map(function(d){
+        ccBody += '<div class="rp-h3">Dívidas</div>'+rpTable(["Dívida","Total","Pago","Restante","Situação","Previsão"], state.debts.map(function(d){
           var pago=debtPago(d); var situacao = debtIsQuitada(d)?"Quitada":(debtIsAtrasada(d)?"Atrasada":"Em dia");
-          return [escapeHtml(d.nome), fmtMoney(d.valorTotal), fmtMoney(pago), fmtMoney(Math.max(0,d.valorTotal-pago)), situacao];
+          var previsao = (!debtIsQuitada(d) && d.dataInicio && d.numParcelas) ? rpShortMonth(shiftMonth(d.dataInicio.slice(0,7), d.numParcelas-1)) : (debtIsQuitada(d)?"—":"—");
+          return [escapeHtml(d.nome), fmtMoney(d.valorTotal), fmtMoney(pago), fmtMoney(Math.max(0,d.valorTotal-pago)), situacao, previsao];
         }), [1,2,3]);
+        var dividaUrgente = state.debts.filter(debtIsAtrasada)[0] || state.debts.filter(function(d){return !debtIsQuitada(d) && d.taxa>=8;})[0];
+        if(dividaUrgente){
+          ccBody += '<div class="rp-callout"><strong>'+escapeHtml(dividaUrgente.nome)+':</strong> '+escapeHtml(debtRecoveryTip(dividaUrgente))+'</div>';
+        }
       }
     }
     var metasBody = "";
-    if(state.goals.length===0){ metasBody = '<div class="rp-empty">Sem metas registradas.</div>'; }
+    if(state.goals.length===0){
+      metasBody = '<div class="rp-empty">Sem metas registradas.</div>'+
+        '<div class="rp-callout">Metas com nome, valor-alvo e prazo tendem a se cumprir mais do que a simples intenção de "guardar dinheiro" — a Bússola calcula automaticamente o progresso a partir dos seus registros.</div>';
+    }
     else{
-      metasBody = rpTable(["Meta","Atual","Objetivo","Progresso"], state.goals.map(function(g){
+      metasBody = rpTable(["Meta","Atual","Objetivo","Faltam","Progresso"], state.goals.map(function(g){
         var cur=goalCurrentValue(g); var pct=g.target>0?Math.min(100,(cur/g.target)*100):0;
-        return [escapeHtml(g.name), fmtMoney(cur), fmtMoney(g.target), pct.toFixed(0)+"%"];
-      }), [1,2,3]);
+        return [escapeHtml(g.name), fmtMoney(cur), fmtMoney(g.target), fmtMoney(Math.max(0,g.target-cur)), pct.toFixed(0)+"%"];
+      }), [1,2,3,4]);
     }
     pages.push('<div class="rp-page">'+hf6.header+
       '<div class="rp-h2">Cartões e dívidas</div><div class="rp-h2-sub">Faturas em aberto e situação das dívidas</div>'+
@@ -5537,36 +5725,89 @@
       hf6.footer+'</div>'
     );
 
-    // ===== DIAGNÓSTICO E PLANO DE AÇÃO =====
-    var hf8 = rpHeaderFooter("Diagnóstico e plano de ação", month);
-    var months = allMonthsSorted();
-    var diagItems = [];
-    var actionItems = [];
-    if(months.length<2){
-      diagItems.push({tag:"Aviso", text:"Registre pelo menos 2 meses de dados para desbloquear um diagnóstico comparativo mais completo."});
+    // ===== DIAGNÓSTICO (página 1) + PLANO DE AÇÃO (página 2) =====
+    // Reaproveita o mesmo motor de diagnóstico do painel (computeDiagnosisCards),
+    // agora com leitura de sentimento (positivo/atenção) e ações sugeridas por item.
+    // Dividido em duas páginas de propósito: com o diagnóstico completo (7 dimensões
+    // analisadas), o conteúdo é longo demais para uma folha só sem sobrar espaço
+    // em branco na física seguinte — melhor ter duas páginas bem preenchidas.
+    var hf8 = rpHeaderFooter("Diagnóstico", month);
+    var diagCards = computeDiagnosisCards();
+    var posCards = diagCards.filter(function(c){ return c.sentiment==="pos"; });
+    var negCards = diagCards.filter(function(c){ return c.sentiment==="neg"; });
+    var infoCards = diagCards.filter(function(c){ return c.sentiment==="info"; });
+    var actionItems = negCards.map(function(c){ return c.action; }).filter(Boolean);
+    if(actionItems.length===0){ actionItems.push("Continue registrando seus dados com regularidade — quanto mais histórico, mais preciso fica este diagnóstico."); }
+
+    if(allMonths.length<2){
+      pages.push('<div class="rp-page">'+hf8.header+
+        '<div class="rp-h2">Diagnóstico</div><div class="rp-h2-sub">Interpretação completa com base nos seus dados reais</div>'+
+        '<div class="rp-empty">Registre pelo menos 2 meses de dados para desbloquear o diagnóstico comparativo completo — com base neles a Bússola avalia orçamento, reserva de emergência, dívidas, consistência de investimento, evolução de renda e ritmo das metas.</div>'+
+        '<div class="rp-callout">💡 '+(rpGenericTip("Orçamento", month)||"Anote até os pequenos gastos por pelo menos um mês inteiro — eles costumam somar mais do que a memória lembra.")+'</div>'+
+        '<p style="font-size:9.5px; color:#8A97A6; margin-top:20px;">Este relatório é gerado automaticamente a partir dos dados que você registrou na Bússola Financeira YS. Não constitui aconselhamento financeiro profissional.</p>'+
+        hf8.footer+'</div>'
+      );
     } else {
-      if(t.saldo<0){ diagItems.push({tag:"Atenção", text:"O saldo do mês ficou negativo ("+fmtMoney(t.saldo)+")."}); actionItems.push("Revise as maiores categorias de despesa do mês e identifique onde cortar."); }
-      else{ diagItems.push({tag:"Positivo", text:"O mês fechou com saldo positivo de "+fmtMoney(t.saldo)+"."}); }
-      if(pctInv>=20){ diagItems.push({tag:"Positivo", text:"Taxa de investimento de "+pctInv.toFixed(0)+"% está dentro da meta de referência (20%)."}); }
-      else if(t.income>0){ diagItems.push({tag:"Atenção", text:"Taxa de investimento de "+pctInv.toFixed(0)+"% está abaixo da meta de referência (20%)."}); actionItems.push("Avalie aumentar o aporte mensal, mesmo que gradualmente."); }
-      if(state.debts.some(debtIsAtrasada)){ diagItems.push({tag:"Atenção", text:"Há dívidas atrasadas em relação ao esperado."}); actionItems.push("Priorize colocar as parcelas atrasadas em dia antes de novos compromissos."); }
-      var pendentesMeta = state.goals.filter(function(g){ return g.target>0 && goalCurrentValue(g)<g.target; });
-      if(pendentesMeta.length>0){ actionItems.push("Revise o ritmo de aporte das metas em andamento na aba Metas."); }
+      // ----- Página: Diagnóstico -----
+      pages.push('<div class="rp-page">'+hf8.header+
+        '<div class="rp-h2">Diagnóstico</div><div class="rp-h2-sub">Interpretação completa com base nos seus dados reais</div>'+
+        '<div class="rp-h3">Pontos positivos</div>'+
+        (posCards.length===0 ? '<div class="rp-empty">Nenhum ponto positivo destacado neste período.</div>' :
+          posCards.map(function(d){ return '<div class="rp-diag-item"><span class="tag" style="color:#0E9F6E;">✓ '+escapeHtml(d.tag)+'</span><span>'+escapeHtml(d.text)+'</span></div>'; }).join(""))+
+        '<div class="rp-h3" style="margin-top:16px;">Pontos de atenção</div>'+
+        (negCards.length===0 ? '<div class="rp-empty">Nenhum ponto de atenção identificado.</div>' :
+          negCards.map(function(d){ return '<div class="rp-diag-item"><span class="tag" style="color:#C17817;">'+escapeHtml(d.tag)+'</span><span>'+escapeHtml(d.text)+'</span></div>'; }).join(""))+
+        (infoCards.length>0 ? '<div class="rp-h3" style="margin-top:16px;">Outros pontos observados</div>'+
+          infoCards.map(function(d){ return '<div class="rp-diag-item"><span class="tag" style="color:#57667A;">'+escapeHtml(d.tag)+'</span><span>'+escapeHtml(d.text)+'</span></div>'; }).join("") : "")+
+        hf8.footer+'</div>'
+      );
+
+      // ----- Página: Plano de ação -----
+      var hf9 = rpHeaderFooter("Plano de ação", month);
+      var planoBody = '<div class="rp-h3">Prioridades para o próximo período</div>'+
+        actionItems.slice(0,5).map(function(a,i){ return '<div class="rp-action-item"><span class="rp-action-num">'+(i+1)+'</span><span>'+escapeHtml(a)+'</span></div>'; }).join("");
+
+      // Resumo geral — leitura qualitativa a partir da contagem real de pontos de atenção
+      var rating = negCards.length===0 ? "Situação financeira saudável — os indicadores acompanhados estão dentro (ou acima) das referências recomendadas. Manter a rotina atual já é a melhor estratégia." :
+        (negCards.length<=2 ? "Situação estável, com "+negCards.length+" ponto(s) específico(s) de atenção — nada que comprometa o quadro geral, mas vale agir nas prioridades listadas acima." :
+        "Vários pontos pedem atenção neste período ("+negCards.length+" ao todo) — comece pela prioridade nº 1 do plano de ação e reavalie o progresso no próximo relatório mensal.");
+      planoBody += '<div class="rp-h3" style="margin-top:26px;">Resumo geral</div>'+
+        '<p style="font-size:11.5px; color:#0E1B2E; line-height:1.7;">'+escapeHtml(rating)+'</p>';
+
+      // Conquistas desbloqueadas até agora — reforço positivo com base no progresso real
+      var milestonesAchieved = computeMilestones().filter(function(m){ return m.achieved; });
+      if(milestonesAchieved.length>0){
+        planoBody += '<div class="rp-h3" style="margin-top:20px;">Conquistas desbloqueadas</div>'+
+          '<p style="font-size:11px; color:#57667A; line-height:1.9;">'+milestonesAchieved.map(function(m){ return m.icon+' '+escapeHtml(m.label); }).join(' &nbsp;·&nbsp; ')+'</p>';
+      }
+
+      // Educação — dicas relacionadas aos pontos de atenção identificados neste diagnóstico
+      var tagToCat = {"50/30/20":"Orçamento", "Reserva de emergência":"Investir", "Dívidas":"Dívidas", "Consistência":"Investir", "Receitas":"Orçamento", "Metas":"Investir", "Maior gasto":"Orçamento"};
+      var eduTipsPicked = [];
+      negCards.forEach(function(c){
+        var cat = tagToCat[c.tag];
+        if(!cat) return;
+        var txt = rpGenericTip(cat, month);
+        if(txt && eduTipsPicked.indexOf(txt)===-1) eduTipsPicked.push(txt);
+      });
+      if(eduTipsPicked.length===0){
+        // Sem pontos de atenção específicos — ainda assim deixa 1 dica geral, para a página
+        // não terminar cedo demais e para reforçar o hábito de aprendizado contínuo.
+        var fallbackTip = rpGenericTip("Investir", month);
+        if(fallbackTip) eduTipsPicked.push(fallbackTip);
+      }
+      if(eduTipsPicked.length>0){
+        planoBody += '<div class="rp-h3" style="margin-top:20px;">Para aprender mais</div>'+
+          eduTipsPicked.slice(0,2).map(function(txt){ return '<div class="rp-callout">💡 '+escapeHtml(txt)+'</div>'; }).join("");
+      }
+
+      pages.push('<div class="rp-page">'+hf9.header+
+        '<div class="rp-h2">Plano de ação</div><div class="rp-h2-sub">O que priorizar a partir deste diagnóstico</div>'+
+        planoBody+
+        '<p style="font-size:9.5px; color:#8A97A6; margin-top:20px;">Este relatório é gerado automaticamente a partir dos dados que você registrou na Bússola Financeira YS. Não constitui aconselhamento financeiro profissional.</p>'+
+        hf9.footer+'</div>'
+      );
     }
-    if(actionItems.length===0){ actionItems.push("Continue registrando seus dados com regularidade para o diagnóstico ficar cada vez mais preciso."); }
-    pages.push('<div class="rp-page">'+hf8.header+
-      '<div class="rp-h2">Diagnóstico</div><div class="rp-h2-sub">Interpretação com base nos seus dados reais</div>'+
-      '<div class="rp-h3">Pontos positivos</div>'+
-      (diagItems.filter(function(d){return d.tag==="Positivo";}).length===0 ? '<div class="rp-empty">Nenhum ponto positivo destacado neste período.</div>' :
-        diagItems.filter(function(d){return d.tag==="Positivo";}).map(function(d){ return '<div class="rp-diag-item"><span class="tag" style="color:#0E9F6E;">✓</span><span>'+escapeHtml(d.text)+'</span></div>'; }).join(""))+
-      '<div class="rp-h3" style="margin-top:16px;">Pontos de atenção</div>'+
-      (diagItems.filter(function(d){return d.tag!=="Positivo";}).length===0 ? '<div class="rp-empty">Nenhum ponto de atenção identificado.</div>' :
-        diagItems.filter(function(d){return d.tag!=="Positivo";}).map(function(d){ return '<div class="rp-diag-item"><span class="tag" style="color:#C17817;">'+escapeHtml(d.tag)+'</span><span>'+escapeHtml(d.text)+'</span></div>'; }).join(""))+
-      '<div class="rp-h3" style="margin-top:26px;">Plano de ação — prioridades para o próximo mês</div>'+
-      actionItems.slice(0,3).map(function(a,i){ return '<div class="rp-action-item"><span class="rp-action-num">'+(i+1)+'</span><span>'+escapeHtml(a)+'</span></div>'; }).join("")+
-      '<p style="font-size:9.5px; color:#8A97A6; margin-top:20px;">Este relatório é gerado automaticamente a partir dos dados que você registrou na Bússola Financeira YS. Não constitui aconselhamento financeiro profissional.</p>'+
-      hf8.footer+'</div>'
-    );
 
     root.innerHTML = pages.join("");
   }
