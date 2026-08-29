@@ -1665,8 +1665,13 @@
           <p><strong>📊 Análises</strong><br>"Como estão minhas finanças?" · "Estou gastando demais?" · "Qual é meu maior problema financeiro?" · "Faça uma análise completa"</p>
           <p><strong>🔮 Simulações</strong><br>"Se eu economizar R$500 por mês, quanto terei em um ano?" · "Se eu reduzir alimentação em 20%?" · "Quanto preciso investir por mês para atingir minha meta?"</p>
           <p><strong>💡 Dicas e sugestões</strong><br>"Onde posso economizar?" · "O que devo melhorar?" · "Me dê uma dica"</p>
+          <p><strong>📚 Educação financeira</strong><br>"O que é reserva de emergência?" · "Qual a diferença entre CDI e Selic?" · "Vale a pena usar cartão de crédito?" · "Como sair de uma dívida com juros altos?"</p>
           <p style="margin-top:10px;">Escreva do seu jeito — não existe um comando "certo". Se o motor não entender, ele avisa e sugere como reformular, em vez de inventar uma resposta.</p>
         </div>
+      </div>
+      <div class="faq-item" data-cat="Chat">
+        <button class="faq-q" type="button">A Bússola também ensina educação financeira, além dos meus dados?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Sim. Além de responder sobre os seus próprios números, o chat tem uma base de conhecimento com dezenas de conceitos de educação financeira — reserva de emergência, CDI, Selic, Tesouro Direto, CDB, LCI/LCA, renda fixa x variável, diversificação, inflação, score de crédito, previdência privada, imposto de renda sobre investimentos, como sair de dívidas, e mais. Pergunte "o que é X" ou "como funciona X" que ele explica, sem precisar de nenhum dado seu registrado — e continua sendo 100% local, sem IA externa.</p></div>
       </div>
       <div class="faq-item" data-cat="Chat">
         <button class="faq-q" type="button">O chat lembra o que eu perguntei antes?<span class="chevron">▾</span></button>
@@ -6236,6 +6241,300 @@
     return pool.slice().sort(function(a,b){ var pa=a.target>0?goalCurrentValue(a)/a.target:0, pb=b.target>0?goalCurrentValue(b)/b.target:0; return pb-pa; })[0];
   }
 
+  /* ---------- 2d. Educação financeira geral (item pedido: "dar educação financeira,
+     ir além dos dados registrados") ----------
+     Uma base de conhecimento curada à mão — sem IA externa, sem internet — cobrindo
+     conceitos que não dependem de nenhum dado pessoal do cliente (definições, comparações,
+     como funciona X). Fica consistente com o guia já existente na aba Educação (mesmos
+     números e recomendações), só que em formato de conversa. Isto é conteúdo educativo
+     genérico, não uma recomendação personalizada — e cada resposta deixa isso implícito
+     ao evitar números específicos do cliente (esses continuam vindo só dos dados reais). */
+  var CHAT_EDUCATION_KB = [
+    { id:"reserva-emergencia", keywords:["reserva de emergencia","reserva emergencia","fundo de emergencia"],
+      answer:'Reserva de emergência é o dinheiro que você mantém guardado, de fácil acesso (alta liquidez), para imprevistos — perda de renda, um conserto urgente, uma emergência médica — sem precisar recorrer a dívida cara (cartão, cheque especial) quando algo assim acontece.<br><br>A referência mais comum é entre <strong>3 e 6 meses</strong> das suas despesas essenciais. Vale priorizar essa reserva <strong>antes</strong> de outros investimentos: ela é a base que sustenta o resto do plano financeiro.<br><br>Costuma ficar bem em Tesouro Selic ou um CDB com liquidez diária de banco sólido — o objetivo aqui é segurança e acesso rápido, não rentabilidade máxima.',
+      simple:'É tipo um "colchão de segurança" — um dinheiro guardado só pra imprevistos, que você pode pegar rapidinho se precisar. A ideia é nunca precisar usar cartão de crédito ou pedir emprestado quando algo inesperado acontece.',
+      deep:'Tecnicamente, a reserva de emergência deveria minimizar duas coisas ao mesmo tempo: risco de crédito (por isso Tesouro Nacional ou instituições com garantia do FGC) e risco de liquidez (por isso preferir liquidez diária, mesmo que isso signifique abrir mão de um pouco de rentabilidade frente a opções com carência). O dimensionamento de "3 a 6 meses" varia com a estabilidade da sua renda: quem tem renda variável ou é autônomo geralmente se beneficia de uma reserva maior (6 a 12 meses), já que a chance de um período sem receita é maior do que para quem tem CLT.',
+      quick:["Minha reserva de emergência é suficiente?","O que é Tesouro Selic?"] },
+    { id:"regra-503020", keywords:["50 30 20","50/30/20","regra dos 50","regra 50"],
+      answer:'A regra 50/30/20 é um ponto de partida simples para organizar o orçamento mensal: <strong>50% da renda para essenciais</strong> (moradia, alimentação, transporte, saúde, educação), <strong>30% para desejos</strong> (lazer, compras, assinaturas) e <strong>20% para investir ou guardar</strong>.<br><br>Não é uma regra rígida — é uma referência para perceber se algo está desproporcional. Quem mora em cidade cara pode gastar mais que 50% com moradia, por exemplo; o importante é ter consciência da proporção e ajustar aos poucos.',
+      simple:'Pensa na sua renda dividida em 3 potes: metade pro que você não pode deixar de pagar (aluguel, comida, contas), um terço pro que é desejo (lazer, compras) e um quinto pra guardar ou investir. É só um guia, não uma regra fixa.',
+      deep:'A proporção original (Elizabeth Warren, "All Your Worth") assume uma economia estável e custo de vida moderado — em contextos de alta concentração de renda em moradia (grandes centros urbanos) ou renda variável, os 50% de essenciais costumam estourar sem que isso signifique descontrole financeiro. Nesses casos, o mais útil é usar a proporção como diagnóstico relativo (comparar o seu % de essenciais mês a mês) em vez de meta absoluta — e priorizar sempre o "20% investir" como o número mais importante de proteger, ajustando os outros dois em torno dele.',
+      quick:["Como estão minhas proporções esse mês?"] },
+    { id:"juros-compostos", keywords:["juros compostos","juro composto"],
+      answer:'Juros compostos são "juros sobre juros": o rendimento de um período passa a fazer parte do valor que rende no período seguinte, então o crescimento acelera com o tempo — é o que Einstein teria chamado de "a oitava maravilha do mundo" (mito, mas a ideia pega bem a força do efeito).<br><br>Na prática: R$ 300/mês a 10% ao ano rende de forma bem diferente dependendo de quando você começa — em 5 anos você teria aportado R$ 18.000 e teria perto de R$ 23.000; em 20 anos, R$ 72.000 aportados viram perto de R$ 227.000. A maior parte do resultado em prazos longos vem do rendimento, não do próprio bolso — por isso começar cedo importa mais do que aportar um valor alto.',
+      simple:'É o dinheiro rendendo em cima do que ele mesmo já rendeu antes — tipo uma bola de neve que cresce cada vez mais rápido quanto mais tempo ela rola morro abaixo. Por isso começar cedo (mesmo com pouco) costuma valer mais que começar tarde com mais dinheiro.',
+      deep:'Matematicamente, o montante final é M = P×(1+i)^n para um aporte único, ou a soma de uma série geométrica para aportes mensais — o que importa reter é que "n" (o tempo) tem efeito exponencial, enquanto "i" (a taxa) tem efeito linear na fórmula simplificada de curto prazo. Na prática isso significa: dobrar o tempo investido tende a ter mais impacto no resultado final do que dobrar a taxa de rentabilidade — por isso o conselho recorrente de "comece cedo" pesa mais do que "busque a taxa mais alta possível".',
+      quick:["Simular meus investimentos na aba Projeções"] },
+    { id:"cdi", keywords:["cdi","o que e o cdi","taxa cdi"],
+      answer:'CDI (Certificado de Depósito Interbancário) é a taxa de referência usada nos empréstimos que os bancos fazem entre si de um dia para o outro. Na prática, ela anda muito próxima da Selic e é usada como "termômetro" para a maioria dos investimentos de renda fixa no Brasil — muita gente descreve o rendimento de um CDB, por exemplo, como "100% do CDI" ou "110% do CDI".',
+      simple:'É tipo uma "régua" que os bancos usam pra dizer quanto um investimento rende — quando você vê "110% do CDI", significa que aquele investimento rende um pouquinho mais do que essa régua de referência.',
+      deep:'O CDI resulta da média das taxas praticadas nos empréstimos interbancários de um dia (overnight), e por arbitragem de mercado fica extremamente próximo da Selic Over (diferença tipicamente de centésimos de ponto percentual). Ele é usado como benchmark porque reflete o "custo do dinheiro" no sistema bancário no curtíssimo prazo — daí ser a referência natural para CDBs, fundos DI e a maior parte da renda fixa pós-fixada. Um "112% do CDI", por exemplo, significa que a instituição paga 12% a mais que essa taxa de referência no período.',
+      quick:["Qual é a diferença entre CDI e Selic?"] },
+    { id:"selic", keywords:["taxa selic","o que e a selic","o que e selic"],
+      answer:'A Selic é a taxa básica de juros da economia brasileira, definida pelo Banco Central. Ela influencia o custo do crédito (financiamentos, cartão, empréstimos) e o rendimento dos investimentos de renda fixa no país inteiro — quando ela sobe, empréstimos ficam mais caros e a renda fixa costuma render mais; quando cai, o contrário.<br><br>O Tesouro Selic é um título público que rende praticamente essa taxa, com liquidez diária — por isso é tão usado para reserva de emergência.',
+      simple:'É a "taxa mãe" de juros do Brasil — quase tudo que envolve juros no país (empréstimos, financiamentos, investimentos de renda fixa) sobe ou desce mais ou menos junto com ela.',
+      deep:'A Selic é definida pelo Copom (Comitê de Política Monetária do Banco Central) a cada ~45 dias, como principal instrumento de controle da inflação: subir a Selic encarece o crédito, desestimula consumo e investimento, e tende a reduzir a inflação; baixar tem o efeito oposto, estimulando a atividade econômica. Ela é a taxa que remunera os títulos públicos overnight (Selic Over), e serve de piso de referência para praticamente toda a renda fixa — instituições privadas precisam oferecer algo competitivo em relação a ela para atrair capital.',
+      quick:["O que é Tesouro Selic?","O que é reserva de emergência?"] },
+    { id:"tesouro-direto", keywords:["tesouro direto","tesouro selic","tesouro ipca","tesouro prefixado"],
+      answer:'O Tesouro Direto é um programa do governo federal que permite investir diretamente em títulos públicos, com valores baixos (a partir de pouco mais de R$ 30) e considerado o investimento de menor risco do país, já que é garantido pelo próprio Tesouro Nacional.<br><br>Os principais tipos: <strong>Tesouro Selic</strong> (acompanha a Selic, ótimo para reserva de emergência, baixa oscilação), <strong>Tesouro IPCA+</strong> (protege contra a inflação, bom para objetivos de longo prazo) e <strong>Tesouro Prefixado</strong> (taxa fixa contratada na hora da compra, mas com mais oscilação se vendido antes do vencimento).',
+      simple:'É emprestar dinheiro pro governo brasileiro, que devolve depois com juros — considerado o investimento mais seguro do país, porque quem "deve" pra você é o próprio governo federal.',
+      deep:'Cada tipo de Tesouro serve a um objetivo diferente por causa de como reage a mudanças na taxa de juros: o Selic tem baixíssima volatilidade porque seu rendimento acompanha a taxa-base quase em tempo real (bom para reserva/curto prazo); o Prefixado e o IPCA+ sofrem marcação a mercado — o preço oscila diariamente conforme as expectativas de juros futuros mudam, então vender antes do vencimento pode significar ganho ou perda em relação ao contratado. Segurar até o vencimento neutraliza esse efeito e garante a taxa combinada na compra.',
+      quick:["O que é CDB?","O que é inflação?"] },
+    { id:"cdb", keywords:["cdb","o que e um cdb"],
+      answer:'CDB (Certificado de Depósito Bancário) é um empréstimo que você faz ao banco em troca de um rendimento combinado — geralmente um percentual do CDI (ex.: "110% do CDI"). É protegido pelo FGC até o limite de garantia, o que o torna relativamente seguro mesmo em bancos menores, que costumam pagar taxas melhores para atrair clientes.<br><br>Fique de olho na liquidez: alguns CDBs só podem ser resgatados no vencimento, outros têm liquidez diária — isso muda bastante se ele serve para reserva de emergência ou para um objetivo mais distante.',
+      simple:'É emprestar dinheiro pro banco, que devolve depois com juros — parecido com o Tesouro, mas quem "deve" é o banco, não o governo. Por isso costuma pagar um pouco mais, mas com um pouquinho mais de risco.',
+      deep:'O prêmio de risco de um CDB em relação ao Tesouro Selic reflete o risco de crédito da instituição emissora — bancos menores costumam pagar mais (às vezes 130%+ do CDI) justamente para compensar esse risco, mitigado até R$ 250 mil pelo FGC. Vale sempre checar o rating de crédito do banco e nunca concentrar mais que o limite de garantia numa única instituição. A escolha entre CDB e Tesouro Selic para reserva de emergência costuma se resumir a: rentabilidade marginal um pouco maior (CDB de banco sólido) vs. simplicidade e lastro do governo federal (Tesouro).',
+      quick:["O que é o FGC?","O que é liquidez?"] },
+    { id:"lci-lca", keywords:["lci","lca","lci lca"],
+      answer:'LCI (Letra de Crédito Imobiliário) e LCA (Letra de Crédito do Agronegócio) são investimentos de renda fixa emitidos por bancos para financiar esses dois setores. A grande vantagem: são <strong>isentos de Imposto de Renda</strong> para pessoa física, o que costuma compensar mesmo quando a taxa nominal é um pouco menor que a de um CDB equivalente. Também contam com a garantia do FGC até o limite vigente. O ponto de atenção costuma ser prazo mínimo de carência, sem liquidez diária na maioria dos casos.',
+      quick:["O que é o FGC?","O que é imposto de renda sobre investimentos?"] },
+    { id:"renda-fixa-variavel", keywords:["renda fixa e renda variavel","renda fixa ou renda variavel","diferenca entre renda fixa e variavel","renda fixa x renda variavel","renda fixa","renda variavel"],
+      answer:'<strong>Renda fixa</strong>: você sabe (ou consegue estimar bem) a regra de rendimento desde o início — Tesouro, CDB, LCI/LCA. Costuma oscilar pouco e é a base mais segura de uma carteira.<br><strong>Renda variável</strong>: o preço oscila conforme o mercado — ações, fundos imobiliários, ETFs. Tem potencial de retorno maior no longo prazo, mas também mais risco de perda no curto prazo.<br><br>Não é "escolher um dos dois": a maioria das pessoas combina os dois, na proporção que faz sentido para o perfil de risco e o prazo de cada objetivo.',
+      simple:'Renda fixa é tipo "eu já sei mais ou menos quanto vou ganhar" — anda devagar e previsível. Renda variável é "o preço sobe e desce todo dia" — pode ganhar mais, mas também pode perder no meio do caminho.',
+      deep:'A diferença técnica está na natureza do contrato: renda fixa tem uma regra de remuneração definida no momento da aplicação (mesmo que pós-fixada, como % do CDI — a REGRA é fixa, não o valor), enquanto renda variável não tem remuneração prometida, apenas participação nos resultados de um ativo cujo preço é definido pelo mercado. Isso muda completamente o tipo de risco: renda fixa tem risco de crédito (o emissor não pagar) e risco de mercado limitado (marcação a mercado, se vendida antes do vencimento); renda variável tem risco de mercado pleno, sem piso garantido, mas historicamente com prêmio de risco maior no longo prazo (mais retorno esperado, em troca de mais volatilidade).',
+      quick:["Qual o percentual ideal para o meu perfil?","O que são ações?"] },
+    { id:"perfil-investidor", keywords:["perfil de investidor","perfil conservador","perfil moderado","perfil arrojado","qual meu perfil"],
+      answer:'Os três perfis mais comuns, com faixas apenas ilustrativas (reserva/liquidez, renda fixa, renda variável):<br>• <strong>Conservador</strong>: 40–50% / 40–50% / 0–10%<br>• <strong>Moderado</strong>: 20–30% / 40–50% / 20–30%<br>• <strong>Arrojado</strong>: 10–15% / 25–35% / 50–60%<br><br>O perfil certo depende do seu prazo até precisar do dinheiro e de quanto você consegue tolerar ver o saldo cair sem entrar em pânico e vender na pior hora. Reserva de emergência não entra nessa conta — ela vem antes, independente do perfil.',
+      quick:["O que é diversificação?"] },
+    { id:"acoes", keywords:["o que sao acoes","o que e uma acao","investir em acoes","comprar acoes"],
+      answer:'Ações são pequenas partes de uma empresa — ao comprar uma, você passa a ser sócio dela na proporção que comprou, participando dos resultados (lucro, via dividendos) e do risco (o preço pode cair, inclusive a zero em casos extremos). É renda variável: o preço oscila todos os dias conforme oferta, demanda e resultados da empresa.<br><br>Costuma fazer sentido para objetivos de longo prazo, com dinheiro que você não vai precisar tirar em uma emergência — e nunca com 100% do patrimônio em uma única ação.',
+      simple:'Comprar uma ação é comprar um "pedacinho" de uma empresa — se a empresa vai bem, seu pedacinho tende a valer mais (e às vezes ainda paga uma parte do lucro pra você); se vai mal, pode valer menos.',
+      deep:'O retorno de uma ação vem de duas fontes: valorização (ganho de capital, na venda por preço maior que o de compra) e proventos (dividendos e juros sobre capital próprio, distribuídos periodicamente). O preço reflete a expectativa do mercado sobre os resultados futuros da empresa, descontados a valor presente — por isso é volátil mesmo sem mudança real no negócio, só por mudança de expectativa. Risco não sistemático (específico da empresa) pode ser reduzido via diversificação entre várias ações; risco sistemático (do mercado como um todo) não pode.',
+      quick:["O que é diversificação?","O que são fundos imobiliários?"] },
+    { id:"fundos-imobiliarios", keywords:["fundo imobiliario","fundos imobiliarios","fii","fiis"],
+      answer:'Fundos Imobiliários (FIIs) reúnem o dinheiro de vários investidores para comprar imóveis (shoppings, galpões, lajes corporativas) ou títulos ligados ao setor, e distribuem boa parte da renda gerada (aluguéis, por exemplo) mensalmente aos cotistas, geralmente isenta de Imposto de Renda para pessoa física nas distribuições. É uma forma de "ter imóveis" sem precisar comprar um imóvel inteiro — com liquidez muito maior, já que as cotas são negociadas na bolsa.',
+      quick:["O que são ações?","O que é diversificação?"] },
+    { id:"diversificacao", keywords:["diversificacao","diversificar","diversificar investimentos"],
+      answer:'Diversificar não é só "ter várias contas" — é distribuir o dinheiro entre ativos que reagem de formas diferentes ao mesmo cenário econômico, para que um problema num só lugar não derrube a carteira inteira. Isso pode significar misturar renda fixa e variável, diferentes emissores, diferentes setores e até diferentes prazos.<br><br>O objetivo não é maximizar o retorno a qualquer custo, é reduzir o risco de um evento específico prejudicar tudo de uma vez.',
+      simple:'É o velho ditado "não coloque todos os ovos na mesma cesta" — se você espalha o dinheiro em coisas diferentes, um problema numa delas não derruba tudo de uma vez.',
+      deep:'Estatisticamente, diversificação reduz o risco não-sistemático (específico de um ativo/setor) na medida em que os ativos combinados têm correlação baixa ou negativa entre si — combinar duas ações do mesmo setor diversifica pouco, porque tendem a se mover juntas; combinar renda fixa, ações de setores diferentes e ativos internacionais diversifica mais, porque reagem de formas diferentes aos mesmos eventos econômicos (juros, câmbio, ciclo econômico). O risco sistemático (de mercado como um todo) não é eliminado por diversificação — só o específico.',
+      quick:["O que é meu perfil de investidor?"] },
+    { id:"inflacao", keywords:["o que e inflacao","inflacao"],
+      answer:'Inflação é o aumento geral dos preços ao longo do tempo, que corrói o poder de compra do dinheiro parado — o mesmo valor compra menos coisa no futuro. É por isso que "guardar" dinheiro parado (na conta corrente, por exemplo) não é o mesmo que investir: sem nenhum rendimento, esse dinheiro perde valor real mês após mês. Investimentos atrelados à inflação, como o Tesouro IPCA+, existem justamente para proteger o poder de compra no longo prazo.',
+      simple:'É quando as coisas vão ficando mais caras com o tempo — o mesmo dinheiro que hoje compra um carrinho de compras cheio, daqui a alguns anos compra menos, se ele ficar parado sem render nada.',
+      deep:'A inflação no Brasil é medida oficialmente pelo IPCA. Para avaliar um investimento corretamente, é preciso olhar a rentabilidade real (descontada a inflação do período), não a nominal — um investimento que rende 8% ao ano com inflação de 6% teve retorno real de aproximadamente 2% (o cálculo exato usa a fórmula de Fisher: (1+nominal)/(1+inflação) - 1, não a subtração simples). Em prazos longos, mesmo pequenas diferenças de inflação acumulam efeito grande sobre o poder de compra — por isso investimentos atrelados ao IPCA (Tesouro IPCA+) são a referência para objetivos de longuíssimo prazo, como aposentadoria.',
+      quick:["Guardar é o mesmo que investir?","O que é Tesouro Direto?"] },
+    { id:"liquidez", keywords:["o que e liquidez","liquidez"],
+      answer:'Liquidez é a facilidade (e a velocidade) de transformar um investimento em dinheiro na conta, sem perder valor no processo. Um investimento com liquidez diária pode ser resgatado a qualquer momento; outros só no vencimento, ou com perda se resgatados antes. Reserva de emergência precisa de alta liquidez, quase por definição — de nada adianta um "dinheiro de emergência" que demora dias ou semanas para sair.',
+      quick:["O que é reserva de emergência?"] },
+    { id:"score-credito", keywords:["score de credito","score credito","meu score"],
+      answer:'O score de crédito é uma pontuação (normalmente de 0 a 1000) que estima o risco de você não pagar uma dívida, usada por bancos e financeiras para decidir se emprestam e a que taxa. Costuma melhorar com: pagar contas em dia, manter dívidas em aberto sob controle, usar uma fatia pequena do limite do cartão (abaixo de 30% costuma ajudar) e ter um histórico de crédito mais longo e consistente.',
+      quick:["Vale a pena usar cartão de crédito?"] },
+    { id:"cartao-credito-uso", keywords:["vale a pena usar cartao","cartao de credito e bom","usar cartao de credito","cartao de credito x debito","cartao credito ou debito"],
+      answer:'Cartão de crédito não é bom nem ruim por si só — depende do uso. Bem usado (pago integralmente todo mês, dentro do que cabe no orçamento), ele dá prazo, proteção em compras e pode ajudar o score de crédito. Mal usado (parcelamento da fatura, "rotativo"), os juros estão entre os mais altos do mercado — evite pagar só o mínimo.<br><br>Regra prática: gastar no cartão só o que você já tem para pagar à vista, tratando o limite como controle de despesa, não como renda extra.',
+      quick:["O que é score de crédito?","Estou usando muito do limite do meu cartão?"] },
+    { id:"cet", keywords:["custo efetivo total","o que e cet","cet"],
+      answer:'CET (Custo Efetivo Total) é o custo real de um empréstimo ou financiamento, somando os juros a todas as taxas, seguros e tarifas embutidas — é o número que de fato importa para comparar propostas, não só a taxa de juros anunciada, que costuma parecer mais baixa isoladamente. Ao renegociar uma dívida ou pegar um crédito novo, sempre peça o CET antes de decidir.',
+      quick:["Como sair de uma dívida com juros altos?"] },
+    { id:"previdencia-privada", keywords:["previdencia privada","pgbl","vgbl","pgbl ou vgbl"],
+      answer:'Previdência privada (PGBL ou VGBL) é uma forma de investir de olho no longo prazo, geralmente aposentadoria, com algumas regras próprias de tributação e sucessão. <strong>PGBL</strong> costuma compensar para quem declara Imposto de Renda pelo modelo completo (permite deduzir até 12% da renda bruta anual). <strong>VGBL</strong> costuma ser melhor pra quem usa a declaração simplificada, ou já usou o limite do PGBL. Vale comparar as taxas de administração entre instituições — elas variam bastante e corroem o rendimento no longo prazo.',
+      quick:["O que é imposto de renda sobre investimentos?"] },
+    { id:"ir-investimentos", keywords:["imposto de renda sobre investimentos","ir sobre investimentos","tabela regressiva","quanto de ir eu pago"],
+      answer:'A maioria dos investimentos de renda fixa (Tesouro, CDB, fundos de renda fixa) segue a tabela regressiva de IR: quanto mais tempo o dinheiro fica investido, menor a alíquota — de 22,5% (até 180 dias) até 15% (acima de 720 dias). LCI, LCA, poupança e a maioria dos FIIs (nas distribuições) costumam ser isentos para pessoa física. Ações têm regra própria (isenção até R$ 20 mil vendidos por mês em ações, fora day trade). Vale sempre comparar o rendimento líquido (depois do IR), não o bruto, na hora de decidir entre opções.',
+      quick:["O que é CDB?","O que é LCI/LCA?"] },
+    { id:"metas-financeiras", keywords:["definir metas financeiras","como definir uma meta","meta smart","como criar uma meta"],
+      answer:'Uma meta financeira funciona melhor quando é específica: um <strong>valor</strong> claro, um <strong>prazo</strong> definido e um <strong>propósito</strong> (por que essa meta importa pra você). "Guardar dinheiro" é vago; "juntar R$ 12.000 de reserva de emergência em 18 meses" já dá pra planejar — dá pra calcular quanto precisa guardar por mês e acompanhar o progresso.<br><br>Você pode criar metas assim direto na aba <strong>Metas</strong> da Bússola, e eu calculo o progresso automaticamente a partir do que você registrar.',
+      quick:["Quanto falta para minha meta?","Quanto preciso investir por mês para atingir minha meta?"] },
+    { id:"orcamento-do-zero", keywords:["como montar um orcamento","fazer um orcamento do zero","como organizar minhas financas","comecar a organizar as financas"],
+      answer:'Para montar um orçamento do zero: <br>1. Registre <strong>tudo</strong> que entra e sai por pelo menos um mês inteiro — sem isso, qualquer plano é um chute.<br>2. Separe entre essenciais, desejos e investimento (a base da regra 50/30/20).<br>3. Construa a reserva de emergência antes de qualquer outro investimento.<br>4. Revise mensalmente — orçamento não é estático, ele se ajusta conforme a vida muda.<br><br>A Bússola já faz boa parte desse acompanhamento automaticamente assim que você registra os lançamentos nas abas Rendimentos e Despesas.',
+      quick:["Como estão minhas finanças?","O que é a regra 50/30/20?"] },
+    { id:"independencia-financeira", keywords:["independencia financeira","liberdade financeira","regra dos 4%","viver de renda"],
+      answer:'Independência financeira é o ponto em que a renda gerada pelo seu patrimônio (juros, aluguéis, dividendos) cobre suas despesas, sem depender de trabalho ativo. Uma referência bastante usada é a "regra dos 4%": um patrimônio investido de forma que permita retirar cerca de 4% ao ano tende a se sustentar no longo prazo — o que implica, grosso modo, acumular perto de 25 vezes o gasto anual desejado. É uma referência simplificada, não uma garantia — depende muito de rentabilidade real, inflação e do tipo de investimento.',
+      quick:["O que é juros compostos?","O que é diversificação?"] },
+    { id:"divida-boa-ruim", keywords:["divida boa e divida ruim","divida boa ou ruim","toda divida e ruim"],
+      answer:'Nem toda dívida é igual. Uma <strong>dívida "boa"</strong> costuma financiar algo que gera valor ou renda no futuro (um financiamento estudantil que aumenta sua capacidade de ganhar, por exemplo), geralmente com juros mais baixos. Uma <strong>dívida "ruim"</strong> financia consumo que perde valor rápido, com juros altos — cartão rotativo e cheque especial são os exemplos clássicos, com alguns dos juros mais altos do mercado brasileiro. Regra prática: desconfie de qualquer dívida cujo juro supere o que você conseguiria render investindo esse mesmo dinheiro.',
+      quick:["Como sair de uma dívida com juros altos?"] },
+    { id:"sair-de-dividas", keywords:["sair de dividas","sair de uma divida","quitar dividas rapido","metodo avalanche","bola de neve","como pagar dividas"],
+      answer:'Duas estratégias práticas quando há mais de uma dívida em aberto:<br>• <strong>Método avalanche</strong>: pague o mínimo em todas, e jogue qualquer sobra na dívida de <strong>maior taxa de juros</strong> primeiro. É o caminho matematicamente mais barato no total.<br>• <strong>Método bola de neve</strong>: pague o mínimo em todas, e jogue a sobra na dívida de <strong>menor valor restante</strong> primeiro. Custa um pouco mais de juros, mas dá vitórias rápidas que ajudam a manter a motivação.<br><br>Antes de escolher, veja se alguma dívida pode ser renegociada com desconto à vista ou portabilidade para uma taxa menor — muitas vezes é o passo mais rentável de todos.',
+      quick:["Qual é minha maior dívida?","O que é CET?"] },
+    { id:"guardar-vs-investir", keywords:["guardar e investir e a mesma coisa","diferenca entre guardar e investir","guardar dinheiro parado","mesma coisa que investir","o mesmo que investir","guardar e a mesma coisa"],
+      answer:'Guardar (deixar parado, sem render) e investir (colocar para render) não são a mesma coisa. Dinheiro parado perde poder de compra com o tempo por causa da inflação. Investir é colocar esse dinheiro para render, ainda que em algo simples e de baixo risco como o Tesouro Selic — mesmo um rendimento modesto já é melhor do que deixar parado perdendo valor.',
+      quick:["O que é inflação?","O que é Tesouro Direto?"] },
+    { id:"poupanca", keywords:["vale a pena a poupanca","poupanca ainda vale a pena","poupanca ou tesouro"],
+      answer:'A poupança é simples e tem liquidez diária, mas costuma render menos do que outras opções de baixo risco disponíveis hoje, como o Tesouro Selic ou um bom CDB de liquidez diária — que, além de renderem mais na maioria dos cenários, também são protegidos (Tesouro pelo governo, CDB pelo FGC até o limite). Vale comparar antes de deixar tudo parado só na poupança por hábito.',
+      quick:["O que é Tesouro Selic?","O que é CDB?"] },
+    { id:"fgc", keywords:["o que e o fgc","fundo garantidor de creditos","fgc"],
+      answer:'O FGC (Fundo Garantidor de Créditos) protege investimentos como CDB, LCI e LCA em caso de a instituição financeira quebrar, até o limite de R$ 250 mil por CPF e por instituição (com teto adicional de R$ 1 milhão a cada 4 anos). É um dos motivos pelos quais CDBs de bancos menores, que pagam taxas mais atrativas, ainda são considerados relativamente seguros — mas vale sempre respeitar o limite de garantia ao distribuir entre instituições.',
+      quick:["O que é CDB?","O que é LCI/LCA?"] },
+    { id:"erros-comuns", keywords:["erros comuns iniciantes","erros de quem esta comecando","o que evitar nas financas","erros comuns","erros comuns de quem esta comecando"],
+      answer:'Os erros mais comuns de quem está começando a organizar a vida financeira: <br>• Não ter nenhum registro e confiar só na memória do que foi gasto.<br>• Investir antes de ter qualquer reserva de emergência.<br>• Deixar de revisar os números por meses seguidos.<br>• Pagar só o mínimo do cartão de crédito, sem perceber o tamanho dos juros.<br>• Misturar dinheiro de curto prazo (emergência) com investimentos de longo prazo (baixa liquidez).<br><br>Este conteúdo é educativo e não substitui orientação de um profissional certificado quando decisões maiores estiverem em jogo.',
+      quick:["O que é reserva de emergência?","Faça uma análise completa"] },
+    { id:"sac-price", keywords:["sac ou price","sac e price","tabela sac","tabela price","financiamento imobiliario"],
+      answer:'Nos financiamentos (imóvel, veículo), as duas tabelas mais comuns são: <br>• <strong>SAC</strong> (Sistema de Amortização Constante): a parcela começa mais alta e vai diminuindo mês a mês, porque a amortização é sempre igual e os juros incidem sobre um saldo devedor cada vez menor. Paga-se menos juros no total.<br>• <strong>Price</strong>: a parcela é fixa do início ao fim, mas nos primeiros anos você paga proporcionalmente mais juros e menos amortização — o custo total tende a ser maior que no SAC.<br><br>Se o orçamento permite uma parcela inicial mais alta, o SAC costuma sair mais barato no total.',
+      quick:["O que é CET?"] },
+    { id:"consorcio", keywords:["consorcio","vale a pena consorcio","consorcio ou financiamento"],
+      answer:'Consórcio é um grupo de pessoas que se reúne para comprar bens (carro, imóvel) por meio de cartas de crédito, contempladas por sorteio ou lance, sem cobrança de juros — só uma taxa de administração. A vantagem é o custo total geralmente menor que um financiamento; a desvantagem é não ter o bem imediatamente (a menos que dê um lance vencedor), o que não serve para quem precisa comprar agora. Vale comparar a taxa de administração total entre administradoras antes de entrar.',
+      quick:["O que é CET?","SAC ou Price, qual é melhor?"] },
+    { id:"seguro", keywords:["vale a pena fazer seguro","seguro de vida vale a pena","tipos de seguro","preciso de seguro"],
+      answer:'Seguro não é investimento — é proteção contra um risco que, se acontecer, comprometeria seu orçamento ou seus dependentes financeiramente. Os mais relevantes para a maioria das pessoas costumam ser: seguro de vida (se alguém depende da sua renda), seguro residencial e seguro do carro/moto (se financiado, costuma ser exigido). A pergunta certa não é "vale a pena", é "o que eu perderia se isso acontecer e eu não tiver seguro" — se a resposta for "muito", geralmente vale.',
+      quick:["O que é reserva de emergência?"] },
+    { id:"inss-aposentadoria", keywords:["aposentadoria do inss","aposentadoria publica","quanto vou receber do inss","previdencia social"],
+      answer:'A aposentadoria pelo INSS (Regime Geral de Previdência Social) é calculada com base no histórico de contribuições, tempo de contribuição e idade — as regras mudaram bastante com a reforma da previdência de 2019, com diferentes regras de transição dependendo de quando você começou a contribuir. Como o valor tende a ser bem menor que a última renda de quem ganha mais, a maioria dos planejadores recomenda complementar com previdência privada e/ou investimentos próprios, e não depender só do INSS para manter o padrão de vida na aposentadoria.',
+      quick:["O que é previdência privada?","O que é independência financeira?"] },
+    { id:"mei-autonomo", keywords:["mei financas","sou autonomo","organizar financas autonomo","separar pessoa fisica e juridica","pro labore","organizar as financas sendo autonomo","financas sendo autonomo","autonomo"],
+      answer:'Para MEI e autônomos, o ponto mais importante costuma ser separar completamente as finanças pessoais das do negócio — mesmo que seja uma conta bancária diferente só para isso. Defina um "pró-labore" (um salário fixo que você paga a si mesmo) em vez de sacar da empresa conforme a necessidade; isso facilita saber se o negócio é realmente lucrativo e evita descontrole. Como a renda costuma ser mais irregular, uma reserva de emergência maior que os 3–6 meses padrão (às vezes 6–12 meses) costuma fazer mais sentido.',
+      quick:["O que é reserva de emergência?","Como montar um orçamento do zero?"] },
+    { id:"come-cotas", keywords:["come cotas","come-cotas","o que e come cotas"],
+      answer:'"Come-cotas" é o apelido para a antecipação semestral do Imposto de Renda em fundos de investimento (exceto ações e alguns outros), cobrada automaticamente em maio e novembro sobre o rendimento acumulado, à menor alíquota da tabela regressiva (15% para fundos de longo prazo). Não é um imposto extra — é parte do IR que já seria devido, só que descontado antes, reduzindo um pouco o efeito dos juros compostos ao longo do caminho em comparação com investimentos que só pagam IR no resgate (como Tesouro Direto e CDB).',
+      quick:["O que é imposto de renda sobre investimentos?"] },
+    { id:"day-trade", keywords:["day trade","especulacao","vale a pena day trade","operar na bolsa todo dia"],
+      answer:'Day trade é comprar e vender o mesmo ativo no mesmo dia, tentando lucrar com pequenas oscilações de preço. É considerado especulação de alto risco, não investimento — a grande maioria dos operadores de day trade perde dinheiro no longo prazo, mesmo entre profissionais. Além disso, o IR sobre ganhos de day trade é de 20% sobre cada operação positiva, sem a isenção que existe para operações comuns em ações. Não é recomendado para quem ainda está construindo reserva de emergência ou patrimônio inicial.',
+      quick:["O que são ações?","O que é diversificação?"] },
+    { id:"criptomoedas", keywords:["criptomoeda","criptomoedas","bitcoin","vale a pena investir em bitcoin","cripto"],
+      answer:'Criptomoedas (Bitcoin e outras) são ativos digitais com alta volatilidade — o preço pode subir ou cair de forma muito mais brusca que ações ou fundos tradicionais, e não têm o mesmo tipo de garantia ou regulação da renda fixa bancária. Quem opta por ter uma parcela da carteira em cripto geralmente é orientado a tratar como uma posição de alto risco e proporção pequena do total — só depois de já ter reserva de emergência e uma base sólida de investimentos mais estáveis. Vale estudar bastante antes de entrar, e nunca investir o que não pode perder.',
+      quick:["O que é diversificação?","O que é reserva de emergência?"] },
+    { id:"cambio-dolar", keywords:["investir em dolar","comprar dolar","investir no exterior","cambio","proteger contra o dolar"],
+      answer:'Investir em dólar (ou ativos internacionais) serve principalmente para diversificar geograficamente e se proteger de riscos específicos do Brasil (câmbio, inflação local, cenário político). Pode ser feito via conta em corretora internacional, ETFs que replicam índices americanos negociados na B3, ou fundos cambiais. Como qualquer diversificação, faz mais sentido como parte de uma carteira já estruturada, não como o primeiro investimento de quem está começando.',
+      quick:["O que é diversificação?"] },
+    { id:"consignado", keywords:["emprestimo consignado","credito consignado","cartao consignado","vale a pena consignado"],
+      answer:'Empréstimo consignado tem a parcela descontada direto da folha de pagamento ou do benefício do INSS, o que reduz o risco para o banco — por isso costuma ter juros bem mais baixos que o crédito pessoal comum ou o cartão. Se você já vai contrair uma dívida, o consignado costuma ser uma opção mais barata do que cartão ou cheque especial. O cuidado principal: como a parcela é descontada automaticamente, é fácil comprometer uma fatia grande demais da renda sem perceber — verifique sempre a margem consignável disponível antes de contratar.',
+      quick:["O que é CET?","Toda dívida é ruim?"] },
+    { id:"cheque-especial", keywords:["cheque especial","vale a pena usar cheque especial"],
+      answer:'O cheque especial está entre os créditos mais caros do mercado brasileiro, com juros que costumam superar os do próprio cartão de crédito rotativo. Ele foi pensado para cobrir um imprevisto de poucos dias, não para ficar no negativo por semanas ou meses. Se você se pega usando cheque especial com frequência, geralmente é sinal de que falta reserva de emergência — e vale muito mais buscar uma linha de crédito mais barata (consignado, por exemplo) para quitar o saldo negativo do que deixar rolando no cheque especial.',
+      quick:["O que é reserva de emergência?","O que é CET?"] },
+    { id:"comprar-alugar", keywords:["comprar ou alugar imovel","vale a pena comprar imovel","alugar ou financiar"],
+      answer:'Não existe resposta universal — depende de quanto tempo você pretende morar no mesmo lugar, da relação entre o valor do aluguel e o valor de compra na sua região, e da taxa de juros do financiamento disponível. Como referência simples: se o aluguel anual for bem menor que ~5–6% do valor do imóvel, alugar e investir a diferença tende a compensar financeiramente no curto/médio prazo; se estiver próximo ou acima disso, comprar tende a fazer mais sentido, especialmente para prazos longos (10+ anos).',
+      quick:["SAC ou Price, qual é melhor?","O que é CET?"] },
+    { id:"nome-sujo", keywords:["nome sujo","negativado","serasa","spc","como sair do serasa","limpar o nome"],
+      answer:'"Nome sujo" significa ter uma dívida em atraso registrada nos órgãos de proteção ao crédito (Serasa, SPC). Isso dificulta crédito novo, financiamentos e até alguns empregos que fazem consulta. Para regularizar: negocie diretamente com quem você deve (muitas vezes com desconto para pagamento à vista), ou aproveite mutirões de renegociação que costumam ter condições melhores. Depois de pago, a dívida deve ser removida do cadastro — se não for, você pode exigir a baixa. Evite empresas que cobram para "limpar o nome" sem negociar a dívida em si — isso não existe de forma legítima.',
+      quick:["Como sair de uma dívida com juros altos?","O que é CET?"] },
+    { id:"cashback-milhas", keywords:["vale a pena cashback","programa de milhas","cartao com milhas","cashback ou milhas"],
+      answer:'Cashback devolve uma porcentagem do gasto em dinheiro (ou crédito na fatura); milhas acumulam pontos trocáveis por passagens aéreas ou produtos. Milhas costumam valer mais para quem viaja de avião com frequência e tem disciplina para não gastar além do planejado só para acumular pontos; cashback é mais simples e direto para o dia a dia. Em ambos os casos, o benefício só compensa se você já pagaria aquele valor de qualquer forma — nunca gaste mais para "ganhar" cashback ou milhas, o desconto quase nunca cobre o excesso.',
+      quick:["Vale a pena usar cartão de crédito?"] },
+    { id:"restituicao-ir", keywords:["restituicao de imposto de renda","restituicao do ir","o que fazer com a restituicao"],
+      answer:'A restituição do Imposto de Renda é, na prática, uma devolução de um valor que já era seu (pago a mais ao longo do ano) — não é um "bônus" do governo. Vale tratar como qualquer outra entrada extra: se você tem dívidas caras em aberto, quitar ou amortizar costuma ser a prioridade (o "retorno" de quitar uma dívida de juros altos supera qualquer investimento); sem dívidas, é uma boa oportunidade para reforçar a reserva de emergência ou dar um aporte maior num objetivo de longo prazo.',
+      quick:["Toda dívida é ruim?","O que é reserva de emergência?"] },
+    { id:"decimo-terceiro", keywords:["decimo terceiro","13 salario","o que fazer com o 13"],
+      answer:'O 13º salário é uma boa oportunidade de planejamento porque é um valor grande e previsível. Uma ordem de prioridade comum: primeiro, quitar ou reduzir dívidas caras (cartão, cheque especial, consignado com juros altos); depois, reforçar a reserva de emergência se ainda não estiver completa; só então, reservar uma parte para desejos do fim de ano e outra para investimentos de mais longo prazo. Evitar gastar tudo de uma vez em consumo é o erro mais comum nessa época.',
+      quick:["Toda dívida é ruim?","O que é reserva de emergência?"] },
+    { id:"fluxo-de-caixa", keywords:["fluxo de caixa pessoal","fluxo de caixa","o que e fluxo de caixa"],
+      answer:'Fluxo de caixa pessoal é o registro de tudo que entra e sai do seu bolso ao longo do tempo — não só "quanto sobra no fim do mês", mas quando cada entrada e saída acontece. É útil porque revela problemas de timing que o saldo total esconde: por exemplo, ter renda suficiente no mês mas ficar sem dinheiro na terceira semana porque as contas grandes vencem antes do salário cair. A Bússola já monta esse fluxo automaticamente a partir do que você registra em Rendimentos e Despesas.',
+      quick:["Como estão minhas finanças?","Como montar um orçamento do zero?"] },
+    { id:"receitas-despesas-fixas-variaveis", keywords:["receita fixa e variavel","despesa fixa e variavel","o que e despesa fixa","o que e despesa variavel","diferenca entre fixo e variavel"],
+      answer:'<strong>Fixas</strong> são as que se repetem todo mês, geralmente no mesmo valor (aluguel, mensalidades, assinaturas) — fáceis de prever, mas também as mais "presas": exigem negociação ou cancelamento pra mudar, não dá pra simplesmente "gastar menos" nelas no mês corrente. <strong>Variáveis</strong> mudam de mês a mês (alimentação, lazer, compras) — geralmente é aqui que sobra mais espaço para ajuste rápido quando o orçamento aperta. Separar os dois tipos ajuda a entender quanto da sua renda já está comprometido antes mesmo do mês começar.',
+      quick:["O que é a regra 50/30/20?"] },
+    { id:"essencial-nao-essencial", keywords:["despesa essencial","despesa nao essencial","o que e essencial","gasto essencial"],
+      answer:'Essenciais são os gastos que mantêm sua vida funcionando — moradia, alimentação, transporte, saúde, educação; costumam ser difíceis de cortar no curto prazo sem mudar de vida. Não essenciais (ou "desejos") são o que melhora sua qualidade de vida mas não é indispensável — lazer, compras, assinaturas de entretenimento. A distinção importa porque, quando o orçamento aperta, é nos não essenciais que normalmente há mais espaço de manobra rápida.',
+      quick:["O que é a regra 50/30/20?"] },
+    { id:"planejamento-grande-compra", keywords:["planejar uma grande compra","planejar comprar um carro","juntar dinheiro para comprar","planejar uma compra grande"],
+      answer:'Para planejar uma compra grande (carro, viagem, um imóvel): defina o valor-alvo e o prazo, calcule quanto precisa guardar por mês para chegar lá, e prefira manter esse dinheiro em algo de boa liquidez enquanto ele for de curto/médio prazo (Tesouro Selic, CDB com liquidez diária) — deixando a renda variável de fora dessa reserva específica, já que ela pode estar em baixa justamente na hora que você precisar sacar. Me diga o valor e o prazo que eu calculo quanto guardar por mês.',
+      quick:["Quero criar essa meta na Bússola","O que é liquidez?"] },
+    { id:"credito-rotativo", keywords:["credito rotativo","rotativo do cartao","o que e rotativo"],
+      answer:'O crédito rotativo do cartão é acionado quando você paga menos que o valor total da fatura — o restante "rola" para o mês seguinte com um dos juros mais altos do mercado brasileiro (facilmente acima de 400% ao ano). Ele deveria ser usado só como uma emergência de poucos dias, nunca como forma recorrente de esticar o orçamento. Se você entrou no rotativo, o primeiro passo costuma ser buscar uma linha de crédito mais barata (empréstimo pessoal ou consignado) para quitar o cartão o quanto antes.',
+      quick:["O que é pagamento mínimo?","O que é CET?"] },
+    { id:"pagamento-minimo", keywords:["pagamento minimo","pagar o minimo da fatura","o que e pagamento minimo"],
+      answer:'O pagamento mínimo é a menor quantia que a operadora exige para não considerar a fatura em atraso — geralmente entre 15% e 20% do total. Pagar só o mínimo evita a "negativação" imediata, mas joga o restante da dívida no crédito rotativo, com juros altíssimos incidindo sobre o saldo que ficou. É uma armadilha comum: parece que "está tudo bem" porque a fatura não veio em atraso, mas a dívida cresce rápido por trás.',
+      quick:["O que é crédito rotativo?"] },
+    { id:"amortizacao", keywords:["o que e amortizacao","amortizar uma divida","amortizar financiamento"],
+      answer:'Amortizar é pagar uma parte do valor principal de uma dívida além do combinado, reduzindo o saldo devedor (e, consequentemente, os juros futuros sobre ele) — diferente de só pagar a parcela normal, que já tem juros embutidos calculados sobre o saldo atual. Em financiamentos, amortizar antecipadamente costuma valer mais a pena quanto maior for a taxa de juros do contrato: quitar uma parte de um financiamento a 12% ao ano "rende" mais do que deixar esse dinheiro rendendo 10% em um investimento.',
+      quick:["O que é CET?","SAC ou Price, qual é melhor?"] },
+    { id:"priorizar-dividas", keywords:["qual divida pagar primeiro","priorizar dividas","por onde comecar a pagar dividas","ordem para pagar dividas"],
+      answer:'Duas formas práticas de decidir a ordem: priorizar pela <strong>taxa de juros</strong> (quita primeiro a mais cara — método avalanche, mais barato no total) ou priorizar pelo <strong>menor saldo</strong> restante (método bola de neve, dá vitórias rápidas que ajudam a manter o ânimo). Se alguma dívida já está atrasada e negativada, ela costuma vir na frente das outras, independente do método, porque o custo de manter o nome sujo (juros de mora + dificuldade de crédito) pesa mais.',
+      quick:["Como sair de uma dívida com juros altos?","O que é nome sujo no Serasa?"] },
+    { id:"juros-simples", keywords:["juros simples","diferenca entre juros simples e composto"],
+      answer:'Juros simples incidem sempre sobre o valor original (o principal), sem "juros sobre juros" — o crescimento é linear, não acelera com o tempo. Na prática, quase nenhum investimento ou dívida do dia a dia usa juros simples puro; a maioria (poupança, financiamentos, cartão, Tesouro) usa juros compostos, que crescem de forma acelerada quanto mais tempo passa. A diferença fica grande em prazos longos — é por isso que juros compostos "trabalham a seu favor" quando você investe, e "contra você" quando é dívida.',
+      quick:["O que é juros compostos?"] },
+    { id:"rentabilidade-nominal-real", keywords:["rentabilidade nominal e real","rentabilidade real","rentabilidade nominal","o que e rentabilidade real"],
+      answer:'Rentabilidade nominal é o número "bruto" que um investimento rendeu, sem descontar a inflação do período. Rentabilidade real é o que sobra depois de descontar a inflação — é o que de fato importa para saber se o seu poder de compra cresceu. Um investimento que rendeu 10% num ano em que a inflação foi 8% teve rentabilidade real de aproximadamente 2%, não 10%. Sempre que possível, compare investimentos pela rentabilidade real, especialmente em prazos longos.',
+      quick:["O que é inflação?","O que é IPCA?"] },
+    { id:"ipca", keywords:["o que e o ipca","ipca","indice de inflacao"],
+      answer:'O IPCA (Índice Nacional de Preços ao Consumidor Amplo) é o índice oficial de inflação do Brasil, medido pelo IBGE, e usado pelo Banco Central como referência para a meta de inflação do país. É também a base de investimentos como o Tesouro IPCA+, que paga essa inflação mais uma taxa fixa — ou seja, protege seu poder de compra e ainda rende algo acima dela.',
+      quick:["O que é Tesouro Direto?","O que é inflação?"] },
+    { id:"debentures", keywords:["debenture","debentures","credito privado"],
+      answer:'Debêntures são títulos de dívida emitidos por empresas (não bancos) para captar dinheiro no mercado — ao comprar uma, você empresta para aquela empresa em troca de juros. Fazem parte do que se chama "crédito privado". Costumam pagar mais que a renda fixa bancária tradicional, mas com mais risco: não têm a garantia do FGC, e dependem da saúde financeira da empresa emissora. As "incentivadas" (infraestrutura) costumam ser isentas de IR para pessoa física.',
+      quick:["O que é o FGC?","O que é diversificação?"] },
+    { id:"marcacao-a-mercado", keywords:["marcacao a mercado","o que e marcacao a mercado"],
+      answer:'Marcação a mercado é a atualização diária do preço de um título de renda fixa conforme as condições atuais do mercado, mesmo antes do vencimento — é por isso que um Tesouro Prefixado, por exemplo, pode mostrar saldo menor que o investido se você olhar antes do prazo final, mesmo "garantindo" a taxa contratada no vencimento. Se você resgatar antes do vencimento, vende pelo preço de mercado do dia, que pode estar acima ou abaixo do que você pagou. Segurar até o vencimento evita esse efeito.',
+      quick:["O que é Tesouro Direto?","O que é liquidez?"] },
+    { id:"etfs", keywords:["o que e um etf","etf","etfs","fundo de indice"],
+      answer:'ETF (Exchange Traded Fund) é um fundo negociado na bolsa como se fosse uma ação, que replica um índice (por exemplo, o Ibovespa ou o S&P 500) — comprando uma cota, você ganha exposição a uma cesta inteira de ativos de uma vez, o que já traz diversificação embutida. Costuma ter taxas de administração bem menores que fundos ativos tradicionais, já que não depende de um gestor escolhendo ativos individualmente.',
+      quick:["O que são ações?","O que é diversificação?"] },
+    { id:"fundos-investimento", keywords:["fundo de investimento","fundos de investimento","como funciona um fundo","cotas de um fundo"],
+      answer:'Um fundo de investimento reúne o dinheiro de vários investidores (cotistas) para ser gerido por um profissional ou instituição, seguindo uma estratégia definida (renda fixa, ações, multimercado, imobiliário). Ao investir, você compra "cotas" — a fração do patrimônio total do fundo que corresponde ao seu investimento. Vale sempre olhar: a taxa de administração (e de performance, se houver), o histórico de rentabilidade comparado ao índice de referência, e a política de resgate (quanto tempo demora até o dinheiro cair na conta).',
+      quick:["O que são ETFs?","O que são fundos imobiliários?"] },
+    { id:"alocacao-rebalanceamento", keywords:["alocacao de ativos","rebalanceamento","rebalancear carteira","o que e rebalanceamento"],
+      answer:'Alocação de ativos é como você distribui o dinheiro entre as categorias (renda fixa, ações, FIIs, etc.) — geralmente a decisão que mais impacta o resultado de uma carteira no longo prazo, mais até do que escolher o ativo "perfeito" dentro de cada categoria. Rebalancear é revisar periodicamente (a cada 6–12 meses, por exemplo) e ajustar de volta às proporções-alvo, já que ativos que subiram mais passam a pesar mais na carteira do que o planejado originalmente — o que, sem querer, aumenta o risco assumido.',
+      quick:["O que é diversificação?","O que é meu perfil de investidor?"] },
+    { id:"ir-declaracao-anual", keywords:["declaracao anual do imposto de renda","como declarar imposto de renda","declaracao de ir","declarar ir"],
+      answer:'A declaração anual do Imposto de Renda é obrigatória para quem se enquadra nos critérios definidos todo ano pela Receita Federal (geralmente ligados a renda recebida, posse de bens, ou movimentação financeira acima de certos limites). Nela, você informa rendimentos (tributáveis, isentos e sujeitos a tributação exclusiva), bens e direitos (incluindo investimentos) e pode usar deduções para reduzir o imposto devido. Como os limites e regras são atualizados todo ano, confirme sempre no site oficial da Receita Federal (gov.br) antes da época da declaração.',
+      quick:["O que são rendimentos tributáveis e isentos?","O que é DARF?"] },
+    { id:"rendimentos-tributaveis-isentos", keywords:["rendimentos tributaveis","rendimentos isentos","o que e isento de imposto de renda"],
+      answer:'Rendimentos tributáveis entram no cálculo do Imposto de Renda devido (salário, aluguéis recebidos, a maioria dos investimentos de renda fixa). Rendimentos isentos não entram nesse cálculo, mas geralmente ainda precisam ser informados na declaração (poupança, LCI/LCA, dividendos de ações, a maioria das distribuições de FIIs). A regra muda conforme o tipo específico de rendimento — na dúvida sobre um caso específico, vale confirmar com um contador ou no site da Receita Federal.',
+      quick:["Como funciona o imposto de renda sobre investimentos?"] },
+    { id:"darf", keywords:["o que e darf","darf","pagar darf"],
+      answer:'DARF (Documento de Arrecadação de Receitas Federais) é o boleto usado para pagar tributos federais fora da folha de pagamento — o exemplo mais comum na vida financeira pessoal é o imposto sobre ganho de capital na venda de ações acima do limite de isenção mensal, que deve ser calculado e pago via DARF até o último dia útil do mês seguinte à venda, por conta própria (não é retido automaticamente pela corretora). Atrasar gera juros e multa. Alíquotas e prazos podem mudar — confirme sempre no site oficial da Receita Federal.',
+      quick:["O que é ganho de capital?"] },
+    { id:"ganho-de-capital", keywords:["ganho de capital","o que e ganho de capital","imposto sobre venda de acoes"],
+      answer:'Ganho de capital é o lucro obtido na venda de um bem ou investimento por um valor maior do que o de compra — em ações, por exemplo, há isenção de IR para vendas de até R$ 20 mil por mês (fora day trade), mas acima disso o lucro é tributado, apurado e pago pelo próprio investidor via DARF. Em imóveis, o ganho de capital na venda também costuma ser tributado, com algumas isenções específicas (como reinvestir em outro imóvel residencial dentro de um prazo). Como os limites podem mudar, confirme sempre os valores vigentes numa fonte oficial antes de decidir.',
+      quick:["O que é DARF?","Como funciona o imposto de renda sobre investimentos?"] },
+    { id:"deducoes-dependentes", keywords:["deducoes do imposto de renda","dependente no imposto de renda","o que posso deduzir no ir"],
+      answer:'As principais deduções permitidas na declaração completa do IR costumam incluir dependentes (um valor fixo por dependente), gastos com educação (até um teto), despesas médicas (sem teto, mas precisam de comprovação), pensão alimentícia paga por decisão judicial, e contribuições a previdência privada (PGBL, até 12% da renda bruta). Vale sempre comparar o resultado da declaração completa (com deduções) com a simplificada (desconto padrão), já que a Receita costuma calcular automaticamente qual é mais vantajosa. Os valores e regras são atualizados todo ano — confirme sempre no site oficial.',
+      quick:["O que é previdência privada?"] },
+    { id:"iptu-ipva-itbi", keywords:["iptu","ipva","itbi","impostos sobre imoveis","impostos sobre carro"],
+      answer:'<strong>IPTU</strong> (Imposto Predial e Territorial Urbano): cobrado anualmente pelo município sobre a posse de um imóvel urbano. <strong>IPVA</strong> (Imposto sobre a Propriedade de Veículos Automotores): cobrado anualmente pelo estado sobre a posse de um veículo. <strong>ITBI</strong> (Imposto de Transmissão de Bens Imóveis): cobrado pelo município na transferência de propriedade de um imóvel (na compra, por exemplo), geralmente uma única vez. As alíquotas variam por município/estado e mudam com frequência — sempre confirme o valor atual direto na prefeitura ou no estado antes de planejar uma compra.',
+      quick:["Vale a pena comprar ou alugar imóvel?"] },
+    { id:"taxas-publicas-contribuicoes", keywords:["taxas publicas","contribuicoes obrigatorias","impostos sobre consumo","o que e icms","o que e iss"],
+      answer:'No dia a dia, além dos impostos diretos (IR, IPTU, IPVA), a maior parte da carga tributária que uma pessoa física paga vem embutida no preço de produtos e serviços — como ICMS (estadual, sobre circulação de mercadorias) e ISS (municipal, sobre serviços). Também existem contribuições específicas, como a previdenciária (INSS) descontada de quem tem carteira assinada ou contribui como autônomo. Como esses tributos são numerosos e mudam por região, o foco prático de planejamento financeiro pessoal costuma ser mais nos impostos diretos e nas obrigações que você paga conscientemente (IR, IPTU, IPVA) do que tentar rastrear cada imposto embutido em cada compra.',
+      quick:["O que é IPTU, IPVA e ITBI?"] },
+    { id:"cdb-vs-tesouro-selic", keywords:["cdb com tesouro selic","cdb ou tesouro selic","comparar cdb e tesouro","cdb x tesouro selic","cdb","tesouro selic"],
+      answer:'Comparando um CDB (ex.: 110% do CDI) com o Tesouro Selic — os dois costumam ser usados para o mesmo tipo de objetivo (reserva de emergência, curto prazo):<br>• <strong>Segurança</strong>: Tesouro é garantido pelo Tesouro Nacional; CDB é garantido pelo FGC até R$ 250 mil por CPF/instituição — ambos considerados de baixo risco, mas o Tesouro tem um lastro ligeiramente mais sólido.<br>• <strong>Rentabilidade</strong>: um CDB acima de 100% do CDI tende a render um pouco mais que o Tesouro Selic (que rende perto de 100% da Selic, muito próxima do CDI) — mas isso varia por instituição e momento.<br>• <strong>Liquidez</strong>: ambos podem ter liquidez diária, mas vale sempre conferir nas condições específicas do CDB, que variam por banco.<br>• <strong>Tributação</strong>: idêntica — tabela regressiva de IR nos dois.<br><br>Na prática, para reserva de emergência, muita gente combina os dois ou escolhe pelo CDB com a melhor taxa de um banco confiável, dentro do limite do FGC.',
+      quick:["O que é CDB?","O que é Tesouro Direto?","O que é o FGC?"] },
+    { id:"acoes-vs-fiis", keywords:["acoes ou fundos imobiliarios","comparar acoes e fiis","acoes ou fiis","acoes x fiis"],
+      answer:'Ações e Fundos Imobiliários (FIIs) são as duas portas de entrada mais comuns na renda variável, mas com perfis diferentes:<br>• <strong>Ações</strong>: você vira sócio de uma empresa, com potencial de valorização maior no longo prazo, mas também mais volatilidade e menos previsibilidade de renda mensal.<br>• <strong>FIIs</strong>: você vira "sócio" de um conjunto de imóveis ou títulos imobiliários, com distribuição de renda mensal geralmente mais previsível (isenta de IR na distribuição), mas com potencial de valorização historicamente menor que ações.<br><br>Não são excludentes — muita gente combina os dois: FIIs para gerar renda mensal mais estável, ações para buscar crescimento de patrimônio no longo prazo.',
+      quick:["O que são ações?","O que são fundos imobiliários?","O que é diversificação?"] },
+    { id:"cdb-vs-lci", keywords:["cdb ou lci","comparar cdb e lci","cdb ou lca","cdb x lci","lci","lca"],
+      answer:'CDB e LCI/LCA competem para o mesmo tipo de dinheiro (renda fixa de médio prazo), com uma diferença central: <strong>CDB tem IR</strong> (tabela regressiva), <strong>LCI/LCA é isento</strong> de IR para pessoa física. Isso significa que uma LCI/LCA a uma taxa nominal um pouco menor pode render, líquido, mais do que um CDB de taxa nominal maior — vale sempre comparar a rentabilidade líquida (depois do imposto), não a taxa anunciada. Em compensação, LCI/LCA costuma ter prazo de carência (sem liquidez diária), enquanto muitos CDBs oferecem resgate a qualquer momento — o que pesa mais depende de quando você vai precisar do dinheiro.',
+      quick:["O que é LCI/LCA?","O que é CDB?","Como funciona o imposto de renda sobre investimentos?"] }
+  ];
+  function chatScoreEducationMatch(normText){
+    var best=null, bestScore=0;
+    CHAT_EDUCATION_KB.forEach(function(entry){
+      var score=0;
+      entry.keywords.forEach(function(kw){ if(normText.indexOf(kw)!==-1) score += kw.split(" ").length; });
+      if(score>bestScore){ bestScore=score; best=entry; }
+    });
+    return best;
+  }
+  // Frases-gatilho de pergunta conceitual — deliberadamente amplas, mas nunca disparam se a
+  // frase tiver "meu/minha/meus/minhas" (sinal forte de que é sobre os DADOS do cliente, não
+  // um conceito geral), pra não roubar perguntas como "o que é minha situação financeira".
+  function chatIsEducationalTrigger(normText){
+    if(/\b(meu|minha|meus|minhas)\b/.test(normText)) return false;
+    return /^o que e\b|^oque e\b|^o que sao\b|^o que significa\b|^o que quer dizer\b|^o que fazer com\b|^como funciona\b|^como funcionam\b|^como declarar\b|^pra que serve\b|^para que serve\b|^explica\b|^me explica\b|^explique\b|^diferenca entre\b|^qual a diferenca\b|^vale a pena\b|^e bom investir\b|^e seguro\b|^como sair\b|^como montar\b|^como definir\b|^como organizar\b|^quero aprender\b|^me ensina\b|^ensina\b|^conte sobre\b|^fala sobre\b|^me fala sobre\b|^quais (sao|os) erros\b|^comparar\b|qual e melhor\b|qual o melhor\b|toda divida e ruim\b|e a mesma coisa\b|e o mesmo que\b/.test(normText);
+  }
+  function chatAnswerEducation(entry, ctx){
+    if(ctx){ ctx.topic="educacao"; ctx.lastEduEntry=entry; }
+    return chatMsg('📚 '+entry.answer, entry.quick ? chatQuick(entry.quick) : chatQuick(["Faça uma análise completa","Me dê outra dica"]));
+  }
+  // Continuação curta dentro de um assunto de educação já explicado (ex.: "e isso tem risco?",
+  // "não entendi", "explica mais simples", "quero aprofundar") — educação adaptativa (item 4
+  // do pedido): tenta achar um novo conceito na própria frase primeiro; senão, ajusta o nível
+  // (mais simples / mais fundo) do último tema explicado, usando as versões dedicadas quando
+  // existem, ou oferece os desdobramentos relacionados em vez de simplesmente "não entendi".
+  function chatWantsSimpler(t){ return /nao entendi|não entendi|nao ficou claro|mais simples|de forma mais simples|pode simplificar|explica de outro jeito|em palavras simples|nao captei|nao peguei/.test(t); }
+  function chatWantsDeeper(t){ return /mais detalhes|aprofundar|aprofunda|quero saber mais|mais profundo|nivel avancado|se aprofundar|quero entender melhor/.test(t); }
+  function chatHandleEducacaoFollowUp(normText, ctx){
+    var hit = chatScoreEducationMatch(normText);
+    if(hit) return chatAnswerEducation(hit, ctx);
+    var last = ctx.lastEduEntry;
+    if(last && chatWantsSimpler(normText)){
+      if(last.simple){
+        return chatMsg('🔎 Deixa eu tentar de um jeito mais simples: '+last.simple, chatQuick(["Agora quero aprofundar","Entendi, obrigado(a)"]));
+      }
+      return chatMsg('🔎 Resumindo bem direto: '+esc(last.answer.replace(/<[^>]+>/g," ").split(".")[0])+'.', chatQuick(last.quick||["Faça uma análise completa"]));
+    }
+    if(last && chatWantsDeeper(normText)){
+      if(last.deep){
+        return chatMsg('🔬 Aprofundando: '+last.deep, chatQuick(["Isso se aplica aos meus dados?","Faça uma análise completa"]));
+      }
+      return chatMsg('🧭 Não tenho uma versão ainda mais técnica escrita especificamente pra esse tema, mas posso comparar com um conceito relacionado, se ajudar.', chatQuick(last.quick||[]));
+    }
+    if(last && last.quick && last.quick.length>0){
+      return chatMsg('📚 Sobre esse assunto, posso aprofundar em:<br>'+last.quick.map(function(q){ return '• "'+esc(q)+'"'; }).join('<br>')+'<br><br>Ou pergunte de outro jeito que eu tento explicar melhor.', chatQuick(last.quick));
+    }
+    return chatFallback();
+  }
+
   /* ---------- 3a. Detectores genéricos de "operação" (o que o cliente quer saber) ---------- */
   function chatWantsMax(t){ return /\bmaior\b|\bmais alta\b|\bmais alto\b|\bmais caro\b|\bprincipal\b|\btop\b|\bmais gastei\b|\bmais pesou\b/.test(t); }
   function chatWantsMin(t){ return /\bmenor\b|\bmais baixa\b|\bmais baixo\b|\bmais barato\b/.test(t); }
@@ -6255,7 +6554,7 @@
     despesas: ["despesa","despesas","gasto","gastos","gastei","gastar","paguei","pagar","saiu","saida","saidas","comprei","compra","compras","custou","custo","categoria","categorias"],
     cartoes: ["cartao","cartoes","fatura","faturas","limite do cartao"],
     dividas: ["divida","dividas","emprestimo","emprestimos","financiamento","financiamentos","parcela","parcelas","parcelado"],
-    investimentos: ["investimento","investimentos","investi","invisto","investir","aporte","aportes","aportei","aplicacao","aplicado","aplicar","rendeu","rende","render","juros","carteira de investimento","renda passiva","guardado","guardei"],
+    investimentos: ["investimento","investimentos","investi","invisto","investir","aporte","aportes","aportei","aplicacao","aplicado","aplicar","rendeu","rende","render","juros","carteira de investimento","carteira","renda passiva","guardado","guardei"],
     patrimonio: ["patrimonio","riqueza","ativos","passivos"],
     metas: ["meta","metas","objetivo","objetivos","sonho","sonhos","guardar","poupar"],
     orcamento: ["orcamento","50 30 20","50/30/20","essenciais","nao essenciais","regra dos"],
@@ -6309,6 +6608,45 @@
   }
   function chatPct(part, total){ return total>0 ? ((part/total)*100).toFixed(0)+"%" : "—"; }
 
+  /* ---------- Narrativa dado → interpretação → impacto → sugestão → próximo passo ----------
+     Usada quando há variação real de despesas entre dois períodos comparáveis: não é só o
+     número, é a leitura completa — o que mudou, por quê, o que isso significa se continuar,
+     e uma pergunta de acompanhamento natural. Reaproveita os mesmos totais/categoria já
+     calculados pelo resto do motor; nunca inventa uma categoria ou valor. */
+  function chatExpenseImpactNarrative(period, ctx){
+    var totalCur = chatSumExpense(period.months);
+    var prevMonths = chatContextPrevOrAuto(ctx, period);
+    var totalPrev = chatSumExpense(prevMonths);
+    if(totalPrev<=0) return null; // sem período comparável — quem chama cai pro texto simples
+    var pct = ((totalCur-totalPrev)/totalPrev)*100;
+    var byCatCur = chatCategoryTotals(period.months, state.expenses, "cat");
+    var byCatPrev = chatCategoryTotals(prevMonths, state.expenses, "cat");
+    var deltas = Object.keys(byCatCur).map(function(c){ return {cat:c, cur:byCatCur[c], prev:byCatPrev[c]||0, diff:byCatCur[c]-(byCatPrev[c]||0)}; })
+      .filter(function(x){ return x.prev>0; }).sort(function(a,b){ return Math.abs(b.diff)-Math.abs(a.diff); });
+    var top = deltas[0];
+    var parts = [];
+    var dirEmoji = pct>=0 ? "📈" : "📉";
+    var dirVerbo = pct>=0 ? "aumentaram" : "diminuíram";
+    // Dado
+    parts.push(dirEmoji+' Suas despesas '+dirVerbo+' '+Math.abs(pct).toFixed(0)+'% '+period.label+' (de '+fmtMoney(totalPrev)+' para '+fmtMoney(totalCur)+').');
+    // Interpretação + impacto
+    if(top && Math.abs(top.diff)>=1){
+      var motivoVerbo = top.diff>=0 ? "O principal motivo foi" : "A maior redução veio de";
+      parts.push(motivoVerbo+' <strong>'+esc(top.cat)+'</strong>, que passou de '+fmtMoney(top.prev)+' para '+fmtMoney(top.cur)+' — '+fmtMoney(Math.abs(top.diff))+' '+(top.diff>=0?'a mais':'a menos')+' que o período anterior.');
+      if(top.diff>0){
+        var anual = top.diff*12;
+        parts.push('Se esse padrão se repetir todos os meses, o impacto anualizado seria de aproximadamente <strong>'+fmtMoney(anual)+'</strong>.');
+      }
+    }
+    // Sugestão + próximo passo (só quando é alta, pra não sugerir "reduzir" numa queda)
+    var quick = ["Qual foi minha maior despesa?","Como estão minhas finanças?"];
+    if(pct>0 && top){
+      parts.push('Quer que eu analise onde dentro de <strong>'+esc(top.cat)+'</strong> você pode reduzir?');
+      quick = ["Onde posso reduzir em "+top.cat+"?","Isso é muito da minha renda?","Faça uma análise completa"];
+    }
+    return {html: parts.join(' '), quick: quick, topCat: top?top.cat:null};
+  }
+
   /* ---------- 4b. Camada de dados: agregações reaproveitáveis por vários tópicos ----------
      Sempre em cima das mesmas funções puras já usadas no resto do painel
      (monthTotals, monthEntries, accountTotals, cardFatura, debtPago, etc.) —
@@ -6354,8 +6692,82 @@
   function chatTotalInvested(){ return state.investmentAccounts.reduce(function(s,a){return s+accountTotals(a).saldoAtual;},0); }
   function chatTotalAportado(){ return state.investmentAccounts.reduce(function(s,a){return s+accountTotals(a).aportado;},0); }
   function chatTotalRendimentoInvest(){ return state.investmentAccounts.reduce(function(s,a){return s+accountTotals(a).rendimento;},0); }
+  function chatEssentialsAvg(months){
+    if(months.length===0) return 0;
+    var total=0;
+    months.forEach(function(m){ monthEntries(state.expenses,m).forEach(function(e){ if(ESSENCIAIS.indexOf(e.cat)!==-1) total+=e.valor; }); });
+    return total/months.length;
+  }
 
-  /* ---------- 4c. Handlers por tópico ---------- */
+  /* ---------- Cruzamento inteligente entre áreas ----------
+     Diferente de computeDiagnosisCards (que olha cada dimensão separadamente — dívidas,
+     reserva, orçamento...), isto relaciona DUAS áreas ao mesmo tempo pra achar coisas que só
+     aparecem quando você olha os dados juntos. Sempre com números reais; nunca dispara se
+     faltar dado pra sustentar a comparação. */
+  function computeCrossInsights(){
+    var insights = [];
+    var months = allMonthsSorted();
+    if(months.length===0) return insights;
+    var recent = months.slice(-3);
+    var avgAporte = totalMonthlyAporte();
+
+    // 1) Investindo com dívida cara em aberto — comparar custo da dívida com o retorno do investimento
+    var dividasCaras = state.debts.filter(function(d){ return !debtIsQuitada(d) && d.taxa>=8; });
+    if(avgAporte>0 && dividasCaras.length>0){
+      var pior = dividasCaras.slice().sort(function(a,b){return b.taxa-a.taxa;})[0];
+      insights.push({ tag:"Dívida × Investimento", sentiment:"neg",
+        text:'Você está investindo cerca de <strong>'+fmtMoney(avgAporte)+'/mês</strong>, mas tem a dívida "<strong>'+esc(pior.nome)+'</strong>" a <strong>'+pior.taxa+'% ao mês</strong> em aberto. Dificilmente um investimento de baixo risco rende mais que isso por mês — quitar essa dívida primeiro tende a "render" mais do que manter o dinheiro investido.',
+        action:'Compare o custo da dívida "'+esc(pior.nome)+'" ('+pior.taxa+'% a.m.) com o rendimento médio da sua carteira antes de decidir para onde direcionar o próximo real disponível.' });
+    }
+
+    // 2) Cartão no limite + reserva de emergência baixa = risco duplo
+    var totalLimite = chatTotalCardLimit(), totalFaturaAll = chatTotalCardFatura();
+    var usoCartao = totalLimite>0 ? totalFaturaAll/totalLimite : 0;
+    var reservaAccs = state.investmentAccounts.filter(function(a){ return a.categoria==="Reserva de Emergência"; });
+    var reservaSaldo = reservaAccs.reduce(function(s,a){ return s+accountTotals(a).saldoAtual; },0);
+    var essMedio = chatEssentialsAvg(recent);
+    var mesesReserva = essMedio>0 ? reservaSaldo/essMedio : null;
+    if(state.cards.length>0 && usoCartao>=0.6 && (mesesReserva===null || mesesReserva<3)){
+      insights.push({ tag:"Cartão × Reserva", sentiment:"neg",
+        text:'Seus cartões estão usando <strong>'+(usoCartao*100).toFixed(0)+'%</strong> do limite, e sua reserva de emergência '+(mesesReserva===null?'ainda não existe':'cobre só '+mesesReserva.toFixed(1)+' mês(es)')+'. É uma combinação de risco: se algo imprevisto acontecer, sobra pouco fôlego tanto no cartão quanto na reserva.',
+        action:'Priorize reconstruir a reserva de emergência antes de continuar dependendo do limite do cartão — ela é o que evita precisar do crédito caro na próxima emergência.' });
+    }
+
+    // 3) Meta pendente andando devagar comparada ao total que você já investe por mês
+    var pendentes = state.goals.filter(function(g){ return g.target>0 && goalCurrentValue(g)<g.target; });
+    if(pendentes.length>0 && avgAporte>0){
+      var gTop = chatPickPendingGoal();
+      var pace = gTop ? computeGoalRecentPace(gTop) : null;
+      if(gTop && pace!==null && pace < avgAporte*0.3){
+        insights.push({ tag:"Meta × Ritmo de investimento", sentiment:"neg",
+          text:'Você investe em média <strong>'+fmtMoney(avgAporte)+'/mês</strong> no total, mas só <strong>'+fmtMoney(pace)+'/mês</strong> está indo para a meta "<strong>'+esc(gTop.name)+'</strong>". No ritmo atual dela, o prazo fica bem mais longo do que precisaria se uma fatia maior do seu aporte total fosse redirecionada pra lá.',
+          action:'Se "'+esc(gTop.name)+'" for prioridade, considere redirecionar uma fatia maior do seu aporte mensal total para ela.' });
+      }
+    }
+
+    // 4) Renda concentrada numa única fonte + essenciais consumindo a maior parte dela
+    var byTipoInc = {};
+    recent.forEach(function(m){ monthEntries(state.incomes,m).forEach(function(i){ byTipoInc[i.tipo]=(byTipoInc[i.tipo]||0)+i.valor; }); });
+    var tiposInc = Object.keys(byTipoInc);
+    var totalIncRecent = tiposInc.reduce(function(s,k){return s+byTipoInc[k];},0);
+    var essenciaisPct = totalIncRecent>0 ? (essMedio*recent.length/totalIncRecent)*100 : 0;
+    if(tiposInc.length===1 && totalIncRecent>0 && essenciaisPct>55){
+      insights.push({ tag:"Renda concentrada", sentiment:"neg",
+        text:'Toda a sua renda recente vem de uma única fonte ("<strong>'+esc(tiposInc[0])+'</strong>"), e seus gastos essenciais consomem cerca de <strong>'+essenciaisPct.toFixed(0)+'%</strong> dela. Isso deixa pouca margem se essa fonte de renda tiver algum imprevisto.',
+        action:'Ter mais de uma fonte de renda, mesmo pequena, reduz esse risco — e reforçar a reserva de emergência ajuda a cobrir esse tipo de imprevisto enquanto isso.' });
+    }
+
+    // 5) Positivo: investindo com consistência, sem dívida cara, com reserva ok
+    if(avgAporte>0 && dividasCaras.length===0 && mesesReserva!==null && mesesReserva>=3){
+      insights.push({ tag:"Trajetória", sentiment:"pos",
+        text:'Você está investindo com consistência, sem dívidas caras em aberto, e já com reserva de emergência dentro do recomendado (3+ meses). Essa combinação é exatamente a base que sustenta a construção de patrimônio no longo prazo.',
+        action:null });
+    }
+
+    return insights;
+  }
+
+
 
   function chatHandleReceitas(normText, ctx){
     var period = chatResolvePeriod(normText) || ctx.period || {months:[state.viewMonth], label:"em "+monthLabel(state.viewMonth), key:"mes_atual"};
@@ -6491,6 +6903,8 @@
       return chatMsg('📉 A categoria que mais diminuiu foi <strong>'+esc(wd.cat)+'</strong>: de '+fmtMoney(wd.prev)+' para '+fmtMoney(wd.cur)+' (queda de '+Math.abs(((wd.cur-wd.prev)/wd.prev)*100).toFixed(0)+'%).');
     }
     if(chatWantsComparison(normText) || chatWantsTrend(normText)){
+      var narrative = chatExpenseImpactNarrative(period, ctx);
+      if(narrative) return chatMsg(narrative.html, chatQuick(narrative.quick));
       var prevM4 = chatContextPrevOrAuto(ctx, period);
       var prevTotal2 = chatSumExpense(prevM4);
       return chatMsg('💸 Suas despesas '+period.label+' somaram <strong>'+fmtMoney(totalGeral)+'</strong>. '+chatDeltaSentence(totalGeral, prevTotal2, "aumentou", "diminuiu"), chatQuick(["Qual categoria foi responsável?","Qual foi minha maior despesa?"]));
@@ -6773,14 +7187,128 @@
 
     var diagCards = computeDiagnosisCards();
     var negCards = diagCards.filter(function(c){ return c.sentiment==="neg" && c.action; });
+    var cross = computeCrossInsights();
+    var crossNeg = cross.filter(function(c){ return c.sentiment==="neg"; });
+    var crossPos = cross.filter(function(c){ return c.sentiment==="pos"; });
+    if(crossNeg.length>0){
+      parts.push('<strong>🔗 Relações entre suas finanças</strong><br>'+crossNeg.map(function(c){ return c.text; }).join('<br><br>'));
+    }
     if(negCards.length>0){
       parts.push('<strong>💡 Oportunidades e recomendações</strong><br>'+negCards.slice(0,4).map(function(c){ return '• '+esc(c.action); }).join('<br>'));
     }
+    if(crossPos.length>0){
+      parts.push(crossPos.map(function(c){ return '🟢 '+c.text; }).join('<br>'));
+    }
 
-    var proximoPasso = negCards.length>0 ? negCards[0].action : "Continue registrando seus dados com regularidade — é isso que deixa esse diagnóstico cada vez mais preciso.";
+    var proximoPasso = crossNeg.length>0 ? crossNeg[0].action : (negCards.length>0 ? negCards[0].action : "Continue registrando seus dados com regularidade — é isso que deixa esse diagnóstico cada vez mais preciso.");
     parts.push('<strong>🧭 Seu próximo passo</strong><br>'+esc(proximoPasso));
 
     return chatMsg(parts.join('<br><br>'), chatQuick(["Onde posso economizar?","Quanto falta para minhas metas?","Estou no caminho certo?"]));
+  }
+
+  /* ---------- Perguntas abertas ("o que você faria no meu lugar?", "qual deveria ser minha
+     prioridade?") — item 3 do pedido: análise estruturada, deixando premissas e limites claros,
+     nunca soando como uma recomendação financeira formal. ---------- */
+  function chatWantsOpenAdvice(t){ return /no meu lugar|se voce fosse eu|voce faria o que|o que voce faria|na minha situacao o que fazer/.test(t); }
+  function chatHandleOpenAdvice(){
+    var months = allMonthsSorted();
+    if(months.length===0){
+      return chatMsg('🧭 Ainda não tenho dados suficientes para uma análise assim. Registre pelo menos um mês de rendimentos e despesas e eu já consigo te dar um panorama melhor.');
+    }
+    var diagCards = computeDiagnosisCards();
+    var neg = diagCards.filter(function(c){ return c.sentiment==="neg" && c.action; });
+    var cross = computeCrossInsights();
+    var crossNeg = cross.filter(function(c){ return c.sentiment==="neg"; });
+    var parts = [];
+    parts.push('🧭 Não sou consultora financeira e não posso decidir por você — mas, olhando os seus números registrados, aqui está o que eu observaria:');
+    if(crossNeg.length>0){
+      parts.push('<strong>O que chama mais atenção:</strong><br>'+crossNeg.slice(0,2).map(function(c){ return '• '+c.text; }).join('<br>'));
+    }
+    if(neg.length>0){
+      parts.push('<strong>Outros pontos que eu olharia:</strong><br>'+neg.slice(0,3).map(function(c){ return '• '+esc(c.action); }).join('<br>'));
+    }
+    if(crossNeg.length===0 && neg.length===0){
+      parts.push('Não encontrei nenhum ponto de atenção específico nos seus dados agora — o que eu faria no seu lugar é continuar no que já está funcionando e talvez revisar as metas de tempos em tempos.');
+    }
+    var topAction = (crossNeg[0]&&crossNeg[0].action) || (neg[0]&&neg[0].action) || "continuar registrando os dados com regularidade, pra esse tipo de análise ficar cada vez mais precisa";
+    parts.push('Se eu tivesse que escolher <strong>um</strong> próximo passo, seria: '+esc(topAction.replace(/\.\s*$/,""))+'.');
+    parts.push('<span style="opacity:.75; font-size:11px;">Isso é uma leitura dos seus números registrados na Bússola, não uma recomendação financeira formal — decisões maiores (grandes valores, contratos, questões fiscais) valem uma segunda opinião de um profissional certificado.</span>');
+    return chatMsg(parts.join('<br><br>'), chatQuick(["Faça uma análise completa","Quero organizar minha vida financeira"]));
+  }
+
+  /* ---------- Situações difíceis, emocionais e pouco estruturadas (item 10) ----------
+     "Estou cheio de dívidas e lascado", "meu salário não chega ao fim do mês", "tenho medo
+     de não conseguir pagar minhas contas"... Aqui a ordem importa mais que em qualquer outro
+     handler: acolher sem clichê → checar o que já dá pra ver nos dados → se faltar o
+     essencial, perguntar só isso → se já tiver, entregar o plano em etapas menores, sempre
+     com os números reais por trás, nunca prometendo resultado. */
+  function chatWantsDistressHelp(t){
+    return /estou lascado|to lascado|tou lascado|completamente perdido|perdido financeiramente|nao sei o que fazer|nao sei por onde comecar|por onde (eu )?comeco|cheio de dividas|cartao estourad|estourei o cartao|nao chega ao fim do mes|nao consigo guardar dinheiro|nao consigo economizar nada|gastando mais do que ganho|atrasado com varias contas|atrasado com as contas|medo de nao conseguir pagar|desorganizado financeiramente|completamente desorganizado|nao sei como reverter isso|quero reverter isso|contas atrasadas.*por onde/.test(t);
+  }
+  function chatDistressOpener(normText){
+    if(/divida|estourad|lascado/.test(normText)){
+      return '🧭 Primeiro, vamos tirar isso do campo de "tá tudo errado" e colocar em números — isso já ajuda a enxergar melhor. Posso te ajudar a organizar passo a passo.';
+    }
+    if(/nao chega ao fim do mes|gastando mais do que ganho|nao consigo guardar|nao consigo economizar/.test(normText)){
+      return '🧭 Isso é mais comum do que parece, e dá pra entender exatamente onde o dinheiro está indo — vamos olhar os números com calma, sem julgamento.';
+    }
+    if(/perdido|desorganizado|nao sei o que fazer|nao sei por onde/.test(normText)){
+      return '🧭 Tudo bem começar sem saber exatamente por onde ir — é justamente pra isso que estou aqui. Vamos organizar isso junto, um passo de cada vez.';
+    }
+    if(/medo/.test(normText)){
+      return '🧭 Entendo a preocupação. Vamos transformar isso em algo que dá pra enxergar e agir, em vez de ficar só na sensação de incerteza.';
+    }
+    return '🧭 Vamos organizar isso juntos, passo a passo — nenhuma situação financeira se resolve de uma vez só, mas quase sempre dá pra quebrar em partes menores e possíveis.';
+  }
+  function chatHandleFinancialDistress(normText, ctx){
+    ctx.topic = "distress";
+    var months = allMonthsSorted();
+    var opener = chatDistressOpener(normText);
+    var recent = months.slice(-3);
+    var temReceita = months.length>0 && chatSumIncome(recent)>0;
+    var temDespesa = months.length>0 && chatSumExpense(recent)>0;
+    var temDividas = state.debts.length>0;
+
+    // Sem quase nenhum dado — pergunta só o essencial, como no exemplo, em vez de um conselho genérico
+    if(!temReceita && !temDespesa){
+      return chatMsg(opener+'<br><br>Pra eu te ajudar de verdade (e não só com um conselho genérico), preciso entender três coisas: <strong>quanto entra por mês</strong>, <strong>quanto você precisa pra cobrir as despesas essenciais</strong>, e <strong>quais dívidas têm juros mais altos</strong>. Você pode registrar isso nas abas <strong>Rendimentos</strong>, <strong>Despesas</strong> e <strong>Dívidas</strong> — assim que tiver isso, eu volto e monto um plano real com os seus números.',
+        chatQuick(["Como sair de uma dívida com juros altos?","O que é dívida boa e dívida ruim?"]));
+    }
+
+    // Já há dados reais — "Olhei seus registros..." com plano em etapas, adaptado ao que existe
+    var parts = [opener, 'Olhei seus registros — vamos por partes.'];
+    var t = months.length>0 ? monthTotals(months[months.length-1]) : {income:0,expense:0,invest:0,saldo:0};
+    var byCatMes = chatCategoryTotals([state.viewMonth], state.expenses, "cat");
+    var topCat = chatTopKey(byCatMes);
+    var passos = [];
+
+    if(t.saldo<0){
+      passos.push('<strong>1. Estabilizar o orçamento.</strong> Seu saldo do mês está negativo ('+fmtMoney(t.saldo)+') — antes de qualquer outra coisa, o objetivo nº 1 é parar de sair mais dinheiro do que entra.'+(topCat?(' A maior categoria de despesa é <strong>'+esc(topCat)+'</strong> ('+fmtMoney(byCatMes[topCat])+') — geralmente é o primeiro lugar que vale revisar.'):''));
+    } else {
+      passos.push('<strong>1. Orçamento.</strong> Seu saldo do mês está positivo ('+fmtMoney(t.saldo)+') — isso já ajuda; o ponto agora é direcionar essa margem com intenção, em vez de deixá-la se diluir em gastos não planejados.');
+    }
+
+    if(temDividas){
+      var totalDiv = chatTotalDebtRemaining();
+      var atrasadas = state.debts.filter(debtIsAtrasada);
+      var ativos = state.debts.filter(function(d){ return !debtIsQuitada(d); });
+      var piorDiv = ativos.slice().sort(function(a,b){ return b.taxa-a.taxa; })[0];
+      passos.push('<strong>2. Mapear e priorizar as dívidas.</strong> Você tem <strong>'+fmtMoney(totalDiv)+'</strong> em dívidas registradas'+(atrasadas.length>0 ? (', sendo <strong>'+atrasadas.length+' atrasada(s)</strong> — essas vêm primeiro, antes até de olhar taxa de juros: dívida atrasada tende a gerar juros e restrição de crédito por cima do que já deve.') : ', nenhuma atrasada no momento — isso ajuda bastante.')+(piorDiv ? (' Depois das atrasadas, a mais cara é "<strong>'+esc(piorDiv.nome)+'</strong>" a '+piorDiv.taxa+'% ao mês — via de regra, é a que "pesa" mais rápido se ficar parada, então tende a ser a próxima prioridade.') : ''));
+    } else {
+      passos.push('<strong>2. Dívidas.</strong> Não encontrei nenhuma dívida cadastrada na Bússola — se você tem alguma fora do que está registrado (cartão parcelado, empréstimo, financiamento), cadastre na aba <strong>Dívidas</strong> com o valor, a taxa e as parcelas: é isso que falta pra eu conseguir te dizer exatamente qual priorizar primeiro.');
+    }
+
+    var totalLimiteD = chatTotalCardLimit(), totalFaturaD = chatTotalCardFatura();
+    if(state.cards.length>0 && totalLimiteD>0 && (totalFaturaD/totalLimiteD)>=0.6){
+      passos.push('<strong>3. Segurar novas dívidas no cartão.</strong> Seus cartões já estão usando '+((totalFaturaD/totalLimiteD)*100).toFixed(0)+'% do limite — enquanto o resto se estabiliza, evitar novas compras parceladas neles ajuda a não abrir uma segunda frente de juros ao mesmo tempo que você lida com o resto.');
+    }
+
+    passos.push('<strong>'+(passos.length+1)+'. Só depois disso, reserva e investimento.</strong> Reconstruir margem, depois reserva de emergência, e só então voltar a pensar em investir — nessa ordem. Tentar fazer tudo ao mesmo tempo costuma ser o que mais trava esse tipo de situação.');
+
+    parts.push(passos.join('<br><br>'));
+    parts.push('Isso não se resolve de uma vez — são vários passos pequenos, não um só. Quer que eu detalhe o primeiro passo com mais números, ou prefere que eu explique como priorizar as dívidas na prática?');
+
+    return chatMsg(parts.join('<br><br>'), chatQuick(["Onde estou gastando mais?","Como sair de uma dívida com juros altos?","Faça uma análise completa"]));
   }
 
   /* ---------- 4e. Dicas e sugestões (item 5 do pedido) ----------
@@ -6791,6 +7319,25 @@
     var months = allMonthsSorted();
     if(months.length===0){
       return chatMsg('🧭 Ainda não tenho dados suficientes para gerar dicas personalizadas. Registre alguns rendimentos e despesas e pergunte de novo.');
+    }
+    // "Onde posso reduzir em [categoria]?" — pedido específico de uma categoria (geralmente vindo
+    // do "próximo passo" sugerido depois de uma análise de despesas): mostra os maiores
+    // lançamentos daquela categoria (onde exatamente o dinheiro foi) + a dica específica dela,
+    // mesmo que a categoria não seja a maior do mês (o threshold de 15% não se aplica aqui,
+    // porque o cliente já pediu essa categoria especificamente).
+    var catFoco = chatResolveExpenseCategory(normText);
+    if(catFoco && /reduz|economizar|cortar/.test(normText)){
+      var mFoco = ctx.period && ctx.period.months && ctx.period.months.length>0 ? ctx.period.months : [state.viewMonth];
+      var itensFoco = mFoco.reduce(function(arr,m){ return arr.concat(monthEntries(state.expenses,m).filter(function(e){return e.cat===catFoco;})); }, []);
+      if(itensFoco.length===0) return chatMsg('🧭 Não encontrei lançamentos em <strong>'+esc(catFoco)+'</strong> no período que estávamos vendo.');
+      var totalFoco = itensFoco.reduce(function(s,e){return s+e.valor;},0);
+      var maiores = itensFoco.slice().sort(function(a,b){return b.valor-a.valor;}).slice(0,5);
+      var linhasFoco = maiores.map(function(e){ return '• '+esc(e.desc)+': '+fmtMoney(e.valor); }).join('<br>');
+      var tipsFoco = CATEGORY_TIPS[catFoco];
+      var tipFoco = tipsFoco ? tipsFoco[parseInt(state.viewMonth.slice(5,7),10) % tipsFoco.length] : null;
+      var out = '💡 Maiores lançamentos em <strong>'+esc(catFoco)+'</strong> (total de '+fmtMoney(totalFoco)+'):<br>'+linhasFoco;
+      if(tipFoco) out += '<br><br>'+esc(tipFoco);
+      return chatMsg(out, chatQuick(["Isso aumentou em relação ao mês passado?","Faça uma análise completa"]));
     }
     var diagCards = computeDiagnosisCards();
     var neg = diagCards.filter(function(c){ return c.sentiment==="neg" && c.action; });
@@ -6807,6 +7354,101 @@
   /* ---------- 4f. Simulações (item 9 do pedido) ----------
      Sempre deixa claro que é uma estimativa. Quando existe uma taxa de rendimento real
      registrada pelo cliente, usa essa taxa; nunca inventa uma taxa de mercado. */
+  /* ---------- Planejamento livre por valor (item 6 e 8 do pedido: "quero juntar R$X",
+     mantendo o valor na conversa pra follow-ups como "e se eu guardar R$700/mês?") ---------- */
+  function chatHandlePlanejamentoLivre(normText, ctx){
+    var moneyVals = chatExtractMoneyValues(normText);
+    if(moneyVals.length===0) return null;
+    var target = moneyVals[0];
+    var mesesMatch = normText.match(/em\s+(\d+)\s*(anos?|meses?)/);
+    var meses = mesesMatch ? parseInt(mesesMatch[1],10)*(/ano/.test(mesesMatch[2])?12:1) : null;
+    ctx.topic = "planejamento"; ctx.planTarget = target; ctx.planMonths = meses;
+    var parts = [];
+    parts.push('🎯 Para juntar <strong>'+fmtMoney(target)+'</strong>'+(meses?(' em '+meses+' '+(meses===1?'mês':'meses')):'')+':');
+    var quick;
+    if(meses){
+      var necessario = target/meses;
+      parts.push('Você precisaria guardar cerca de <strong>'+fmtMoney(necessario)+'/mês</strong> (soma simples, sem considerar rendimento — investindo esse valor em vez de só guardar, o aporte mensal necessário tende a ser um pouco menor).');
+      quick = ["E se eu guardar R$500 por mês?","Quero criar essa meta na Bússola","O que é juros compostos?"];
+    } else {
+      parts.push('Sem um prazo definido, alguns cenários possíveis:<br>'+[6,12,24,36].map(function(n){ return '• Em '+n+' meses: '+fmtMoney(target/n)+'/mês'; }).join('<br>'));
+      quick = ["E se eu guardar R$500 por mês?","Quero criar essa meta na Bússola"];
+    }
+    return chatMsg(parts.join(' '), chatQuick(quick));
+  }
+  // Continuação de um planejamento livre já iniciado — "e se eu guardar/investir R$X por mês?"
+  // e "comparar R$X, R$Y e R$Z por mês", sempre relativos ao valor-alvo guardado no contexto.
+  function chatHandlePlanFollowUp(normText, ctx){
+    var vals = chatExtractMoneyValues(normText);
+    if(vals.length===0 || !ctx.planTarget) return null;
+    if(/compar/.test(normText) && vals.length>=2){
+      var lines = vals.map(function(v){ var m=Math.ceil(ctx.planTarget/v); return '• '+fmtMoney(v)+'/mês → cerca de '+m+' meses ('+(m/12).toFixed(1)+' anos)'; });
+      return chatMsg('🔮 Comparando cenários para juntar <strong>'+fmtMoney(ctx.planTarget)+'</strong>:<br>'+lines.join('<br>')+'<br><br>Sempre soma simples, sem considerar rendimento de investimento — com rendimento, os prazos tendem a ser um pouco menores.');
+    }
+    var v = vals[0];
+    var mesesNec = Math.ceil(ctx.planTarget/v);
+    var v2 = Math.round((v*1.5)/50)*50, v3 = v*2;
+    return chatMsg('🔮 Guardando <strong>'+fmtMoney(v)+'/mês</strong>, você chegaria aos '+fmtMoney(ctx.planTarget)+' em cerca de <strong>'+mesesNec+' '+(mesesNec===1?'mês':'meses')+'</strong> (~'+(mesesNec/12).toFixed(1)+' anos), numa conta simples, sem juros.', chatQuick(["Comparar "+fmtMoney(v)+", "+fmtMoney(v2)+" e "+fmtMoney(v3)+" por mês","O que é juros compostos?"]));
+  }
+
+  /* ---------- Jornadas de aprendizagem guiadas (item 5 do pedido) ----------
+     Quando o cliente diz que quer aprender a investir, organizar a vida financeira ou sair
+     das dívidas, em vez de uma resposta solta, conduz um primeiro passo estruturado usando
+     os dados reais dele (quando existirem) e já emenda no próximo passo natural. */
+  function chatDetectJornada(normText){
+    if(/quero aprender a investir|comecar a investir|quero comecar a investir|do zero.*investir/.test(normText)) return "investir";
+    if(/organizar minha vida financeira|organizar minhas financas|organizar a vida financeira|colocar as financas em ordem/.test(normText)) return "organizar";
+    if(/sair das dividas|quero sair das dividas|me livrar das dividas|ficar livre das dividas/.test(normText)) return "dividas";
+    return null;
+  }
+  function chatHandleJornadaInvestir(ctx){
+    ctx.topic="jornada"; ctx.jornadaTipo="investir";
+    var parts = ['🎓 Vamos começar sua jornada para investir, passo a passo, olhando pros seus números reais.'];
+    var reservaAccs = state.investmentAccounts.filter(function(a){ return a.categoria==="Reserva de Emergência"; });
+    var reservaSaldo = reservaAccs.reduce(function(s,a){ return s+accountTotals(a).saldoAtual; },0);
+    if(reservaAccs.length===0){
+      parts.push('<strong>Passo 1 — Reserva de emergência.</strong> Você ainda não tem nenhuma conta marcada como "Reserva de Emergência" na aba Investimentos. Esse é sempre o primeiro passo, antes de qualquer outro investimento: 3 a 6 meses das suas despesas essenciais, em algo de fácil acesso como o Tesouro Selic.');
+    } else {
+      var essMedio = chatEssentialsAvg(allMonthsSorted().slice(-3));
+      var mesesR = essMedio>0 ? reservaSaldo/essMedio : null;
+      parts.push('<strong>Passo 1 — Reserva de emergência.</strong> Você já tem '+fmtMoney(reservaSaldo)+' guardados'+(mesesR!==null?(', cobrindo cerca de '+mesesR.toFixed(1)+' meses de despesas essenciais'):'')+'. '+(mesesR!==null && mesesR>=3 ? 'Já está dentro do recomendado (3 a 6 meses) — ótima base pra seguir adiante.' : 'Ainda vale reforçar até chegar em 3-6 meses antes de focar em outros investimentos.'));
+    }
+    parts.push('<strong>Passo 2 — Entender renda fixa primeiro.</strong> É onde a maioria começa: Tesouro Direto, CDB, LCI/LCA. São as opções mais previsíveis para quem está começando.');
+    parts.push('Quer que eu explique cada uma, ou prefere já ver como está sua alocação atual?');
+    return chatMsg(parts.join('<br><br>'), chatQuick(["O que é Tesouro Direto?","O que é CDB?","Como está minha alocação?"]));
+  }
+  function chatHandleJornadaOrganizar(ctx){
+    ctx.topic="jornada"; ctx.jornadaTipo="organizar";
+    var months = allMonthsSorted();
+    var parts = ['🎓 Vamos organizar sua vida financeira, passo a passo.'];
+    if(months.length<2){
+      parts.push('<strong>Passo 1 — Registrar.</strong> Ainda não há dados suficientes registrados. O primeiro passo é simples: registre todas as receitas e despesas de pelo menos um mês inteiro nas abas Rendimentos e Despesas — sem isso, qualquer plano é um chute.');
+      return chatMsg(parts.join('<br><br>'), chatQuick(["O que é a regra 50/30/20?","Como montar um orçamento do zero?"]));
+    }
+    var t = monthTotals(state.viewMonth);
+    var pctInv = t.income>0 ? (t.invest/t.income)*100 : 0;
+    parts.push('<strong>Passo 1 — Onde você está.</strong> Em '+monthLabel(state.viewMonth)+', sua renda foi '+fmtMoney(t.income)+', despesas '+fmtMoney(t.expense)+', e você investiu cerca de '+pctInv.toFixed(0)+'% da renda.');
+    parts.push('<strong>Passo 2 — Comparar com uma referência.</strong> A regra 50/30/20 (50% essenciais, 30% desejos, 20% investir) é um bom ponto de partida pra ver se algo está desproporcional.');
+    parts.push('Quer que eu compare seus números reais com essa regra agora?');
+    return chatMsg(parts.join('<br><br>'), chatQuick(["Como está meu orçamento esse mês?","O que é a regra 50/30/20?"]));
+  }
+  function chatHandleJornadaDividas(ctx){
+    ctx.topic="jornada"; ctx.jornadaTipo="dividas";
+    if(state.debts.length===0){
+      return chatMsg('🎓 Boa notícia — não encontrei nenhuma dívida registrada na sua Bússola! Se você tem alguma dívida fora do que está cadastrado, registre na aba <strong>Dívidas</strong> pra eu conseguir montar um plano real com você.', chatQuick(["O que é dívida boa e dívida ruim?"]));
+    }
+    var total = chatTotalDebtRemaining();
+    var atrasadas = state.debts.filter(debtIsAtrasada);
+    var ordenadas = state.debts.filter(function(d){ return !debtIsQuitada(d); }).slice().sort(function(a,b){ return b.taxa-a.taxa; });
+    var parts = ['🎓 Vamos montar um plano para sair das dívidas, com base no que está registrado.'];
+    parts.push('<strong>Passo 1 — Panorama.</strong> Você tem '+fmtMoney(total)+' em dívidas em aberto'+(atrasadas.length>0 ? (', sendo '+atrasadas.length+' atrasada(s) — essas são a prioridade nº 1, mesmo antes de olhar as taxas de juros.') : ', nenhuma atrasada no momento.'));
+    if(ordenadas.length>0){
+      parts.push('<strong>Passo 2 — Ordem sugerida (método avalanche, pela taxa de juros, da maior pra menor):</strong><br>'+ordenadas.slice(0,4).map(function(d,i){ return (i+1)+'. '+esc(d.nome)+' — '+d.taxa+'% a.m.'; }).join('<br>'));
+    }
+    parts.push('Quer que eu explique a diferença entre esse método ("avalanche") e o "bola de neve" antes de decidir qual seguir?');
+    return chatMsg(parts.join('<br><br>'), chatQuick(["Como sair de uma dívida com juros altos?","Qual é minha maior dívida?"]));
+  }
+
   function chatHandleSimulacao(normText, raw, ctx){
     ctx.topic = "simulacao";
     var moneyVals = chatExtractMoneyValues(normText);
@@ -6872,6 +7514,27 @@
      Verificadas antes da pontuação de tópico único, pra pegar perguntas que
      misturam dois assuntos numa frase só. */
   function chatTryComposite(normText, ctx){
+    // Profundidade adaptativa: "o que é CDI" já cai na educação simples (item 11 do pedido);
+    // "qual o impacto do CDI na minha carteira" combina o conceito com os dados reais do
+    // cliente — a única forma de responder isso corretamente é olhando as contas dele.
+    if(/\bcdi\b/.test(normText) && /(minha carteira|meus investimentos|meu dinheiro investido|minha carteira de investimentos)/.test(normText)){
+      ctx.topic="investimentos";
+      var accsCdi = state.investmentAccounts.filter(function(a){ return a.categoria==="Renda Fixa" || a.categoria==="Reserva de Emergência"; });
+      if(accsCdi.length===0){
+        return chatMsg('📚 O CDI é a taxa de referência da maioria dos investimentos de renda fixa no Brasil — quando ela sobe, esse tipo de investimento tende a render mais. Você ainda não tem contas de investimento cadastradas pra eu calcular o impacto real na sua carteira — assim que cadastrar (aba Investimentos), eu consigo mostrar exatamente quanto do seu rendimento vem de CDI.', chatQuick(["O que é CDI?"]));
+      }
+      var totalCdi = accsCdi.reduce(function(s,a){ return s+accountTotals(a).saldoAtual; },0);
+      var totalTudo = chatTotalInvested();
+      var rendaCdi = accsCdi.reduce(function(s,a){ var at=accountTotals(a); return s+(at.monthlyYieldPct!==null?at.saldoAtual*(at.monthlyYieldPct/100):0); },0);
+      return chatMsg('📚 O CDI é a taxa de referência da maioria dos investimentos de renda fixa — quando ele sobe ou desce, o rendimento desses investimentos costuma acompanhar.<br><br>Na sua carteira: <strong>'+fmtMoney(totalCdi)+'</strong> ('+chatPct(totalCdi,totalTudo)+' do total investido) está em contas ligadas a renda fixa/CDI, gerando cerca de <strong>'+fmtMoney(rendaCdi)+'/mês</strong> nas condições atuais. Se o CDI subir, essa fatia da sua carteira tende a render mais; se cair, menos — o resto da carteira (renda variável) segue outra lógica, ligada ao mercado, não ao CDI.', chatQuick(["Como está minha alocação?","O que é diversificação?"]));
+    }
+    // Planejamento livre por valor — "quero juntar R$20.000[, em 2 anos]" — não depende de já
+    // existir uma meta cadastrada; guarda o valor-alvo no contexto pra follow-ups tipo
+    // "e se eu guardar R$700 por mês?" entenderem a que valor "R$700" se refere.
+    if(/^quero (juntar|guardar|acumular|ter|economizar)\b|^preciso juntar\b|^gostaria de juntar\b|^quero comprar\b|^planejo comprar\b/.test(normText)){
+      var planResp = chatHandlePlanejamentoLivre(normText, ctx);
+      if(planResp) return planResp;
+    }
     // Saldo do mês — "quanto sobra", "estou no azul/vermelho", "meu saldo está positivo?"
     if(/\bsobra\b|\bsobrou\b|\bsaldo do mes\b|\bfica de saldo\b|\bno azul\b|\bno vermelho\b|\bficou positivo\b|\bficou negativo\b/.test(normText) && !/fixas?/.test(normText)){
       var periodS = chatResolvePeriod(normText) || {months:[state.viewMonth], label:"em "+monthLabel(state.viewMonth), key:"mes_atual"};
@@ -6890,14 +7553,12 @@
     }
     if(/despesa/.test(normText) && /aument|subiu|subiram|cresceu|cresceram/.test(normText) && /(qual categoria|quem foi|qual foi a categoria|responsavel)/.test(normText)){
       var period2 = chatResolvePeriod(normText) || {months:[state.viewMonth], label:"em "+monthLabel(state.viewMonth), key:"mes_atual"};
+      ctx.topic="despesas"; ctx.period=period2;
+      var narrative2 = chatExpenseImpactNarrative(period2, ctx);
+      if(narrative2) return chatMsg(narrative2.html, chatQuick(narrative2.quick));
       var prevM = chatPreviousComparablePeriod(period2);
       var cur = chatSumExpense(period2.months), prev = chatSumExpense(prevM);
-      var byCatCur = chatCategoryTotals(period2.months, state.expenses, "cat");
-      var byCatPrev = chatCategoryTotals(prevM, state.expenses, "cat");
-      var deltas = Object.keys(byCatCur).map(function(c){ return {cat:c, diff:byCatCur[c]-(byCatPrev[c]||0)}; }).sort(function(a,b){return b.diff-a.diff;});
       var resp = '📈 Suas despesas '+period2.label+' somaram '+fmtMoney(cur)+'. '+chatDeltaSentence(cur,prev,"aumentaram","diminuíram");
-      if(deltas.length>0 && deltas[0].diff>0){ resp += '<br>A categoria mais responsável pela alta foi <strong>'+esc(deltas[0].cat)+'</strong> (+'+fmtMoney(deltas[0].diff)+').'; }
-      ctx.topic="despesas"; ctx.period=period2;
       return chatMsg(resp);
     }
     if(/dinheiro suficiente/.test(normText) && /meta/.test(normText)){
@@ -6928,21 +7589,24 @@
   }
   function chatHandleAjudaChat(){
     var nome = state.chatBotName || "Bússola";
-    return chatMsg('🧭 Eu sou a <strong>'+esc(nome)+'</strong>, o motor de inteligência financeira local da Bússola. Tudo roda aqui no seu navegador, usando os dados que você já registrou — nenhuma informação sai daqui, e eu não uso nenhuma IA externa.<br><br>Posso responder sobre receitas, despesas, cartões, dívidas, investimentos, património, metas e orçamento, fazer comparações e simulações, e dar dicas. Veja mais exemplos na Central de Ajuda, em "🧭 Converse com a Bússola".', chatQuick(["Faça uma análise completa","Como estão minhas finanças?"]));
+    return chatMsg('🧭 Eu sou a <strong>'+esc(nome)+'</strong>, o motor de inteligência financeira local da Bússola. Tudo roda aqui no seu navegador, usando os dados que você já registrou — nenhuma informação sai daqui, e eu não uso nenhuma IA externa.<br><br>Posso responder sobre receitas, despesas, cartões, dívidas, investimentos, património, metas e orçamento, fazer comparações e simulações, e dar dicas. Também posso explicar conceitos de educação financeira em geral (reserva de emergência, CDI, juros compostos, como sair de dívidas…), mesmo sem ligação com os seus dados. Veja mais exemplos na Central de Ajuda, em "🧭 Converse com a Bússola".', chatQuick(["Faça uma análise completa","O que é a regra 50/30/20?"]));
   }
   function chatFallback(){
-    return chatMsg('🧭 Não tive certeza de ter entendido essa pergunta. Você pode perguntar, por exemplo:<br>'+
+    return chatMsg('🧭 Não tive certeza de ter entendido essa pergunta. Você pode perguntar sobre os seus dados, por exemplo:<br>'+
       '• "Quanto gastei este mês?"<br>'+
       '• "Como estão minhas finanças?"<br>'+
-      '• "Quanto falta para minha meta?"<br>'+
-      '• "Onde posso economizar?"<br><br>'+
+      '• "Quanto falta para minha meta?"<br><br>'+
+      'Ou sobre educação financeira em geral, mesmo sem ligação com os seus dados:<br>'+
+      '• "O que é reserva de emergência?"<br>'+
+      '• "Vale a pena usar cartão de crédito?"<br>'+
+      '• "Como sair de uma dívida com juros altos?"<br><br>'+
       'Ou toque em "🔎 Fazer análise completa" para eu analisar tudo de uma vez.',
-      chatQuick(["Faça uma análise completa","Como estão minhas finanças?","Onde estou gastando mais?"]));
+      chatQuick(["Faça uma análise completa","O que é a regra 50/30/20?","Onde estou gastando mais?"]));
   }
 
   /* ---------- 5. Contexto da conversa + despachante principal (item 10) ---------- */
-  var chatContext = {topic:null, category:null, period:null, prevPeriod:null};
-  function chatResetContext(){ chatContext = {topic:null, category:null, period:null, prevPeriod:null}; }
+  var chatContext = {topic:null, category:null, period:null, prevPeriod:null, planTarget:null, planMonths:null, lastEduEntry:null};
+  function chatResetContext(){ chatContext = {topic:null, category:null, period:null, prevPeriod:null, planTarget:null, planMonths:null, lastEduEntry:null}; }
 
   function chatAnswer(raw){
     var normText = chatNorm(raw);
@@ -6950,6 +7614,15 @@
 
     if(/analise completa|analise minha situacao|faca uma analise|analise financeira completa|fazer analise/.test(normText)){
       return chatFullAnalysis();
+    }
+    if(chatWantsOpenAdvice(normText)){
+      return chatHandleOpenAdvice();
+    }
+    // Situações difíceis e pouco estruturadas (item 10) — checado com prioridade alta, antes
+    // de qualquer pontuação de tópico, porque frases como "cheio de dívidas, por onde começo"
+    // combinam vários assuntos de uma vez e merecem acolhimento + plano, não um número solto.
+    if(chatWantsDistressHelp(normText)){
+      return chatHandleFinancialDistress(normText, chatContext);
     }
     if(chatWantsGeneralStatus(normText)){
       return chatFullAnalysis();
@@ -6960,6 +7633,33 @@
     }
     if(CHAT_TOPIC_KEYWORDS.ajudachat.some(function(k){return normText.indexOf(k)!==-1;})){
       return chatHandleAjudaChat();
+    }
+    // Jornada de aprendizagem guiada — "quero aprender a investir" etc: checado antes da
+    // pontuação de tópico, porque essas frases também soam como pergunta comum de investimentos.
+    var jornada = chatDetectJornada(normText);
+    if(jornada){
+      if(jornada==="investir") return chatHandleJornadaInvestir(chatContext);
+      if(jornada==="organizar") return chatHandleJornadaOrganizar(chatContext);
+      if(jornada==="dividas") return chatHandleJornadaDividas(chatContext);
+    }
+    // Educação adaptativa — "não entendi", "explica mais simples", "quero aprofundar" só fazem
+    // sentido em cima de um tema educacional já explicado nesta conversa; checado antes do
+    // gatilho de educação genérico pra não cair como uma pergunta nova sem contexto.
+    if(chatContext.topic==="educacao" && chatContext.lastEduEntry && (chatWantsSimpler(normText) || chatWantsDeeper(normText))){
+      return chatHandleEducacaoFollowUp(normText, chatContext);
+    }
+    // Educação financeira geral — perguntas conceituais ("o que é X", "como funciona X",
+    // "vale a pena X"), sem estarem ligadas aos dados pessoais do cliente.
+    if(chatIsEducationalTrigger(normText)){
+      var eduHit = chatScoreEducationMatch(normText);
+      if(eduHit) return chatAnswerEducation(eduHit, chatContext);
+    }
+    // Continuação de um planejamento livre já em andamento ("e se eu guardar R$700/mês?",
+    // "comparar R$700, R$1000 e R$1500 por mês") — checado antes da simulação genérica,
+    // porque "e se eu..." também bate no gatilho de simulação.
+    if(chatContext.topic==="planejamento" && chatContext.planTarget){
+      var planFollow = chatHandlePlanFollowUp(normText, chatContext);
+      if(planFollow) return planFollow;
     }
     if(chatWantsRecommendation(normText)){
       return chatHandleDicas(normText, chatContext);
@@ -6972,9 +7672,20 @@
 
     var scored = chatScoreTopic(normText);
     var topic = scored.topic;
-    var isFollowUp = /^(e |mas e |entao e )/.test(normText);
+    var isFollowUp = /^(e |mas e |entao e |isso )/.test(normText);
     if((!topic || scored.score===0) && isFollowUp && chatContext.topic){ topic = chatContext.topic; }
-    if(!topic){ return chatFallback(); }
+    // Continuação curta de uma pergunta educacional anterior ("e isso tem risco?", "e vale a
+    // pena?") — trata separado do switch de tópicos de dados, que não tem essa categoria.
+    if(topic==="educacao" && isFollowUp){
+      return chatHandleEducacaoFollowUp(normText, chatContext);
+    }
+    if(!topic){
+      // Antes de desistir, tenta bater com a base de educação financeira (sem exigir a
+      // frase-gatilho estrita) — é o que estende o chat para além dos dados da Bússola.
+      var eduLoose = chatScoreEducationMatch(normText);
+      if(eduLoose) return chatAnswerEducation(eduLoose, chatContext);
+      return chatFallback();
+    }
 
     switch(topic){
       case "receitas": return chatHandleReceitas(normText, chatContext);
@@ -6987,6 +7698,7 @@
       case "orcamento": return chatHandleOrcamento(normText, chatContext);
       case "dicas": return chatHandleDicas(normText, chatContext);
       case "situacao": return chatFullAnalysis();
+      case "educacao": return chatHandleEducacaoFollowUp(normText, chatContext);
       default: return chatFallback();
     }
   }
@@ -7067,13 +7779,29 @@
     var launcher = document.getElementById("chatLauncher");
     if(launcher) launcher.classList.remove("hidden-launcher");
   }
+  // Inteligência proativa (item 1 do pedido): quando há dado suficiente, a Bússola já entra
+  // na conversa com um insight real, sem esperar pergunta — prioriza cruzamentos entre áreas
+  // (mais informativos) e cai para o diagnóstico padrão se não houver nenhum. Nunca dispara
+  // sem dado real por trás, e nunca mais que um insight por vez pra não parecer alarme falso.
+  function chatProactiveInsightLine(){
+    var months = allMonthsSorted();
+    if(months.length<2) return null;
+    var cross = computeCrossInsights().filter(function(c){ return c.sentiment==="neg"; });
+    if(cross.length>0) return '🔎 <strong>Uma coisa que notei nos seus dados:</strong> '+cross[0].text;
+    var diag = computeDiagnosisCards().filter(function(c){ return c.sentiment==="neg" && c.action; });
+    if(diag.length>0) return '🔎 <strong>Uma coisa que notei nos seus dados:</strong> '+esc(diag[0].text);
+    return null;
+  }
   function chatNewConversation(){
     chatResetContext();
     var body = document.getElementById("chatBody");
     if(body) body.innerHTML = "";
     var starters = document.getElementById("chatStarters");
     if(starters){ starters.innerHTML = CHAT_STARTER_SUGGESTIONS.map(function(q){ return '<button type="button" class="chat-quick-chip">'+esc(q)+'</button>'; }).join(""); starters.querySelectorAll(".chat-quick-chip").forEach(function(btn){ btn.addEventListener("click", function(){ chatSendMessage(btn.textContent); }); }); }
-    chatAppendBubble("bot", chatHandleSaudacao().html);
+    var greet = chatHandleSaudacao().html;
+    var insight = chatProactiveInsightLine();
+    if(insight) greet += '<br><br>'+insight;
+    chatAppendBubble("bot", greet);
   }
   var CHAT_STARTER_SUGGESTIONS = [
     "Como estão minhas finanças?",
@@ -7083,7 +7811,8 @@
     "Como posso melhorar?",
     "Analise minha situação financeira.",
     "Quanto falta para minhas metas?",
-    "Faça uma análise completa"
+    "Faça uma análise completa",
+    "O que é reserva de emergência?"
   ];
   function initChatWidget(){
     var launcher = document.getElementById("chatLauncher");
@@ -7139,6 +7868,8 @@
 
     // Primeira mensagem de boas-vindas da sessão
     var welcome = '🧭 Olá'+(state.owner?", "+esc(state.owner):"")+'! Sou a <strong>'+esc(chatBotName())+'</strong>'+(state.chatBotName?"":" (você pode me dar um nome no ícone ✎ ali em cima)")+', sua assistente financeira local. Uso só os dados que você já registrou aqui na Bússola — nada sai do seu navegador.<br><br>Pode me chamar como quiser, ou tocar numa das sugestões abaixo pra começar.';
+    var welcomeInsight = chatProactiveInsightLine();
+    if(welcomeInsight) welcome += '<br><br>'+welcomeInsight;
     chatAppendBubble("bot", welcome);
   }
 
