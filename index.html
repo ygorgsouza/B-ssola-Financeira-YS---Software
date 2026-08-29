@@ -628,6 +628,116 @@
   .fab:hover{ transform:scale(1.08) rotate(90deg); box-shadow:var(--glow-accent2); }
   @media (min-width:761px){ .fab{display:none;} }
 
+  /* ===== 🧭 Converse com a Bússola — chat local ===== */
+  .chat-launcher{
+    position:fixed; right:24px; bottom:24px; width:58px; height:58px; border-radius:50%;
+    background:var(--grad-hero); border:1px solid rgba(217,189,130,0.4); color:#fff; font-size:26px;
+    box-shadow:0 10px 26px -8px rgba(14,27,46,0.55); cursor:pointer; z-index:120;
+    display:flex; align-items:center; justify-content:center; transition:transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease, opacity .2s ease;
+  }
+  .chat-launcher:hover{ transform:scale(1.08); box-shadow:0 14px 30px -8px rgba(14,27,46,0.65); }
+  .chat-launcher:active{ transform:scale(0.94); }
+  .chat-launcher.hidden-launcher{ opacity:0; pointer-events:none; transform:scale(0.6); }
+  .chat-launcher-icon{ position:relative; z-index:2; animation:chatLauncherSway 4.5s ease-in-out infinite; display:inline-block; }
+  @keyframes chatLauncherSway{ 0%,100%{transform:rotate(-10deg);} 50%{transform:rotate(10deg);} }
+  .chat-launcher-pulse{
+    position:absolute; inset:-6px; border-radius:50%; border:2px solid var(--brass-light);
+    opacity:0; animation:chatPulse 2.6s ease-out infinite;
+  }
+  @keyframes chatPulse{ 0%{opacity:0.55; transform:scale(0.85);} 100%{opacity:0; transform:scale(1.35);} }
+  @media (max-width:760px){ .chat-launcher{ right:16px; bottom:92px; width:52px; height:52px; font-size:23px; } }
+  @media (prefers-reduced-motion:reduce){ .chat-launcher-icon{animation:none;} .chat-launcher-pulse{animation:none; display:none;} }
+
+  .chat-panel{
+    position:fixed; right:24px; bottom:24px; width:min(400px, calc(100vw - 32px)); height:min(640px, calc(100vh - 48px));
+    background:var(--bg); border:1px solid var(--line); border-radius:18px; box-shadow:0 24px 60px -16px rgba(14,27,46,0.45);
+    z-index:130; display:flex; flex-direction:column; overflow:hidden;
+    animation:chatPanelIn .28s cubic-bezier(.16,.84,.44,1);
+  }
+  .chat-panel.hidden{ display:none; }
+  @keyframes chatPanelIn{ from{opacity:0; transform:translateY(18px) scale(.97);} to{opacity:1; transform:translateY(0) scale(1);} }
+  @media (prefers-reduced-motion:reduce){ .chat-panel{animation:none;} }
+  @media (max-width:760px){
+    .chat-panel{ right:0; bottom:0; left:0; top:0; width:100%; height:100%; border-radius:0; }
+  }
+
+  .chat-header{
+    display:flex; align-items:center; justify-content:space-between; gap:8px; padding:14px 16px;
+    background:var(--grad-hero); color:#F4EFDF; flex-shrink:0;
+  }
+  .chat-header-brand{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .chat-header-icon{ font-size:22px; flex-shrink:0; }
+  .chat-header-name{ font-family:'Fraunces', serif; font-weight:700; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .chat-header-sub{ font-size:10.5px; color:#B9C6D6; margin-top:1px; }
+  .chat-header-actions{ display:flex; align-items:center; gap:4px; flex-shrink:0; }
+  .chat-icon-btn{
+    width:28px; height:28px; border-radius:50%; border:none; background:rgba(255,255,255,0.12); color:#F4EFDF;
+    font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s ease, transform .15s ease;
+  }
+  .chat-icon-btn:hover{ background:rgba(255,255,255,0.22); transform:scale(1.08); }
+
+  .chat-name-edit-row{ padding:10px 16px; background:var(--surface-2); border-bottom:1px solid var(--line); flex-shrink:0; }
+  .chat-name-edit-row.hidden{ display:none; }
+  .chat-name-edit-row input{
+    width:100%; padding:8px 10px; border-radius:8px; border:1px solid var(--line); background:var(--surface);
+    color:var(--text); font-size:13px; font-family:inherit;
+  }
+  .chat-name-edit-hint{ font-size:10.5px; color:var(--text-soft); margin:6px 0 0; }
+
+  .chat-full-analysis-btn{
+    margin:10px 16px 0; padding:9px 12px; border-radius:10px; border:1px dashed var(--brass);
+    background:var(--accent2-bg); color:var(--accent2-text); font-size:12.5px; font-weight:600; cursor:pointer;
+    flex-shrink:0; transition:background .15s ease, transform .1s ease;
+  }
+  .chat-full-analysis-btn:hover{ background:var(--brass-bg); }
+  .chat-full-analysis-btn:active{ transform:scale(0.98); }
+
+  .chat-body{
+    flex:1; overflow-y:auto; padding:14px 14px 6px; display:flex; flex-direction:column; gap:4px;
+    scrollbar-width:thin; scrollbar-color:var(--line) transparent;
+  }
+  .chat-row{ display:flex; align-items:flex-end; gap:8px; margin-bottom:8px; animation:chatRowIn .22s ease; }
+  @keyframes chatRowIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+  @media (prefers-reduced-motion:reduce){ .chat-row{animation:none;} }
+  .chat-row-user{ justify-content:flex-end; }
+  .chat-avatar{
+    width:26px; height:26px; border-radius:50%; background:var(--grad-hero); color:#fff; font-size:13px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .chat-bubble{ max-width:82%; padding:10px 13px; border-radius:14px; font-size:13.3px; line-height:1.55; }
+  .chat-bubble-bot{ background:var(--surface-2); color:var(--text); border-bottom-left-radius:4px; }
+  .chat-bubble-user{ background:var(--grad-accent); color:#fff; border-bottom-right-radius:4px; }
+  .chat-bubble strong{ color:inherit; }
+  .chat-typing{ display:flex; align-items:center; gap:4px; padding:12px 14px; }
+  .chat-typing span{ width:6px; height:6px; border-radius:50%; background:var(--text-soft); opacity:0.6; animation:chatTypingBounce 1.1s ease-in-out infinite; }
+  .chat-typing span:nth-child(2){ animation-delay:.15s; } .chat-typing span:nth-child(3){ animation-delay:.3s; }
+  @keyframes chatTypingBounce{ 0%,60%,100%{transform:translateY(0); opacity:.5;} 30%{transform:translateY(-4px); opacity:1;} }
+
+  .chat-quick-row{ display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 10px 34px; }
+  .chat-quick-chip{
+    background:var(--surface); border:1px solid var(--line); color:var(--brass); font-size:11.5px; font-weight:600;
+    padding:6px 11px; border-radius:999px; cursor:pointer; transition:background .15s ease, border-color .15s ease;
+  }
+  .chat-quick-chip:hover{ background:var(--accent2-bg); border-color:var(--accent2); }
+
+  .chat-starters{ display:flex; flex-wrap:wrap; gap:6px; padding:0 14px 8px; flex-shrink:0; }
+  .chat-starters:empty{ display:none; }
+
+  .chat-input-row{ display:flex; align-items:flex-end; gap:8px; padding:10px 14px; border-top:1px solid var(--line); flex-shrink:0; background:var(--surface); }
+  .chat-input{
+    flex:1; resize:none; border:1px solid var(--line); border-radius:14px; padding:9px 13px; font-size:13.5px;
+    font-family:inherit; background:var(--bg); color:var(--text); max-height:96px; line-height:1.4;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .chat-input:focus{ outline:none; border-color:var(--accent2); box-shadow:0 0 0 3px var(--accent2-bg); }
+  .chat-send-btn{
+    width:38px; height:38px; border-radius:50%; border:none; background:var(--grad-accent); color:#fff; font-size:15px;
+    cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:transform .15s ease;
+  }
+  .chat-send-btn:hover{ transform:scale(1.08); }
+  .chat-send-btn:active{ transform:scale(0.92); }
+  .chat-footer-note{ text-align:center; font-size:10px; color:var(--text-soft); padding:4px 14px 10px; flex-shrink:0; }
+
   /* ===== Modals ===== */
   .modal-overlay{
     position:fixed; inset:0; background:rgba(10,15,9,0.6); display:flex; align-items:center; justify-content:center;
@@ -1360,6 +1470,42 @@
 
 <button class="fab" id="fabBtn" aria-label="Adicionar gasto rápido">+</button>
 
+<!-- ===== 🧭 CONVERSE COM A BÚSSOLA — chat local, sem API externa ===== -->
+<button class="chat-launcher" id="chatLauncher" aria-label="Converse com a Bússola" title="🧭 Converse com a Bússola">
+  <span class="chat-launcher-icon">🧭</span>
+  <span class="chat-launcher-pulse" aria-hidden="true"></span>
+</button>
+
+<div class="chat-panel hidden" id="chatPanel" role="dialog" aria-label="Converse com a Bússola">
+  <div class="chat-header">
+    <div class="chat-header-brand">
+      <span class="chat-header-icon">🧭</span>
+      <div>
+        <div class="chat-header-name" id="chatBotNameLabel">Bússola</div>
+        <div class="chat-header-sub">100% local · seus dados não saem daqui</div>
+      </div>
+    </div>
+    <div class="chat-header-actions">
+      <button type="button" class="chat-icon-btn" id="chatEditNameBtn" title="Dar um nome ao chat" aria-label="Dar um nome ao chat">✎</button>
+      <button type="button" class="chat-icon-btn" id="chatNewBtn" title="Nova conversa" aria-label="Nova conversa">↻</button>
+      <button type="button" class="chat-icon-btn" id="chatMinimizeBtn" title="Minimizar" aria-label="Minimizar">—</button>
+      <button type="button" class="chat-icon-btn" id="chatCloseBtn" title="Fechar" aria-label="Fechar">✕</button>
+    </div>
+  </div>
+  <div class="chat-name-edit-row hidden" id="chatNameEditRow">
+    <input type="text" id="chatBotNameInput" placeholder="Dê um nome à sua assistente…" maxlength="24">
+    <p class="chat-name-edit-hint">Depois de nomear, você pode chamá-la pelo nome durante a conversa.</p>
+  </div>
+  <button type="button" class="chat-full-analysis-btn" id="chatFullAnalysisBtn">🔎 Fazer análise completa</button>
+  <div class="chat-body" id="chatBody"></div>
+  <div class="chat-starters" id="chatStarters"></div>
+  <div class="chat-input-row">
+    <textarea id="chatInput" class="chat-input" placeholder="Pergunte algo sobre suas finanças…" rows="1"></textarea>
+    <button type="button" class="chat-send-btn" id="chatSendBtn" aria-label="Enviar">➤</button>
+  </div>
+  <div class="chat-footer-note">🔒 Motor de inteligência financeira local — sem IA externa, sem servidor.</div>
+</div>
+
 <div class="modal-overlay hidden" id="quickExpenseOverlay">
   <div class="modal-box quick-expense-box">
     <h2>⚡ Despesa rápida</h2>
@@ -1492,6 +1638,43 @@
       <div class="faq-item" data-cat="Começando">
         <button class="faq-q" type="button">Como interpretar os indicadores<span class="chevron">▾</span></button>
         <div class="faq-a"><p>Cada indicador principal mostra, além do valor, uma comparação com o mês anterior (▲ ou ▼) — verde quando a mudança é boa, vermelho quando não é (por exemplo, despesa subindo é vermelho; renda subindo é verde).</p></div>
+      </div>
+
+      <div class="faq-item" data-cat="Chat">
+        <button class="faq-q" type="button">🧭 O que é "Converse com a Bússola"?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>É um motor de inteligência financeira que responde perguntas em português sobre os seus próprios dados — receitas, despesas, cartões, dívidas, investimentos, património, metas e orçamento. Você pode escrever a pergunta do jeito que quiser ("quanto gastei?", "quanto saiu esse mês?", "minhas despesas foram quanto?" — tudo funciona), e pode dar um nome a ela e chamá-la por esse nome durante a conversa.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Chat">
+        <button class="faq-q" type="button">Isso usa alguma IA externa (ChatGPT, Claude, Gemini)?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p><strong>Não.</strong> Não é feita nenhuma chamada a OpenAI, Claude, Gemini ou qualquer outra API. Tudo roda com JavaScript dentro deste mesmo documento, usando exclusivamente os dados que já estão salvos no seu navegador (localStorage). Nenhuma informação financeira sua é enviada para fora da Bússola.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Chat">
+        <button class="faq-q" type="button">Como o motor interpreta a minha pergunta?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Ele identifica o assunto (receitas, despesas, cartões, dívidas, investimentos, património, metas, orçamento…), o período (hoje, este mês, mês passado, este ano, últimos 3/6/12 meses, um mês ou ano específico) e a categoria citados na frase, busca os dados reais correspondentes, faz os cálculos e monta a resposta — sem inventar nenhum número. Se não encontrar dados suficientes, ele avisa isso claramente em vez de chutar uma resposta.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Chat">
+        <button class="faq-q" type="button">O que o chat consegue fazer, na prática?<span class="chevron">▾</span></button>
+        <div class="faq-a">
+          <p>Você pode perguntar sobre qualquer área da Bússola, pedir comparações entre períodos, identificar tendências, receber dicas e sugestões, entender pontos de atenção e até simular cenários. Alguns exemplos, organizados por assunto:</p>
+          <p style="margin-top:10px;"><strong>💰 Receitas</strong><br>"Quanto ganhei este mês?" · "Qual foi minha maior fonte de receita?" · "Minha renda cresceu?"</p>
+          <p><strong>💸 Despesas</strong><br>"Quanto gastei com alimentação?" · "Qual foi minha maior categoria?" · "Isso aumentou em relação ao mês passado?" · "Onde estou gastando mais?"</p>
+          <p><strong>💳 Cartões e dívidas</strong><br>"Quanto está em aberto no cartão?" · "Quando vence minha fatura?" · "Quanto estou comprometido com dívidas?" · "Alguma dívida está atrasada?"</p>
+          <p><strong>📈 Investimentos</strong><br>"Quanto investi este ano?" · "Quanto já rendeu?" · "Como está minha alocação por categoria?"</p>
+          <p><strong>🏆 Património</strong><br>"Quanto tenho de património?" · "Meu património aumentou?"</p>
+          <p><strong>🎯 Metas</strong><br>"Quanto falta para minha meta?" · "Estou perto de atingir?" · "Quando vou atingir minha meta nesse ritmo?"</p>
+          <p><strong>📊 Análises</strong><br>"Como estão minhas finanças?" · "Estou gastando demais?" · "Qual é meu maior problema financeiro?" · "Faça uma análise completa"</p>
+          <p><strong>🔮 Simulações</strong><br>"Se eu economizar R$500 por mês, quanto terei em um ano?" · "Se eu reduzir alimentação em 20%?" · "Quanto preciso investir por mês para atingir minha meta?"</p>
+          <p><strong>💡 Dicas e sugestões</strong><br>"Onde posso economizar?" · "O que devo melhorar?" · "Me dê uma dica"</p>
+          <p style="margin-top:10px;">Escreva do seu jeito — não existe um comando "certo". Se o motor não entender, ele avisa e sugere como reformular, em vez de inventar uma resposta.</p>
+        </div>
+      </div>
+      <div class="faq-item" data-cat="Chat">
+        <button class="faq-q" type="button">O chat lembra o que eu perguntei antes?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Sim, durante a sessão de conversa. Se você perguntar "quanto gastei com alimentação?" e depois só "e no mês passado?", ele entende que a pergunta continua sendo sobre alimentação. O botão ↻ no topo do chat inicia uma conversa nova, limpando esse contexto.</p></div>
+      </div>
+      <div class="faq-item" data-cat="Chat">
+        <button class="faq-q" type="button">O que é o botão "🔎 Fazer análise completa"?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Pede ao motor uma leitura completa da sua situação financeira de uma vez: pontos fortes, pontos de atenção, maior despesa, evolução do património, capacidade de poupança, investimentos, dívidas, progresso das metas e recomendações — terminando sempre com "🧭 Seu próximo passo", a ação mais prioritária no momento.</p></div>
       </div>
 
       <div class="faq-item" data-cat="Receitas">
@@ -2332,7 +2515,7 @@
   });
   var setHelpCategory = function(){}; // substituída abaixo por initHelpCategoryFilters
   (function initHelpCategoryFilters(){
-    var CAT_ORDER = ["Todos","Começando","Receitas","Despesas","Cartões","Dívidas","Investimentos","Património","Análises","Metas","Projeções","Geral"];
+    var CAT_ORDER = ["Todos","Começando","Chat","Receitas","Despesas","Cartões","Dívidas","Investimentos","Património","Análises","Metas","Projeções","Geral"];
     var present = Array.from(new Set(Array.from(document.querySelectorAll("#helpFaqList .faq-item")).map(function(el){return el.dataset.cat;})));
     var cats = ["Todos"].concat(CAT_ORDER.filter(function(c){return c!=="Todos" && present.indexOf(c)!==-1;}));
     var current = "Todos";
@@ -5858,6 +6041,1107 @@
     }
   });
 
+  /* =====================================================================
+     🧭 CONVERSE COM A BÚSSOLA — motor de inteligência financeira local
+     =====================================================================
+     Não usa nenhuma API externa, nenhuma IA generativa e nunca envia dados
+     para fora do navegador: todas as respostas vêm das mesmas funções e do
+     mesmo `state` (localStorage) já usados pelo resto do painel.
+
+     Arquitetura em camadas (cada uma isolada, para o motor crescer sem
+     precisar ser reescrito quando novos módulos forem adicionados):
+
+       1. chatNorm / chatTokenize            → normalização de texto
+       2. chatExtract*                       → números, %, período, categoria, entidades citadas pelo nome
+       3. chatScoreTopic / chatWants*         → identificação da intenção (tópico + operação)
+       4. CHAT_HANDLERS[topico](...)         → busca os dados reais, calcula, analisa
+       5. chatMsg / chatQuick                → formata a resposta (HTML + sugestões)
+       6. chatContext                        → memória da conversa (contexto entre perguntas)
+       7. initChatWidget                     → interface (abrir/fechar, mensagens, input)
+     ===================================================================== */
+
+  /* ---------- 1. Normalização de texto ---------- */
+  function chatStripAccents(s){ return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,""); }
+  function chatNorm(s){ return chatStripAccents(String(s||"")).toLowerCase().replace(/[^a-z0-9%$.,\s]/g," ").replace(/\s+/g," ").trim(); }
+  function esc(s){ return escapeHtml(String(s==null?"":s)); }
+
+  /* ---------- 2a. Números, dinheiro e percentuais citados na frase ---------- */
+  function chatParseMoneyToken(tok){
+    if(!tok) return null;
+    tok = String(tok).trim();
+    // "1.500,00" -> 1500.00 · "1500" -> 1500 · "500,50" -> 500.5
+    if(/,\d{1,2}$/.test(tok)){ tok = tok.replace(/\./g,"").replace(",","."); }
+    else{ tok = tok.replace(/\./g,"").replace(",","."); }
+    var n = parseFloat(tok);
+    return isNaN(n) ? null : n;
+  }
+  function chatExtractMoneyValues(normText){
+    var out = [];
+    var re = /r\$\s*([\d.,]+)|([\d.,]+)\s*mil\b|([\d.,]+)\s*reais\b/g;
+    var m;
+    while((m = re.exec(normText))){
+      var raw = m[1]||m[2]||m[3];
+      var val = chatParseMoneyToken(raw);
+      if(val==null) continue;
+      if(m[2]) val *= 1000; // "5 mil"
+      out.push(val);
+    }
+    return out;
+  }
+  function chatExtractPercents(normText){
+    var out = [];
+    var re = /([\d.,]+)\s*(?:%|por cento)/g;
+    var m;
+    while((m = re.exec(normText))){
+      var val = chatParseMoneyToken(m[1]);
+      if(val!=null) out.push(val);
+    }
+    return out;
+  }
+  // número solto associado a uma palavra-gatilho, ex.: "economizar 500", "investir mais 300",
+  // "reduzir em 20%", "por 12 meses" — usado principalmente nas simulações (seção 9 do pedido).
+  function chatNumberAfter(normText, triggerRegex){
+    var re = new RegExp(triggerRegex.source + "\\s*(?:r\\$)?\\s*([\\d.,]+)", triggerRegex.flags.replace("g","")+"g");
+    var m = re.exec(normText);
+    return m ? chatParseMoneyToken(m[1]) : null;
+  }
+
+  /* ---------- 2b. Período citado na frase (item 7 do pedido) ---------- */
+  // Sempre ancorado em state.viewMonth (o mês que o cliente está navegando no painel — mesma
+  // referência usada em todo o resto do app), nunca na data real do sistema operacional.
+  function chatResolvePeriod(normText){
+    var all = allMonthsSorted();
+    var cur = state.viewMonth;
+
+    if(/\bhoje\b/.test(normText) || /\bagora\b/.test(normText)){
+      return {months:[cur], label:"hoje ("+monthLabel(cur)+")", key:"hoje"};
+    }
+    if(/\b(este|esse|neste|nesse) mes\b|\bmes atual\b|\bmes corrente\b/.test(normText)){
+      return {months:[cur], label:"em "+monthLabel(cur), key:"mes_atual"};
+    }
+    if(/\bmes passado\b|\bmes anterior\b|\bultimo mes\b/.test(normText)){
+      var mp = shiftMonth(cur,-1);
+      return {months: all.indexOf(mp)!==-1 ? [mp] : [], label:"em "+monthLabel(mp), key:"mes_passado", noData: all.indexOf(mp)===-1};
+    }
+    if(/\bproximo mes\b|\bmes que vem\b/.test(normText)){
+      var mf = shiftMonth(cur,1);
+      return {months:[], label:monthLabel(mf), key:"mes_futuro", isFuture:true};
+    }
+    if(/\b(este|esse|neste|nesse) ano\b|\bano atual\b|\bano corrente\b/.test(normText)){
+      var y = cur.slice(0,4);
+      return {months: all.filter(function(m){return m.slice(0,4)===y;}), label:"em "+y, key:"ano_atual"};
+    }
+    if(/\bano passado\b|\bano anterior\b/.test(normText)){
+      var yp = String(parseInt(cur.slice(0,4),10)-1);
+      return {months: all.filter(function(m){return m.slice(0,4)===yp;}), label:"em "+yp, key:"ano_passado"};
+    }
+    if(/\bdesde o inicio\b|\btodo o historico\b|\bdesde sempre\b|\bno total\b|\bao todo\b/.test(normText)){
+      return {months: all, label:"desde o início ("+periodRangeLabel(all)+")", key:"tudo"};
+    }
+    var mUlt = normText.match(/ultimos?\s+(\d+)\s+mes/);
+    if(mUlt){
+      var n = parseInt(mUlt[1],10);
+      var slice = all.slice(-n);
+      return {months: slice, label:"nos últimos "+n+" meses ("+periodRangeLabel(slice)+")", key:"ultimos_"+n};
+    }
+    if(/ultimo trimestre|ultimos 3 meses/.test(normText)){
+      var s3 = all.slice(-3);
+      return {months:s3, label:"nos últimos 3 meses ("+periodRangeLabel(s3)+")", key:"ultimos_3"};
+    }
+    // ano específico citado (ex.: "em 2025")
+    var mAno = normText.match(/\b(20\d{2})\b/);
+    // mês específico citado pelo nome (ex.: "em março", "marco de 2024")
+    for(var i=0;i<monthNames.length;i++){
+      var nomeNorm = chatNorm(monthNames[i]);
+      var re = new RegExp("\\b"+nomeNorm+"\\b");
+      if(re.test(normText)){
+        var year = mAno ? mAno[1] : cur.slice(0,4);
+        var ym = year+"-"+String(i+1).padStart(2,"0");
+        var has = all.indexOf(ym)!==-1;
+        return {months: has?[ym]:[], label:monthLabel(ym), key:"mes_"+ym, noData:!has};
+      }
+    }
+    if(mAno){
+      var y2 = mAno[1];
+      return {months: all.filter(function(m){return m.slice(0,4)===y2;}), label:"em "+y2, key:"ano_"+y2};
+    }
+    return null; // nenhum período explícito — quem chama decide o padrão (mês atual ou contexto)
+  }
+  // Meses "equivalentes" imediatamente anteriores a um período, para comparações automáticas
+  // (ex.: período de 3 meses → compara com os 3 meses anteriores a esses).
+  function chatPreviousComparablePeriod(period){
+    var all = allMonthsSorted();
+    if(!period || period.months.length===0) return [];
+    var n = period.months.length;
+    var firstIdx = all.indexOf(period.months[0]);
+    if(firstIdx<=0) return [];
+    return all.slice(Math.max(0, firstIdx-n), firstIdx);
+  }
+
+  /* ---------- 2c. Categorias, tipos e entidades citadas pelo nome ----------
+     Busca SEMPRE dinamicamente nas listas atuais de state.categories.* e nos
+     nomes reais de cartões/dívidas/metas/contas — nunca uma lista fixa —
+     para continuar funcionando mesmo se o cliente renomear categorias. */
+  var CHAT_CATEGORY_SYNONYMS = {
+    "moradia": ["aluguel","casa","condominio","habitacao","imovel"],
+    "alimentacao": ["comida","mercado","supermercado","almoco","janta","restaurante","ifood","delivery","feira"],
+    "transporte": ["combustivel","gasolina","uber","99","onibus","carro","estacionamento","pedagio"],
+    "saude": ["plano de saude","remedio","farmacia","medico","dentista","consulta"],
+    "educacao": ["curso","escola","faculdade","mensalidade escolar","livro","material escolar"],
+    "lazer": ["cinema","viagem de lazer","passeio","entretenimento","streaming","show","festa"],
+    "compras": ["roupa","shopping","presente","calcado","eletronico"],
+    "cartao de credito": ["cartao","fatura do cartao"],
+    "dividas": ["divida","emprestimo","financiamento"],
+    "outros": ["diversos","variados"]
+  };
+  function chatBestListMatch(normText, list, synonymMap){
+    var best = null, bestLen = 0;
+    (list||[]).forEach(function(item){
+      var n = chatNorm(item);
+      if(!n) return;
+      var re = new RegExp("(^|\\s)"+n.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"(\\s|$)");
+      if(re.test(normText) && n.length>bestLen){ best=item; bestLen=n.length; }
+      var syns = (synonymMap && synonymMap[n]) || [];
+      syns.forEach(function(s){
+        var reS = new RegExp("(^|\\s)"+s+"(\\s|$)");
+        if(reS.test(normText) && s.length>bestLen){ best=item; bestLen=s.length; }
+      });
+    });
+    return best;
+  }
+  function chatResolveExpenseCategory(normText){ return chatBestListMatch(normText, state.categories.despesas, CHAT_CATEGORY_SYNONYMS); }
+  function chatResolveIncomeTipo(normText){ return chatBestListMatch(normText, state.categories.rendimentos, null); }
+  function chatResolveInvestCategoria(normText){ return chatBestListMatch(normText, state.categories.investimentos, null); }
+  function chatResolveCard(normText){ return chatBestListMatch(normText, state.cards.map(function(c){return c.nome;}), null); }
+  function chatResolveDebt(normText){ return chatBestListMatch(normText, state.debts.map(function(d){return d.nome;}), null); }
+  function chatResolveGoal(normText){ return chatBestListMatch(normText, state.goals.map(function(g){return g.name;}), null); }
+  function chatResolveAccount(normText){ return chatBestListMatch(normText, state.investmentAccounts.map(function(a){return a.nome;}), null); }
+  var CHAT_MEMBRO_SYNONYMS = {
+    "parceiro a": ["parceiro","parceira","conjuge","esposa","esposo","marido","mulher"],
+    "conjunto": ["casal","juntos","ambos","nos dois","familia toda"]
+  };
+  // "Eu" é o nome padrão de membro, mas é também o pronome mais comum da língua — nunca
+  // detecta "Eu" a partir da palavra solta (senão qualquer "quanto eu gastei" filtraria por
+  // membro), só quando o próprio nome de membro citado explicitamente combina outro padrão.
+  function chatResolveMembro(normText){
+    var list = state.categories.membros.filter(function(m){ return chatNorm(m)!=="eu"; });
+    return chatBestListMatch(normText, list, CHAT_MEMBRO_SYNONYMS);
+  }
+  // Quando o cliente fala de "minha meta" sem citar o nome, escolhe a meta PENDENTE mais
+  // avançada (nunca uma já concluída) — usada nas simulações e em perguntas compostas.
+  function chatPickPendingGoal(){
+    if(state.goals.length===0) return null;
+    var pendentes = state.goals.filter(function(g){ return g.target>0 && goalCurrentValue(g)<g.target; });
+    var pool = pendentes.length>0 ? pendentes : state.goals;
+    return pool.slice().sort(function(a,b){ var pa=a.target>0?goalCurrentValue(a)/a.target:0, pb=b.target>0?goalCurrentValue(b)/b.target:0; return pb-pa; })[0];
+  }
+
+  /* ---------- 3a. Detectores genéricos de "operação" (o que o cliente quer saber) ---------- */
+  function chatWantsMax(t){ return /\bmaior\b|\bmais alta\b|\bmais alto\b|\bmais caro\b|\bprincipal\b|\btop\b|\bmais gastei\b|\bmais pesou\b/.test(t); }
+  function chatWantsMin(t){ return /\bmenor\b|\bmais baixa\b|\bmais baixo\b|\bmais barato\b/.test(t); }
+  function chatWantsComparison(t){ return /compar|aumentou|aumentaram|diminuiu|diminuiram|cresceu|cresceram|caiu|cairam|subiu|subiram|desceu|desceram|em relacao a|versus|\bvs\b|variou|variacao|mudou/.test(t); }
+  function chatWantsPercent(t){ return /percentual|porcentagem|por cento|%|representa|proporcao|fatia|parcela da renda/.test(t); }
+  function chatWantsTrend(t){ return /tendencia|evolu|historico|ao longo do tempo|nos ultimos meses/.test(t); }
+  function chatWantsList(t){ return /\bquais\b|\bliste\b|\blistar\b|\bme mostra\b|\bmostre\b|\bmostrar\b|\bdetalh/.test(t); }
+  function chatWantsWhen(t){ return /\bquando\b|\bdaqui a quanto tempo\b|\bquanto tempo falta\b|\bem quantos meses\b/.test(t); }
+  function chatWantsHowMuchNeeded(t){ return /\bquanto preciso\b|\bquanto falta\b|\bquanto tenho que\b|\bo que preciso\b/.test(t); }
+  function chatIsSimulation(t){ return /^se\s|\bse eu\b|\be se\b|\bsimular\b|\bsimula\w*\b|\bhipoteticamente\b|\bsuponha\b|\bimagina que\b|quanto precis\w*\s+(investir|guardar|poupar)|continuar (nesse|neste) ritmo/.test(t); }
+  function chatWantsRecommendation(t){ return /\bdica\b|\bdicas\b|\bsugest|\bo que devo\b|\bo que deveria\b|\bcomo posso\b|\bcomo melhorar\b|\bonde posso economizar\b|\bonde economizar\b|\brecomend|oportunidade de economia|\beconomia\b/.test(t); }
+  function chatWantsGeneralStatus(t){ return /como est(a|ao) minha|como estao minhas financas|como vao minhas financas|minha situacao financeira|situacao financeira|saude financeira|estou bem|estou indo bem|estou no caminho certo|estou gastando demais|gastando demais|maior problema financeiro|minha prioridade|deveria ser minha prioridade|analise completa|analise minha situacao|analise financeira|fazer uma analise|faca uma analise/.test(t); }
+
+  /* ---------- 3b. Pontuação de tópico (item 2 e 3 do pedido: reconhecer muitas formas de perguntar) ---------- */
+  var CHAT_TOPIC_KEYWORDS = {
+    receitas: ["receita","receitas","renda","rendimento","rendimentos","ganhei","ganho","ganhar","entrou","entrada","entradas","recebi","receber","salario","salarios"],
+    despesas: ["despesa","despesas","gasto","gastos","gastei","gastar","paguei","pagar","saiu","saida","saidas","comprei","compra","compras","custou","custo","categoria","categorias"],
+    cartoes: ["cartao","cartoes","fatura","faturas","limite do cartao"],
+    dividas: ["divida","dividas","emprestimo","emprestimos","financiamento","financiamentos","parcela","parcelas","parcelado"],
+    investimentos: ["investimento","investimentos","investi","invisto","investir","aporte","aportes","aportei","aplicacao","aplicado","aplicar","rendeu","rende","render","juros","carteira de investimento","renda passiva","guardado","guardei"],
+    patrimonio: ["patrimonio","riqueza","ativos","passivos"],
+    metas: ["meta","metas","objetivo","objetivos","sonho","sonhos","guardar","poupar"],
+    orcamento: ["orcamento","50 30 20","50/30/20","essenciais","nao essenciais","regra dos"],
+    dicas: ["dica","dicas","sugestao","sugestoes","economizar","economia","recomendacao","recomendacoes","onde posso economizar","o que melhorar","como melhorar"],
+    situacao: ["situacao financeira","como estou","como estao minhas financas","minha situacao","analise completa","analise minha situacao","saude financeira","estou bem","estou mal","caminho certo","meu maior problema","minha prioridade"],
+    ajudachat: ["o que voce faz","o que voce sabe fazer","como voce funciona","quem e voce","o que e voce","me ajuda a usar o chat"],
+    saudacao: ["oi bussola","ola bussola","oi","ola","bom dia","boa tarde","boa noite","tudo bem","e ai"]
+  };
+  function chatScoreTopic(normText){
+    var scores = {};
+    Object.keys(CHAT_TOPIC_KEYWORDS).forEach(function(topic){
+      var score = 0;
+      CHAT_TOPIC_KEYWORDS[topic].forEach(function(kw){
+        if(normText.indexOf(kw)!==-1) score += kw.split(" ").length; // termos de mais palavras contam mais (mais específicos)
+      });
+      scores[topic] = score;
+    });
+    // "Dívidas" e "Cartão de Crédito" também existem como categorias de despesa, mas têm
+    // abas/tópicos dedicados (dividas/cartões) com dados mais ricos — priorizar esses.
+    var expCatMatch = chatResolveExpenseCategory(normText);
+    if(expCatMatch === "Dívidas"){ scores.dividas = (scores.dividas||0) + 2; }
+    else if(expCatMatch === "Cartão de Crédito"){ scores.cartoes = (scores.cartoes||0) + 2; }
+    else if(expCatMatch){ scores.despesas = (scores.despesas||0) + 2; }
+    if(chatResolveIncomeTipo(normText)) scores.receitas = (scores.receitas||0) + 1;
+    if(chatResolveInvestCategoria(normText)) scores.investimentos = (scores.investimentos||0) + 1;
+    if(chatResolveCard(normText)) scores.cartoes = (scores.cartoes||0) + 2;
+    if(chatResolveDebt(normText)) scores.dividas = (scores.dividas||0) + 2;
+    if(chatResolveGoal(normText)) scores.metas = (scores.metas||0) + 2;
+    if(chatResolveAccount(normText)) scores.investimentos = (scores.investimentos||0) + 2;
+    if(chatResolveMembro(normText)) scores.despesas = (scores.despesas||0) + 1;
+    // "rendimento(s)" sozinho é ambíguo entre receita e investimento — a presença de palavras de
+    // investimento (aporte/investi/render) desempata a favor de investimentos.
+    var best=null, bestScore=0;
+    Object.keys(scores).forEach(function(k){ if(scores[k]>bestScore){ bestScore=scores[k]; best=k; } });
+    return {topic:best, score:bestScore, scores:scores};
+  }
+
+  /* ---------- 4a. Formatação de resposta ---------- */
+  function chatMsg(html, quick){ return {html:html, quick:quick||null}; }
+  function chatQuick(list){ return list; }
+  function chatNoData(topicLabel, periodLabel){
+    return chatMsg('🧭 Não encontrei registros de '+topicLabel+' '+(periodLabel||"nesse período")+'. Se ainda não lançou nada nessa aba, é só registrar por lá — assim que houver dados eu já consigo responder.');
+  }
+  function chatDeltaSentence(cur, prev, subjectUp, subjectDown){
+    if(prev<=0){ return cur>0 ? "Não encontrei um período anterior comparável com dados para calcular a variação." : ""; }
+    var pct = ((cur-prev)/prev)*100;
+    if(Math.abs(pct)<1){ return "Ficou praticamente estável em relação ao período anterior ("+fmtMoney(prev)+")."; }
+    var verbo = pct>=0 ? (subjectUp||"aumentou") : (subjectDown||"diminuiu");
+    var emoji = pct>=0 ? "📈" : "📉";
+    return emoji+" "+verbo.charAt(0).toUpperCase()+verbo.slice(1)+" "+Math.abs(pct).toFixed(0)+"% em relação ao período anterior ("+fmtMoney(prev)+").";
+  }
+  function chatPct(part, total){ return total>0 ? ((part/total)*100).toFixed(0)+"%" : "—"; }
+
+  /* ---------- 4b. Camada de dados: agregações reaproveitáveis por vários tópicos ----------
+     Sempre em cima das mesmas funções puras já usadas no resto do painel
+     (monthTotals, monthEntries, accountTotals, cardFatura, debtPago, etc.) —
+     o motor de chat nunca duplica lógica de cálculo, só combina o que já existe. */
+  function chatSumIncome(months, tipo){
+    var total=0; months.forEach(function(m){ monthEntries(state.incomes,m).forEach(function(i){ if(!tipo||i.tipo===tipo) total+=i.valor; }); }); return total;
+  }
+  function chatSumExpense(months, cat){
+    var total=0; months.forEach(function(m){ monthEntries(state.expenses,m).forEach(function(e){ if(!cat||e.cat===cat) total+=e.valor; }); }); return total;
+  }
+  function chatSumExpenseMembro(months, membro){
+    var total=0; months.forEach(function(m){ monthEntries(state.expenses,m).forEach(function(e){ if((e.membro||"Não informado")===membro) total+=e.valor; }); }); return total;
+  }
+  function chatSumInvest(months){
+    var total=0; months.forEach(function(m){ total += monthTotals(m).invest; }); return total;
+  }
+  function chatCategoryTotals(months, list, field, catField){
+    // list: state.incomes ou state.expenses · field: "tipo" ou "cat"
+    var byCat = {};
+    months.forEach(function(m){
+      monthEntries(list, m).forEach(function(item){ var k=item[field]; byCat[k]=(byCat[k]||0)+item.valor; });
+    });
+    return byCat;
+  }
+  function chatTopKey(byCatObj){
+    var keys = Object.keys(byCatObj);
+    if(keys.length===0) return null;
+    keys.sort(function(a,b){ return byCatObj[b]-byCatObj[a]; });
+    return keys[0];
+  }
+  function chatTotalDebtRemaining(){
+    return state.debts.reduce(function(s,d){ return s + Math.max(0, d.valorTotal - debtPago(d)); }, 0);
+  }
+  function chatTotalDebtMonthlyCommitment(){
+    // soma da parcela mensal (valorTotal/numParcelas) de cada dívida ainda não quitada — "quanto
+    // você está comprometido por mês com dívidas", distinto do saldo total restante.
+    return state.debts.filter(function(d){ return !debtIsQuitada(d); }).reduce(function(s,d){
+      return s + (d.numParcelas>0 ? d.valorTotal/d.numParcelas : d.valorTotal);
+    }, 0);
+  }
+  function chatTotalCardLimit(){ return state.cards.reduce(function(s,c){return s+(c.limite||0);},0); }
+  function chatTotalCardFatura(){ return state.cards.reduce(function(s,c){return s+cardFatura(c);},0); }
+  function chatTotalInvested(){ return state.investmentAccounts.reduce(function(s,a){return s+accountTotals(a).saldoAtual;},0); }
+  function chatTotalAportado(){ return state.investmentAccounts.reduce(function(s,a){return s+accountTotals(a).aportado;},0); }
+  function chatTotalRendimentoInvest(){ return state.investmentAccounts.reduce(function(s,a){return s+accountTotals(a).rendimento;},0); }
+
+  /* ---------- 4c. Handlers por tópico ---------- */
+
+  function chatHandleReceitas(normText, ctx){
+    var period = chatResolvePeriod(normText) || ctx.period || {months:[state.viewMonth], label:"em "+monthLabel(state.viewMonth), key:"mes_atual"};
+    ctx.topic = "receitas"; ctx.prevPeriod = ctx.period; ctx.period = period;
+    if(period.isFuture){ return chatMsg("🧭 "+period.label+" ainda não chegou, então não existem registros de receita para esse mês."); }
+    if(period.months.length===0){ return chatNoData("receitas", period.label); }
+    var tipo = chatResolveIncomeTipo(normText);
+    var total = chatSumIncome(period.months, tipo);
+
+    if(tipo){
+      if(total<=0) return chatNoData('receitas do tipo "'+tipo+'"', period.label);
+      var totalGeral = chatSumIncome(period.months);
+      var linha = '💰 Receitas do tipo <strong>'+esc(tipo)+'</strong> '+period.label+': <strong>'+fmtMoney(total)+'</strong> ('+chatPct(total,totalGeral)+' do total de receitas do período).';
+      if(chatWantsComparison(normText)){
+        var prevM = chatContextPrevOrAuto(ctx, period);
+        var prevTotal = chatSumIncome(prevM, tipo);
+        linha += '<br>'+chatDeltaSentence(total, prevTotal, "aumentou", "diminuiu");
+      }
+      return chatMsg(linha);
+    }
+
+    if(chatWantsMax(normText)){
+      var byTipo = chatCategoryTotals(period.months, state.incomes, "tipo");
+      var top = chatTopKey(byTipo);
+      if(!top) return chatNoData("receitas", period.label);
+      return chatMsg('💰 Sua maior fonte de receita '+period.label+' foi <strong>'+esc(top)+'</strong>: '+fmtMoney(byTipo[top])+' ('+chatPct(byTipo[top],total)+' do total).');
+    }
+
+    if(chatWantsComparison(normText) || chatWantsTrend(normText)){
+      var prevMonths = chatContextPrevOrAuto(ctx, period);
+      var prevTotal2 = chatSumIncome(prevMonths);
+      var html = '💰 Suas receitas '+period.label+' somaram <strong>'+fmtMoney(total)+'</strong>. '+chatDeltaSentence(total, prevTotal2, "cresceu", "caiu");
+      return chatMsg(html, chatQuick(["Qual foi minha maior fonte de receita?","E as despesas?"]));
+    }
+
+    if(chatWantsPercent(normText)){
+      var t2 = period.months.reduce(function(s,m){var tt=monthTotals(m); return s+tt.income+tt.expense+tt.invest;},0);
+      return chatMsg('💰 As receitas representam a base de tudo — '+fmtMoney(total)+' '+period.label+', usados para calcular despesas, investimento e saldo.');
+    }
+
+    var byTipoAll = chatCategoryTotals(period.months, state.incomes, "tipo");
+    var tiposList = Object.keys(byTipoAll).sort(function(a,b){return byTipoAll[b]-byTipoAll[a];});
+    var linhas = tiposList.map(function(tp){ return '• '+esc(tp)+': '+fmtMoney(byTipoAll[tp])+' ('+chatPct(byTipoAll[tp],total)+')'; }).join("<br>");
+    var out = '💰 Suas receitas '+period.label+' somaram <strong>'+fmtMoney(total)+'</strong>.';
+    if(linhas) out += '<br><br>'+linhas;
+    return chatMsg(out, chatQuick(["Quanto gastei?","Comparar com o mês anterior","Qual foi minha maior fonte?"]));
+  }
+  // Reaproveita o período anterior já "lembrado" na conversa quando o cliente pergunta de novo
+  // sobre o mesmo assunto (ex.: pergunta 1 = mês atual, pergunta 2 = "e no mês passado?",
+  // pergunta 3 = "e quanto aumentou?" → compara exatamente os dois períodos já discutidos).
+  function chatContextPrevOrAuto(ctx, period){
+    if(ctx.prevPeriod && ctx.prevPeriod.months && ctx.prevPeriod.months.length>0 && ctx.prevPeriod.key!==period.key){
+      return ctx.prevPeriod.months;
+    }
+    return chatPreviousComparablePeriod(period);
+  }
+
+  function chatHandleDespesas(normText, ctx){
+    var period = chatResolvePeriod(normText) || ctx.period || {months:[state.viewMonth], label:"em "+monthLabel(state.viewMonth), key:"mes_atual"};
+    var cat = chatResolveExpenseCategory(normText) || (ctx.topic==="despesas" ? ctx.category : null);
+    ctx.topic="despesas"; ctx.category=cat; ctx.prevPeriod=ctx.period; ctx.period=period;
+    if(period.isFuture){ return chatMsg("🧭 "+period.label+" ainda não chegou, então não existem despesas registradas para esse mês."); }
+    if(period.months.length===0){ return chatNoData("despesas", period.label); }
+    var totalGeral = chatSumExpense(period.months);
+
+    // Gasto por membro da família — "quanto o Parceiro gastou?" / "gastos por membro"
+    var membro = chatResolveMembro(normText);
+    if(membro){
+      var totalMembro = chatSumExpenseMembro(period.months, membro);
+      if(totalMembro<=0) return chatMsg('💸 Não encontrei despesas atribuídas a <strong>'+esc(membro)+'</strong> '+period.label+'.');
+      return chatMsg('💸 <strong>'+esc(membro)+'</strong> gastou <strong>'+fmtMoney(totalMembro)+'</strong> '+period.label+' ('+chatPct(totalMembro,totalGeral)+' do total da família).', chatQuick(["E os outros membros?","Qual foi minha maior categoria?"]));
+    }
+    if(/por membro|cada membro|membros da familia|entre eu e/.test(normText)){
+      var byMembro = {};
+      period.months.forEach(function(m){ monthEntries(state.expenses,m).forEach(function(e){ var mb=e.membro||"Não informado"; byMembro[mb]=(byMembro[mb]||0)+e.valor; }); });
+      var membrosList = Object.keys(byMembro).sort(function(a,b){return byMembro[b]-byMembro[a];});
+      if(membrosList.length===0) return chatNoData("despesas", period.label);
+      var linhasM = membrosList.map(function(m){ return '• '+esc(m)+': '+fmtMoney(byMembro[m])+' ('+chatPct(byMembro[m],totalGeral)+')'; }).join("<br>");
+      return chatMsg('💸 Despesas por membro '+period.label+':<br>'+linhasM);
+    }
+
+    if(cat){
+      var totalCat = chatSumExpense(period.months, cat);
+      if(totalCat<=0){ return chatMsg('💸 Não encontrei despesas na categoria <strong>'+esc(cat)+'</strong> '+period.label+'.'); }
+      if(chatWantsComparison(normText)){
+        var prevM = chatContextPrevOrAuto(ctx, period);
+        var prevTotal = chatSumExpense(prevM, cat);
+        return chatMsg('💸 Você gastou <strong>'+fmtMoney(totalCat)+'</strong> com <strong>'+esc(cat)+'</strong> '+period.label+'. '+chatDeltaSentence(totalCat, prevTotal, "aumentou", "diminuiu"), chatQuick(["E no mês passado?","Isso é muito da minha renda?"]));
+      }
+      if(chatWantsPercent(normText) || /represent/.test(normText)){
+        var totalInc = chatSumIncome(period.months);
+        var pctRenda = totalInc>0 ? chatPct(totalCat, totalInc) : "—";
+        return chatMsg('💸 <strong>'+esc(cat)+'</strong> somou '+fmtMoney(totalCat)+' '+period.label+' — isso é '+chatPct(totalCat,totalGeral)+' das suas despesas totais'+(totalInc>0?" e "+pctRenda+" da sua renda do período":"")+'.');
+      }
+      var tip = computeCategoryTipForMonth(period.months[period.months.length-1]);
+      var tipHtml = (tip && tip.cat===cat) ? '<br><br>💡 '+esc(tip.tip) : "";
+      return chatMsg('💸 Você gastou <strong>'+fmtMoney(totalCat)+'</strong> com <strong>'+esc(cat)+'</strong> '+period.label+' ('+chatPct(totalCat,totalGeral)+' das despesas do período).'+tipHtml, chatQuick(["Isso aumentou?","Qual foi minha maior categoria?"]));
+    }
+
+    if(chatWantsMax(normText)){
+      var byCat = chatCategoryTotals(period.months, state.expenses, "cat");
+      var top = chatTopKey(byCat);
+      if(!top) return chatNoData("despesas", period.label);
+      ctx.category = top;
+      return chatMsg('💸 Sua maior categoria de despesa '+period.label+' foi <strong>'+esc(top)+'</strong>: '+fmtMoney(byCat[top])+' ('+chatPct(byCat[top],totalGeral)+' do total).', chatQuick(["Isso aumentou?","Onde posso economizar?"]));
+    }
+    if(chatWantsMin(normText)){
+      var byCat2 = chatCategoryTotals(period.months, state.expenses, "cat");
+      var keys2 = Object.keys(byCat2).sort(function(a,b){return byCat2[a]-byCat2[b];});
+      if(keys2.length===0) return chatNoData("despesas", period.label);
+      return chatMsg('💸 Sua menor categoria de despesa '+period.label+' foi <strong>'+esc(keys2[0])+'</strong>: '+fmtMoney(byCat2[keys2[0]])+'.');
+    }
+    if(/qual categoria mais cresceu|qual categoria mais aumentou|categoria que mais aumentou|categoria que mais cresceu/.test(normText)){
+      var prevM2 = chatContextPrevOrAuto(ctx, period);
+      var byCatCur = chatCategoryTotals(period.months, state.expenses, "cat");
+      var byCatPrev = chatCategoryTotals(prevM2, state.expenses, "cat");
+      var deltas = Object.keys(byCatCur).map(function(c){ return {cat:c, cur:byCatCur[c], prev:byCatPrev[c]||0, diff:byCatCur[c]-(byCatPrev[c]||0)}; }).filter(function(x){return x.prev>0;});
+      if(deltas.length===0) return chatMsg('🧭 Ainda não tenho um período anterior comparável para dizer qual categoria mais cresceu.');
+      deltas.sort(function(a,b){return b.diff-a.diff;});
+      var w = deltas[0];
+      var pctW = ((w.cur-w.prev)/w.prev)*100;
+      return chatMsg('📈 A categoria que mais cresceu foi <strong>'+esc(w.cat)+'</strong>: de '+fmtMoney(w.prev)+' para '+fmtMoney(w.cur)+' (alta de '+pctW.toFixed(0)+'%).');
+    }
+    if(/qual categoria mais diminuiu|categoria que mais diminuiu|categoria que mais caiu/.test(normText)){
+      var prevM3 = chatContextPrevOrAuto(ctx, period);
+      var byCatCur2 = chatCategoryTotals(period.months, state.expenses, "cat");
+      var byCatPrev2 = chatCategoryTotals(prevM3, state.expenses, "cat");
+      var deltas2 = Object.keys(byCatCur2).map(function(c){ return {cat:c, cur:byCatCur2[c], prev:byCatPrev2[c]||0, diff:byCatCur2[c]-(byCatPrev2[c]||0)}; }).filter(function(x){return x.prev>0;});
+      if(deltas2.length===0) return chatMsg('🧭 Ainda não tenho um período anterior comparável para dizer qual categoria mais diminuiu.');
+      deltas2.sort(function(a,b){return a.diff-b.diff;});
+      var wd = deltas2[0];
+      if(wd.diff>=0) return chatMsg('🧭 Nenhuma categoria diminuiu em relação ao período anterior — todas se mantiveram ou aumentaram.');
+      return chatMsg('📉 A categoria que mais diminuiu foi <strong>'+esc(wd.cat)+'</strong>: de '+fmtMoney(wd.prev)+' para '+fmtMoney(wd.cur)+' (queda de '+Math.abs(((wd.cur-wd.prev)/wd.prev)*100).toFixed(0)+'%).');
+    }
+    if(chatWantsComparison(normText) || chatWantsTrend(normText)){
+      var prevM4 = chatContextPrevOrAuto(ctx, period);
+      var prevTotal2 = chatSumExpense(prevM4);
+      return chatMsg('💸 Suas despesas '+period.label+' somaram <strong>'+fmtMoney(totalGeral)+'</strong>. '+chatDeltaSentence(totalGeral, prevTotal2, "aumentou", "diminuiu"), chatQuick(["Qual categoria foi responsável?","Qual foi minha maior despesa?"]));
+    }
+    if(/fixas? e quanto sobra|fixas? sobra|quanto sobra depois das fixas/.test(normText)){
+      var brk = period.months.reduce(function(acc,m){ var b=monthExpenseBreakdown(m); var t=monthTotals(m); acc.fix+=0; return acc; }, {fix:0});
+      var fixTotal = period.months.reduce(function(s,m){ return s+monthEntries(state.expenses,m).filter(function(e){return e.tipo==="Fixa";}).reduce(function(a,e){return a+e.valor;},0); },0);
+      var totalInc2 = chatSumIncome(period.months);
+      var sobra = totalInc2 - totalGeral;
+      return chatMsg('💸 Despesas fixas '+period.label+': <strong>'+fmtMoney(fixTotal)+'</strong>. Depois de todas as despesas ('+fmtMoney(totalGeral)+'), sobram <strong>'+fmtMoney(sobra)+'</strong> da renda ('+fmtMoney(totalInc2)+').');
+    }
+    if(chatWantsPercent(normText)){
+      var totalInc3 = chatSumIncome(period.months);
+      return chatMsg('💸 Suas despesas '+period.label+' foram '+fmtMoney(totalGeral)+', o que representa '+(totalInc3>0?chatPct(totalGeral,totalInc3):"—")+' da sua renda no período.');
+    }
+
+    var byCatAll = chatCategoryTotals(period.months, state.expenses, "cat");
+    var catList = Object.keys(byCatAll).sort(function(a,b){return byCatAll[b]-byCatAll[a];});
+    var linhas2 = catList.slice(0,8).map(function(c){ return '• '+esc(c)+': '+fmtMoney(byCatAll[c])+' ('+chatPct(byCatAll[c],totalGeral)+')'; }).join("<br>");
+    var out2 = '💸 Suas despesas '+period.label+' somaram <strong>'+fmtMoney(totalGeral)+'</strong>.';
+    if(linhas2) out2 += '<br><br>'+linhas2;
+    return chatMsg(out2, chatQuick(["Qual foi minha maior categoria?","Isso aumentou em relação ao mês passado?","Onde posso economizar?"]));
+  }
+
+  function chatHandleCartoes(normText, ctx){
+    ctx.topic="cartoes";
+    if(state.cards.length===0){
+      return chatMsg('🧭 Você ainda não cadastrou nenhum cartão na aba <strong>Cartões</strong>. Assim que cadastrar, consigo te contar sobre limite, fatura em aberto e uso.');
+    }
+    var cardName = chatResolveCard(normText);
+    var cardsToUse = cardName ? state.cards.filter(function(c){return c.nome===cardName;}) : state.cards;
+
+    if(chatWantsMax(normText) && /limite/.test(normText)){
+      var maxC = state.cards.slice().sort(function(a,b){return b.limite-a.limite;})[0];
+      return chatMsg('💳 Seu cartão com maior limite é <strong>'+esc(maxC.nome)+'</strong>: '+fmtMoney(maxC.limite)+'.');
+    }
+    if(/vence|vencimento|venc\b/.test(normText)){
+      var linhas = cardsToUse.map(function(c){ var dias=daysUntilDueDate(c.vencimento); return '• '+esc(c.nome)+': vence dia '+c.vencimento+' (em '+dias+' dia'+(dias===1?'':'s')+'), fatura em aberto de '+fmtMoney(cardFatura(c)); }).join("<br>");
+      return chatMsg('💳 '+linhas);
+    }
+    var totalLimite = chatTotalCardLimit(), totalFatura = chatTotalCardFatura();
+    if(cardName){
+      var c = cardsToUse[0];
+      var f = cardFatura(c); var pct = c.limite>0?(f/c.limite)*100:0;
+      var gastoMes = cardMonthSpend(c, state.viewMonth);
+      return chatMsg('💳 <strong>'+esc(c.nome)+'</strong>: fatura em aberto de <strong>'+fmtMoney(f)+'</strong> ('+pct.toFixed(0)+'% do limite de '+fmtMoney(c.limite)+'). Gasto em '+monthLabel(state.viewMonth)+': '+fmtMoney(gastoMes)+'.'+(pct>=80?'<br><br>⚠️ Está acima de 80% do limite — vale segurar novas compras nesse cartão.':''));
+    }
+    var linhasAll = state.cards.map(function(c){
+      var f=cardFatura(c); var pct=c.limite>0?(f/c.limite)*100:0;
+      return '• '+esc(c.nome)+': '+fmtMoney(f)+' de fatura em aberto ('+pct.toFixed(0)+'% do limite de '+fmtMoney(c.limite)+')';
+    }).join("<br>");
+    var usoGeral = totalLimite>0 ? (totalFatura/totalLimite)*100 : 0;
+    var out = '💳 Fatura total em aberto: <strong>'+fmtMoney(totalFatura)+'</strong> de '+fmtMoney(totalLimite)+' de limite ('+usoGeral.toFixed(0)+'% usado).<br><br>'+linhasAll;
+    if(usoGeral>=70){ out += '<br><br>💡 Usar menos de 30% do limite do cartão tende a ajudar sua pontuação de crédito.'; }
+    return chatMsg(out, chatQuick(["Quando vencem minhas faturas?","Tenho dívidas também?"]));
+  }
+
+  function chatHandleDividas(normText, ctx){
+    ctx.topic="dividas";
+    if(state.debts.length===0){
+      return chatMsg('🧭 Você não tem nenhuma dívida cadastrada na aba <strong>Dívidas</strong>. Se isso for verdade, ótima notícia — se não, cadastre por lá para eu conseguir acompanhar.');
+    }
+    var debtName = chatResolveDebt(normText);
+    if(debtName){
+      var d = state.debts.filter(function(x){return x.nome===debtName;})[0];
+      var pago = debtPago(d); var restante = Math.max(0,d.valorTotal-pago);
+      var situacao = debtIsQuitada(d) ? "quitada" : (debtIsAtrasada(d) ? "atrasada" : "em dia");
+      var out = '💳 <strong>'+esc(d.nome)+'</strong>: restam <strong>'+fmtMoney(restante)+'</strong> de '+fmtMoney(d.valorTotal)+' (já pagou '+fmtMoney(pago)+'), taxa de '+d.taxa+'% a.m., situação: '+situacao+'.';
+      if(!debtIsQuitada(d)) out += '<br><br>💡 '+esc(debtRecoveryTip(d));
+      return chatMsg(out);
+    }
+    if(chatWantsMax(normText)){
+      var maxD = state.debts.slice().sort(function(a,b){ return (b.valorTotal-debtPago(b)) - (a.valorTotal-debtPago(a)); })[0];
+      var rest = Math.max(0, maxD.valorTotal-debtPago(maxD));
+      return chatMsg('💳 Sua maior dívida é <strong>'+esc(maxD.nome)+'</strong>, com '+fmtMoney(rest)+' ainda restantes de '+fmtMoney(maxD.valorTotal)+'.');
+    }
+    var atrasadas = state.debts.filter(debtIsAtrasada);
+    if(/atrasad/.test(normText)){
+      if(atrasadas.length===0) return chatMsg('✅ Nenhuma das suas dívidas está atrasada no momento.');
+      var linhasAt = atrasadas.map(function(d){ return '• '+esc(d.nome)+' — '+esc(debtRecoveryTip(d)); }).join("<br>");
+      return chatMsg('⚠️ Você tem '+atrasadas.length+' dívida(s) atrasada(s):<br>'+linhasAt);
+    }
+    var totalRestante = chatTotalDebtRemaining();
+    var totalMensal = chatTotalDebtMonthlyCommitment();
+    if(/comprometid|compromisso mensal|quanto pago por mes de divida/.test(normText)){
+      return chatMsg('💳 Você está comprometido com aproximadamente <strong>'+fmtMoney(totalMensal)+'/mês</strong> em parcelas de dívidas (soma das parcelas mensais das dívidas ainda não quitadas).');
+    }
+    var linhasAll = state.debts.map(function(d){
+      var restD = Math.max(0,d.valorTotal-debtPago(d));
+      var sit = debtIsQuitada(d) ? "quitada ✅" : (debtIsAtrasada(d) ? "atrasada ⚠️" : "em dia");
+      return '• '+esc(d.nome)+': '+fmtMoney(restD)+' restantes ('+sit+')';
+    }).join("<br>");
+    var out2 = '💳 Total ainda devido: <strong>'+fmtMoney(totalRestante)+'</strong>, com um compromisso de cerca de '+fmtMoney(totalMensal)+'/mês em parcelas.<br><br>'+linhasAll;
+    if(atrasadas.length>0){ out2 += '<br><br>⚠️ '+atrasadas.length+' dessa(s) está(ão) atrasada(s) — priorize colocar em dia.'; }
+    return chatMsg(out2, chatQuick(["Alguma dívida está atrasada?","Qual é minha maior dívida?"]));
+  }
+
+  function chatHandleInvestimentos(normText, ctx){
+    var period = chatResolvePeriod(normText) || ctx.period || {months:[state.viewMonth], label:"em "+monthLabel(state.viewMonth), key:"mes_atual"};
+    ctx.topic="investimentos"; ctx.prevPeriod=ctx.period; ctx.period=period;
+    if(state.investmentAccounts.length===0){
+      return chatMsg('🧭 Você ainda não tem contas de investimento cadastradas. Comece pela aba <strong>Investimentos</strong> — o primeiro passo costuma ser uma reserva de emergência.');
+    }
+    if(period.months.length===0 && !period.isFuture) return chatNoData("investimentos", period.label);
+
+    var accName = chatResolveAccount(normText);
+    if(accName){
+      var acc = state.investmentAccounts.filter(function(a){return a.nome===accName;})[0];
+      var at = accountTotals(acc);
+      return chatMsg('📈 <strong>'+esc(acc.nome)+'</strong> ('+esc(acc.categoria)+'): saldo atual de <strong>'+fmtMoney(at.saldoAtual)+'</strong>, aportado '+fmtMoney(at.aportado)+', rendimento de '+fmtMoney(at.rendimento)+' ('+at.rendPct.toFixed(1)+'%).');
+    }
+
+    var totalInvestido = chatSumInvest(period.months);
+    if(chatWantsMax(normText)){
+      var maiorConta = state.investmentAccounts.slice().sort(function(a,b){return accountTotals(b).saldoAtual-accountTotals(a).saldoAtual;})[0];
+      return chatMsg('📈 Sua maior posição é <strong>'+esc(maiorConta.nome)+'</strong>, com '+fmtMoney(accountTotals(maiorConta).saldoAtual)+' de saldo atual.');
+    }
+    if(/\brendeu\b|\brendimento dos investimentos\b|\brenda passiva\b/.test(normText)){
+      var rendaPassivaMedia = state.investmentAccounts.reduce(function(s,a){ var at=accountTotals(a); return s + (at.monthlyYieldPct!==null && at.saldoAtual>0 ? at.saldoAtual*(at.monthlyYieldPct/100) : 0); },0);
+      var totalRend = chatTotalRendimentoInvest();
+      return chatMsg('📈 Seus investimentos já renderam <strong>'+fmtMoney(totalRend)+'</strong> ao todo (acima do que foi aportado), com uma renda passiva média estimada de '+fmtMoney(rendaPassivaMedia)+'/mês nas condições atuais.');
+    }
+    if(chatWantsComparison(normText) || chatWantsTrend(normText)){
+      var prevMonths = chatContextPrevOrAuto(ctx, period);
+      var prevTotal = chatSumInvest(prevMonths);
+      return chatMsg('📈 Você investiu <strong>'+fmtMoney(totalInvestido)+'</strong> '+period.label+'. '+chatDeltaSentence(totalInvestido, prevTotal, "aumentou", "diminuiu"));
+    }
+    if(/alocacao|composicao|distribuicao da carteira|diversificacao/.test(normText)){
+      var byCatInv = {};
+      state.investmentAccounts.forEach(function(a){ byCatInv[a.categoria]=(byCatInv[a.categoria]||0)+accountTotals(a).saldoAtual; });
+      var totalAll = chatTotalInvested();
+      var linhas = Object.keys(byCatInv).sort(function(x,y){return byCatInv[y]-byCatInv[x];}).map(function(c){ return '• '+esc(c)+': '+chatPct(byCatInv[c],totalAll)+' ('+fmtMoney(byCatInv[c])+')'; }).join("<br>");
+      return chatMsg('📈 Alocação da sua carteira por categoria:<br>'+linhas);
+    }
+
+    var totalGeralInv = chatTotalInvested();
+    var byConta = {}; state.investmentAccounts.forEach(function(a){ byConta[a.nome]=accountTotals(a).saldoAtual; });
+    var linhasC = Object.keys(byConta).sort(function(a,b){return byConta[b]-byConta[a];}).map(function(n){ return '• '+esc(n)+': '+fmtMoney(byConta[n]); }).join("<br>");
+    var out = '📈 Você investiu <strong>'+fmtMoney(totalInvestido)+'</strong> '+period.label+'. Saldo total investido hoje: <strong>'+fmtMoney(totalGeralInv)+'</strong>.<br><br>'+linhasC;
+    return chatMsg(out, chatQuick(["Quanto isso já rendeu?","Como está minha alocação?","Quanto invisto por mês em média?"]));
+  }
+
+  function chatHandlePatrimonio(normText, ctx){
+    ctx.topic="patrimonio";
+    var atual = netWorth();
+    var brk = netWorthBreakdown();
+    if(chatWantsTrend(normText) || chatWantsComparison(normText)){
+      var series = computeCapitalAccumSeries();
+      if(series.length<2){
+        return chatMsg('📊 Seu património líquido atual é <strong>'+fmtMoney(atual)+'</strong>. Registre pelo menos 2 meses de dados para eu conseguir mostrar a evolução ao longo do tempo.');
+      }
+      var delta = series[series.length-1].value - series[series.length-2].value;
+      var dirTxt = delta>=0 ? "cresceu 📈" : "caiu 📉";
+      return chatMsg('📊 Seu património líquido é <strong>'+fmtMoney(atual)+'</strong>. No último mês, o capital acumulado (caixa + investido) '+dirTxt+' '+fmtMoney(Math.abs(delta))+' em relação ao mês anterior.', chatQuick(["Como está minha situação financeira?","Quanto tenho investido?"]));
+    }
+    if(/ativos|passivos|composicao/.test(normText)){
+      return chatMsg('📊 Ativos (caixa acumulado + investimentos): <strong>'+fmtMoney(brk.ativos)+'</strong>. Passivos (dívidas + faturas em aberto): <strong>'+fmtMoney(brk.passivos)+'</strong>. Património líquido = ativos − passivos = <strong>'+fmtMoney(atual)+'</strong>.');
+    }
+    var out = '🏆 Seu património líquido atual é <strong>'+fmtMoney(atual)+'</strong> (ativos de '+fmtMoney(brk.ativos)+' menos passivos de '+fmtMoney(brk.passivos)+').';
+    return chatMsg(out, chatQuick(["Meu património aumentou?","Como está minha situação financeira?"]));
+  }
+
+  function chatHandleMetas(normText, ctx){
+    ctx.topic="metas";
+    if(state.goals.length===0){
+      return chatMsg('🧭 Você ainda não criou nenhuma meta. Vá até a aba <strong>Metas</strong> e defina um nome, um valor-alvo — pode ser reserva de emergência, viagem, o que fizer sentido pra você.');
+    }
+    var goalName = chatResolveGoal(normText);
+    var goals = goalName ? state.goals.filter(function(g){return g.name===goalName;}) : state.goals;
+    // Quando há várias metas e nenhuma foi citada pelo nome, mas a pergunta é claramente sobre
+    // UMA meta específica ("quanto falta", "quando", "perto"), escolhe automaticamente a meta
+    // pendente mais avançada — em vez de simplesmente devolver a lista genérica sem responder.
+    var wantsSpecific = !goalName && goals.length>1 && (chatWantsWhen(normText) || chatWantsHowMuchNeeded(normText) || /\bfalta\b|\bfaltam\b|\bperto\b|\bprogresso\b|\bconcluida\b/.test(normText));
+    var autoPicked = false;
+    if(wantsSpecific){
+      var pendentes = state.goals.filter(function(g){ return g.target>0 && goalCurrentValue(g)<g.target; });
+      var pool = pendentes.length>0 ? pendentes : state.goals;
+      goals = [pool.slice().sort(function(a,b){ var pa=a.target>0?goalCurrentValue(a)/a.target:0, pb=b.target>0?goalCurrentValue(b)/b.target:0; return pb-pa; })[0]];
+      autoPicked = true;
+    }
+
+    if(goals.length===1){
+      var g = goals[0];
+      var cur = goalCurrentValue(g);
+      var falta = Math.max(0, g.target-cur);
+      var pct = g.target>0 ? Math.min(100,(cur/g.target)*100) : 0;
+      var out = (autoPicked ? '🎯 Considerando sua meta mais próxima de concluir, <strong>'+esc(g.name)+'</strong>: ' : '🎯 <strong>'+esc(g.name)+'</strong>: ')+fmtMoney(cur)+' de '+fmtMoney(g.target)+' (<strong>'+pct.toFixed(0)+'% concluída</strong>).';
+      if(falta<=0){ out += ' 🎉 Meta já atingida!'; return chatMsg(out); }
+      out += ' Faltam '+fmtMoney(falta)+'.';
+      if(chatWantsWhen(normText) || chatWantsHowMuchNeeded(normText)){
+        var pace = computeGoalRecentPace(g);
+        if(pace && pace>0){
+          var meses = Math.ceil(falta/pace);
+          out += '<br><br>No seu ritmo médio recente ('+fmtMoney(pace)+'/mês), você atinge essa meta em cerca de <strong>'+meses+' '+(meses===1?'mês':'meses')+'</strong> — estimativa, não garantia.';
+        } else {
+          var avgAporte = totalMonthlyAporte();
+          if(avgAporte>0){
+            var meses2 = Math.ceil(falta/avgAporte);
+            out += '<br><br>Considerando seu aporte médio geral em investimentos ('+fmtMoney(avgAporte)+'/mês), levaria cerca de <strong>'+meses2+' '+(meses2===1?'mês':'meses')+'</strong> — estimativa.';
+          } else {
+            out += '<br><br>Ainda não tenho aportes suficientes registrados para estimar um prazo — registre alguns meses de investimento para eu calcular isso.';
+          }
+        }
+      }
+      if(autoPicked && state.goals.length>1){ out += '<br><br><span style="opacity:.75; font-size:11.5px;">Você tem outras metas — pergunte pelo nome de uma delas se quiser ver essa outra.</span>'; }
+      return chatMsg(out, chatQuick(["Quanto preciso investir por mês para chegar mais rápido?","Como está minha situação financeira?"]));
+    }
+
+    var linhas = state.goals.map(function(g){
+      var cur=goalCurrentValue(g); var pct=g.target>0?Math.min(100,(cur/g.target)*100):0;
+      return '• '+esc(g.name)+': '+pct.toFixed(0)+'% ('+fmtMoney(cur)+' de '+fmtMoney(g.target)+')';
+    }).join("<br>");
+    return chatMsg('🎯 Suas metas:<br>'+linhas, chatQuick(state.goals.slice(0,3).map(function(g){return "Quanto falta para "+g.name+"?";})));
+  }
+
+  function chatHandleOrcamento(normText, ctx){
+    var period = chatResolvePeriod(normText) || ctx.period || {months:[state.viewMonth], label:"em "+monthLabel(state.viewMonth), key:"mes_atual"};
+    ctx.topic="orcamento"; ctx.period=period;
+    if(period.months.length===0) return chatNoData("dados de orçamento", period.label);
+    var t = period.months.reduce(function(acc,m){ var tt=monthTotals(m); acc.income+=tt.income; acc.expense+=tt.expense; acc.invest+=tt.invest; return acc; }, {income:0,expense:0,invest:0});
+    if(t.income<=0) return chatNoData("receitas para calcular o orçamento", period.label);
+    var essTotal=0, naoEssTotal=0;
+    period.months.forEach(function(m){ monthEntries(state.expenses,m).forEach(function(e){ if(ESSENCIAIS.indexOf(e.cat)!==-1) essTotal+=e.valor; else naoEssTotal+=e.valor; }); });
+    var pctEss=(essTotal/t.income)*100, pctNao=(naoEssTotal/t.income)*100, pctInv=(t.invest/t.income)*100;
+    var out = '📊 Regra 50/30/20 '+period.label+':<br>'+
+      '• Essenciais: '+pctEss.toFixed(0)+'% (meta ≤50%)<br>'+
+      '• Não essenciais: '+pctNao.toFixed(0)+'% (meta ≤30%)<br>'+
+      '• Investido: '+pctInv.toFixed(0)+'% (meta ≥20%)';
+    out += '<br><br>'+(pctEss>60?"⚠️ Essenciais bem acima da referência — vale revisar despesas fixas.":pctInv>=20?"✅ Você está investindo dentro (ou acima) da meta.":"💡 Ainda dá para aumentar a fatia investida da renda.");
+    return chatMsg(out, chatQuick(["Como está minha situação financeira?","Onde posso economizar?"]));
+  }
+
+  /* ---------- 4d. Análise completa (item 4 e 15 do pedido) ----------
+     Usada tanto pela pergunta "como estão minhas finanças" quanto pela
+     ação dedicada "🔎 Fazer análise completa". Reaproveita computeHealthFactors
+     (mesmos 5 fatores do card de Saúde Financeira do Dashboard) e
+     computeDiagnosisCards (mesmo motor de diagnóstico do relatório em PDF)
+     — resposta sempre consistente com o resto do painel, nunca um número
+     calculado "à parte". */
+  function chatFullAnalysis(){
+    var months = allMonthsSorted();
+    if(months.length===0){
+      return chatMsg('🧭 Ainda não há dados suficientes para uma análise. Comece registrando rendimentos e despesas de pelo menos um mês nas abas <strong>Rendimentos</strong> e <strong>Despesas</strong> — aí eu já consigo te dizer muita coisa.');
+    }
+    var t = monthTotals(state.viewMonth);
+    var parts = [];
+    parts.push('🧭 Fiz uma análise dos seus principais indicadores em '+monthLabel(state.viewMonth)+'.');
+
+    var factors = computeHealthFactors();
+    var fortes = factors.filter(function(f){return f.ok;});
+    var atencaoF = factors.filter(function(f){return !f.ok;});
+    if(fortes.length>0){ parts.push(fortes.map(function(f){ return '🟢 '+esc(f.label)+': '+esc(f.note)+'.'; }).join('<br>')); }
+    if(atencaoF.length>0){ parts.push(atencaoF.map(function(f){ return '🔴 '+esc(f.label)+': '+esc(f.note)+'.'; }).join('<br>')); }
+
+    var byCat = chatCategoryTotals([state.viewMonth], state.expenses, "cat");
+    var topCat = chatTopKey(byCat);
+    if(topCat){ parts.push('💸 Maior despesa do mês: <strong>'+esc(topCat)+'</strong> ('+fmtMoney(byCat[topCat])+', '+chatPct(byCat[topCat], t.expense)+' das despesas).'); }
+
+    var pctPoup = t.income>0 ? (t.invest/t.income)*100 : 0;
+    parts.push((pctPoup>=20?'🟢':pctPoup>=10?'🟡':'🔴')+' Capacidade de poupança: você investiu '+pctPoup.toFixed(0)+'% da renda este mês (referência: ≥20%). Saldo do mês: '+fmtMoney(t.saldo)+'.');
+
+    var series = computeCapitalAccumSeries();
+    if(series.length>=2){
+      var delta = series[series.length-1].value - series[series.length-2].value;
+      parts.push((delta>=0?'📈':'📉')+' Capital acumulado (caixa + investido) '+(delta>=0?'cresceu':'caiu')+' '+fmtMoney(Math.abs(delta))+' no último mês.');
+    }
+
+    if(state.investmentAccounts.length>0){
+      parts.push('📈 Investimentos: saldo total de '+fmtMoney(chatTotalInvested())+', rendimento acumulado de '+fmtMoney(chatTotalRendimentoInvest())+'.');
+    }
+    if(state.debts.length>0){
+      var atrasadas = state.debts.filter(debtIsAtrasada);
+      parts.push((atrasadas.length>0?'🔴 '+atrasadas.length+' dívida(s) atrasada(s)':'🟢 Dívidas em dia')+' — total restante de '+fmtMoney(chatTotalDebtRemaining())+'.');
+    }
+    if(state.goals.length>0){
+      var gTop = state.goals.slice().sort(function(a,b){ var pa=a.target>0?goalCurrentValue(a)/a.target:0, pb=b.target>0?goalCurrentValue(b)/b.target:0; return pb-pa; })[0];
+      var pctG = gTop.target>0 ? Math.min(100,(goalCurrentValue(gTop)/gTop.target)*100) : 0;
+      parts.push('🎯 Sua meta "'+esc(gTop.name)+'" está '+pctG.toFixed(0)+'% concluída.');
+    }
+
+    var diagCards = computeDiagnosisCards();
+    var negCards = diagCards.filter(function(c){ return c.sentiment==="neg" && c.action; });
+    if(negCards.length>0){
+      parts.push('<strong>💡 Oportunidades e recomendações</strong><br>'+negCards.slice(0,4).map(function(c){ return '• '+esc(c.action); }).join('<br>'));
+    }
+
+    var proximoPasso = negCards.length>0 ? negCards[0].action : "Continue registrando seus dados com regularidade — é isso que deixa esse diagnóstico cada vez mais preciso.";
+    parts.push('<strong>🧭 Seu próximo passo</strong><br>'+esc(proximoPasso));
+
+    return chatMsg(parts.join('<br><br>'), chatQuick(["Onde posso economizar?","Quanto falta para minhas metas?","Estou no caminho certo?"]));
+  }
+
+  /* ---------- 4e. Dicas e sugestões (item 5 do pedido) ----------
+     Reaproveita computeDiagnosisCards (ações sugeridas), computeCategoryTipForMonth
+     (dica por categoria de maior peso) e reconhece bons comportamentos (sentiment "pos"). */
+  function chatHandleDicas(normText, ctx){
+    ctx.topic="dicas";
+    var months = allMonthsSorted();
+    if(months.length===0){
+      return chatMsg('🧭 Ainda não tenho dados suficientes para gerar dicas personalizadas. Registre alguns rendimentos e despesas e pergunte de novo.');
+    }
+    var diagCards = computeDiagnosisCards();
+    var neg = diagCards.filter(function(c){ return c.sentiment==="neg" && c.action; });
+    var pos = diagCards.filter(function(c){ return c.sentiment==="pos"; });
+    var parts = [];
+    if(neg.length>0){ parts.push('💡 <strong>Onde você pode melhorar:</strong><br>'+neg.slice(0,4).map(function(c){ return '• '+esc(c.action); }).join('<br>')); }
+    var catTip = computeCategoryTipForMonth(state.viewMonth);
+    if(catTip){ parts.push('💡 Sobre "<strong>'+esc(catTip.cat)+'</strong>" ('+catTip.pct.toFixed(0)+'% da sua renda este mês): '+esc(catTip.tip)); }
+    if(pos.length>0){ parts.push('🟢 <strong>O que você já está fazendo bem:</strong><br>'+pos.slice(0,3).map(function(c){ return '• '+esc(c.text); }).join('<br>')); }
+    if(parts.length===0){ return chatMsg('✅ Não identifiquei nenhum ponto de atenção específico agora — continue assim! Se quiser, posso fazer uma análise completa mesmo assim.', chatQuick(["Faça uma análise completa"])); }
+    return chatMsg(parts.join('<br><br>'), chatQuick(["Faça uma análise completa","Onde estou gastando mais?"]));
+  }
+
+  /* ---------- 4f. Simulações (item 9 do pedido) ----------
+     Sempre deixa claro que é uma estimativa. Quando existe uma taxa de rendimento real
+     registrada pelo cliente, usa essa taxa; nunca inventa uma taxa de mercado. */
+  function chatHandleSimulacao(normText, raw, ctx){
+    ctx.topic = "simulacao";
+    var moneyVals = chatExtractMoneyValues(normText);
+    var pctVals = chatExtractPercents(normText);
+    var mesesMatch = normText.match(/(\d+)\s*(meses|mes|anos|ano)\b/);
+    var mesesAlvo = mesesMatch ? parseInt(mesesMatch[1],10) * (/ano/.test(mesesMatch[2])?12:1) : null;
+
+    if(/econom|guardar|poupar/.test(normText) && moneyVals.length>0){
+      var valor = moneyVals[0]; var n = mesesAlvo || 12; var total = valor*n;
+      return chatMsg('🔮 <strong>Simulação (estimativa):</strong> economizando '+fmtMoney(valor)+' por mês, em '+n+' '+(n===1?'mês':'meses')+' você teria acumulado <strong>'+fmtMoney(total)+'</strong> (soma simples, sem juros). Se investir esse valor, o total tende a ser maior, dependendo do rendimento.');
+    }
+    if(/investir/.test(normText) && moneyVals.length>0){
+      var valor2 = moneyVals[0]; var n2 = mesesAlvo || 12;
+      var totalInv = chatTotalInvested();
+      var rendaPassivaMedia = state.investmentAccounts.reduce(function(s,a){ var at=accountTotals(a); return s + (at.monthlyYieldPct!==null && at.saldoAtual>0 ? at.saldoAtual*(at.monthlyYieldPct/100) : 0); },0);
+      var taxaMensal = totalInv>0 ? rendaPassivaMedia/totalInv : 0;
+      var saldo = 0;
+      for(var i=0;i<n2;i++){ saldo = saldo*(1+taxaMensal) + valor2; }
+      var out = '🔮 <strong>Simulação (estimativa):</strong> investindo mais '+fmtMoney(valor2)+' por mês durante '+n2+' '+(n2===1?'mês':'meses');
+      if(taxaMensal>0){ out += ', com o rendimento médio atual da sua carteira ('+(taxaMensal*100).toFixed(2)+'% a.m.), esse aporte extra renderia aproximadamente <strong>'+fmtMoney(saldo)+'</strong>.'; }
+      else { out += ', você teria acumulado <strong>'+fmtMoney(valor2*n2)+'</strong> (não encontrei uma taxa de rendimento real sua registrada, então esse valor é a soma simples dos aportes, sem juros).'; }
+      return chatMsg(out);
+    }
+    if(/despesa/.test(normText) && /aument/.test(normText) && pctVals.length>0){
+      var t = monthTotals(state.viewMonth); var pct = pctVals[0];
+      var novoGasto = t.expense*(1+pct/100);
+      var novoSaldo = t.income - novoGasto - t.invest;
+      return chatMsg('🔮 <strong>Simulação (estimativa):</strong> se suas despesas aumentarem '+pct+'%, passariam de '+fmtMoney(t.expense)+' para <strong>'+fmtMoney(novoGasto)+'</strong>. Seu saldo do mês iria de '+fmtMoney(t.saldo)+' para <strong>'+fmtMoney(novoSaldo)+'</strong>'+(novoSaldo<0?' — ficaria negativo ⚠️.':'.'));
+    }
+    var catSim = chatResolveExpenseCategory(normText);
+    if(catSim && /reduz/.test(normText) && pctVals.length>0){
+      var atualCat = chatSumExpense([state.viewMonth], catSim); var pctR = pctVals[0];
+      var economia = atualCat*(pctR/100);
+      if(atualCat<=0){ return chatMsg('🧭 Não encontrei despesas em "'+esc(catSim)+'" em '+monthLabel(state.viewMonth)+' para simular essa redução.'); }
+      return chatMsg('🔮 <strong>Simulação (estimativa):</strong> reduzindo <strong>'+esc(catSim)+'</strong> em '+pctR+'% (de '+fmtMoney(atualCat)+' para '+fmtMoney(atualCat-economia)+'), você economizaria <strong>'+fmtMoney(economia)+'/mês</strong> — '+fmtMoney(economia*12)+' em um ano.');
+    }
+    if(/quanto precis\w*\s+(investir|guardar|poupar)/.test(normText) && /meta/.test(normText)){
+      var gName = chatResolveGoal(normText);
+      var g = gName ? state.goals.filter(function(x){return x.name===gName;})[0] : chatPickPendingGoal();
+      if(!g) return chatMsg('🧭 Você ainda não tem metas cadastradas para eu calcular isso.');
+      var falta = Math.max(0, g.target-goalCurrentValue(g));
+      if(falta<=0) return chatMsg('🎉 A meta "'+esc(g.name)+'" já foi atingida!');
+      var n5 = mesesAlvo || 12;
+      var necessario = falta/n5;
+      return chatMsg('🔮 Para atingir a meta "<strong>'+esc(g.name)+'</strong>" (faltam '+fmtMoney(falta)+') em '+n5+' '+(n5===1?'mês':'meses')+', você precisaria investir cerca de <strong>'+fmtMoney(necessario)+'/mês</strong>.');
+    }
+    if(/continuar (nesse|neste) ritmo/.test(normText) || (/quando/.test(normText) && /meta/.test(normText) && /(atinj|alcanc|bater|consig)/.test(normText))){
+      var gName2 = chatResolveGoal(normText);
+      var g2 = gName2 ? state.goals.filter(function(x){return x.name===gName2;})[0] : chatPickPendingGoal();
+      if(!g2) return chatMsg('🧭 Você ainda não tem metas cadastradas para eu calcular isso.');
+      var falta2 = Math.max(0, g2.target-goalCurrentValue(g2));
+      if(falta2<=0) return chatMsg('🎉 A meta "'+esc(g2.name)+'" já foi atingida!');
+      var pace = computeGoalRecentPace(g2) || totalMonthlyAporte();
+      if(!pace || pace<=0) return chatMsg('🧭 Ainda não tenho aportes suficientes registrados para estimar um prazo para a meta "'+esc(g2.name)+'".');
+      var mesesR = Math.ceil(falta2/pace);
+      return chatMsg('🔮 No seu ritmo médio recente ('+fmtMoney(pace)+'/mês), você atingiria a meta "<strong>'+esc(g2.name)+'</strong>" em cerca de <strong>'+mesesR+' '+(mesesR===1?'mês':'meses')+'</strong> — estimativa baseada no seu histórico, não uma garantia.');
+    }
+
+    return chatMsg('🔮 Posso simular coisas como:<br>• "Se eu economizar R$500 por mês, quanto terei em 1 ano?"<br>• "Se eu investir mais R$300 por mês?"<br>• "Se minhas despesas aumentarem 10%?"<br>• "Se eu reduzir alimentação em 20%?"<br>• "Quanto preciso investir por mês para atingir minha meta?"<br><br>Tenta reescrever sua pergunta em um formato parecido?');
+  }
+
+  /* ---------- 4g. Perguntas compostas (item 8 do pedido) ----------
+     Verificadas antes da pontuação de tópico único, pra pegar perguntas que
+     misturam dois assuntos numa frase só. */
+  function chatTryComposite(normText, ctx){
+    // Saldo do mês — "quanto sobra", "estou no azul/vermelho", "meu saldo está positivo?"
+    if(/\bsobra\b|\bsobrou\b|\bsaldo do mes\b|\bfica de saldo\b|\bno azul\b|\bno vermelho\b|\bficou positivo\b|\bficou negativo\b/.test(normText) && !/fixas?/.test(normText)){
+      var periodS = chatResolvePeriod(normText) || {months:[state.viewMonth], label:"em "+monthLabel(state.viewMonth), key:"mes_atual"};
+      if(periodS.months.length===0) return chatNoData("dados", periodS.label);
+      var tS = periodS.months.reduce(function(acc,m){ var tt=monthTotals(m); acc.income+=tt.income; acc.expense+=tt.expense; acc.invest+=tt.invest; acc.saldo+=tt.saldo; return acc; }, {income:0,expense:0,invest:0,saldo:0});
+      ctx.topic="despesas"; ctx.period=periodS;
+      var status = tS.saldo>=0 ? "positivo — no azul 🟢" : "negativo — no vermelho 🔴";
+      return chatMsg('💰 Seu saldo '+periodS.label+' está <strong>'+status+'</strong>: <strong>'+fmtMoney(tS.saldo)+'</strong> (renda '+fmtMoney(tS.income)+' − despesas '+fmtMoney(tS.expense)+' − investido '+fmtMoney(tS.invest)+').', chatQuick(["Onde posso economizar?","Qual foi minha maior despesa?"]));
+    }
+    if(/ganh|receb/.test(normText) && /invest/.test(normText)){
+      var period = chatResolvePeriod(normText) || {months:[state.viewMonth], label:"em "+monthLabel(state.viewMonth), key:"mes_atual"};
+      if(period.months.length===0) return chatNoData("dados", period.label);
+      var inc = chatSumIncome(period.months), inv = chatSumInvest(period.months);
+      ctx.topic="receitas"; ctx.period=period;
+      return chatMsg('💰 Você ganhou <strong>'+fmtMoney(inc)+'</strong> '+period.label+' e conseguiu investir <strong>'+fmtMoney(inv)+'</strong> disso ('+(inc>0?chatPct(inv,inc):'—')+' da renda).');
+    }
+    if(/despesa/.test(normText) && /aument|subiu|subiram|cresceu|cresceram/.test(normText) && /(qual categoria|quem foi|qual foi a categoria|responsavel)/.test(normText)){
+      var period2 = chatResolvePeriod(normText) || {months:[state.viewMonth], label:"em "+monthLabel(state.viewMonth), key:"mes_atual"};
+      var prevM = chatPreviousComparablePeriod(period2);
+      var cur = chatSumExpense(period2.months), prev = chatSumExpense(prevM);
+      var byCatCur = chatCategoryTotals(period2.months, state.expenses, "cat");
+      var byCatPrev = chatCategoryTotals(prevM, state.expenses, "cat");
+      var deltas = Object.keys(byCatCur).map(function(c){ return {cat:c, diff:byCatCur[c]-(byCatPrev[c]||0)}; }).sort(function(a,b){return b.diff-a.diff;});
+      var resp = '📈 Suas despesas '+period2.label+' somaram '+fmtMoney(cur)+'. '+chatDeltaSentence(cur,prev,"aumentaram","diminuíram");
+      if(deltas.length>0 && deltas[0].diff>0){ resp += '<br>A categoria mais responsável pela alta foi <strong>'+esc(deltas[0].cat)+'</strong> (+'+fmtMoney(deltas[0].diff)+').'; }
+      ctx.topic="despesas"; ctx.period=period2;
+      return chatMsg(resp);
+    }
+    if(/dinheiro suficiente/.test(normText) && /meta/.test(normText)){
+      if(state.goals.length===0) return chatMsg('🧭 Você ainda não tem metas cadastradas.');
+      var g = chatResolveGoal(normText); g = g ? state.goals.filter(function(x){return x.name===g;})[0] : state.goals.slice().sort(function(a,b){ var pa=a.target>0?goalCurrentValue(a)/a.target:0, pb=b.target>0?goalCurrentValue(b)/b.target:0; return pb-pa; })[0];
+      var falta = Math.max(0,g.target-goalCurrentValue(g));
+      ctx.topic="metas";
+      if(falta<=0) return chatMsg('✅ Sim! A meta "'+esc(g.name)+'" já foi atingida.');
+      var pace = computeGoalRecentPace(g) || totalMonthlyAporte();
+      var txt = pace>0 ? ' No seu ritmo atual, faltam cerca de '+Math.ceil(falta/pace)+' meses.' : ' Ainda não tenho aportes suficientes pra estimar um prazo.';
+      return chatMsg('🎯 Ainda não — faltam <strong>'+fmtMoney(falta)+'</strong> para a meta "'+esc(g.name)+'".'+txt);
+    }
+    if(/maior despesa/.test(normText) && /represent/.test(normText)){
+      var t2 = monthTotals(state.viewMonth);
+      var byCat = chatCategoryTotals([state.viewMonth], state.expenses, "cat");
+      var top = chatTopKey(byCat);
+      ctx.topic="despesas";
+      if(!top) return chatNoData("despesas", "em "+monthLabel(state.viewMonth));
+      return chatMsg('💸 Sua maior despesa em '+monthLabel(state.viewMonth)+' foi <strong>'+esc(top)+'</strong>: '+fmtMoney(byCat[top])+', o que representa '+(t2.income>0?chatPct(byCat[top],t2.income):'—')+' da sua renda do mês.');
+    }
+    return null;
+  }
+
+  /* ---------- 4h. Saudação, ajuda sobre o próprio chat e fallback (item 11) ---------- */
+  function chatHandleSaudacao(){
+    var nome = state.chatBotName || "Bússola";
+    return chatMsg('🧭 Olá'+(state.owner?", "+esc(state.owner):"")+'! Sou a <strong>'+esc(nome)+'</strong>, sua assistente financeira local. Pode perguntar sobre receitas, despesas, cartões, dívidas, investimentos, património, metas ou orçamento — ou pedir uma análise completa.', chatQuick(["Como estão minhas finanças?","Onde estou gastando mais?","Faça uma análise completa"]));
+  }
+  function chatHandleAjudaChat(){
+    var nome = state.chatBotName || "Bússola";
+    return chatMsg('🧭 Eu sou a <strong>'+esc(nome)+'</strong>, o motor de inteligência financeira local da Bússola. Tudo roda aqui no seu navegador, usando os dados que você já registrou — nenhuma informação sai daqui, e eu não uso nenhuma IA externa.<br><br>Posso responder sobre receitas, despesas, cartões, dívidas, investimentos, património, metas e orçamento, fazer comparações e simulações, e dar dicas. Veja mais exemplos na Central de Ajuda, em "🧭 Converse com a Bússola".', chatQuick(["Faça uma análise completa","Como estão minhas finanças?"]));
+  }
+  function chatFallback(){
+    return chatMsg('🧭 Não tive certeza de ter entendido essa pergunta. Você pode perguntar, por exemplo:<br>'+
+      '• "Quanto gastei este mês?"<br>'+
+      '• "Como estão minhas finanças?"<br>'+
+      '• "Quanto falta para minha meta?"<br>'+
+      '• "Onde posso economizar?"<br><br>'+
+      'Ou toque em "🔎 Fazer análise completa" para eu analisar tudo de uma vez.',
+      chatQuick(["Faça uma análise completa","Como estão minhas finanças?","Onde estou gastando mais?"]));
+  }
+
+  /* ---------- 5. Contexto da conversa + despachante principal (item 10) ---------- */
+  var chatContext = {topic:null, category:null, period:null, prevPeriod:null};
+  function chatResetContext(){ chatContext = {topic:null, category:null, period:null, prevPeriod:null}; }
+
+  function chatAnswer(raw){
+    var normText = chatNorm(raw);
+    if(!normText){ return chatFallback(); }
+
+    if(/analise completa|analise minha situacao|faca uma analise|analise financeira completa|fazer analise/.test(normText)){
+      return chatFullAnalysis();
+    }
+    if(chatWantsGeneralStatus(normText)){
+      return chatFullAnalysis();
+    }
+    var isShort = normText.split(" ").length<=4;
+    if(isShort && CHAT_TOPIC_KEYWORDS.saudacao.some(function(k){return normText.indexOf(k)===0;})){
+      return chatHandleSaudacao();
+    }
+    if(CHAT_TOPIC_KEYWORDS.ajudachat.some(function(k){return normText.indexOf(k)!==-1;})){
+      return chatHandleAjudaChat();
+    }
+    if(chatWantsRecommendation(normText)){
+      return chatHandleDicas(normText, chatContext);
+    }
+    if(chatIsSimulation(normText)){
+      return chatHandleSimulacao(normText, raw, chatContext);
+    }
+    var composite = chatTryComposite(normText, chatContext);
+    if(composite) return composite;
+
+    var scored = chatScoreTopic(normText);
+    var topic = scored.topic;
+    var isFollowUp = /^(e |mas e |entao e )/.test(normText);
+    if((!topic || scored.score===0) && isFollowUp && chatContext.topic){ topic = chatContext.topic; }
+    if(!topic){ return chatFallback(); }
+
+    switch(topic){
+      case "receitas": return chatHandleReceitas(normText, chatContext);
+      case "despesas": return chatHandleDespesas(normText, chatContext);
+      case "cartoes": return chatHandleCartoes(normText, chatContext);
+      case "dividas": return chatHandleDividas(normText, chatContext);
+      case "investimentos": return chatHandleInvestimentos(normText, chatContext);
+      case "patrimonio": return chatHandlePatrimonio(normText, chatContext);
+      case "metas": return chatHandleMetas(normText, chatContext);
+      case "orcamento": return chatHandleOrcamento(normText, chatContext);
+      case "dicas": return chatHandleDicas(normText, chatContext);
+      case "situacao": return chatFullAnalysis();
+      default: return chatFallback();
+    }
+  }
+
+  /* ---------- 6. Interface do chat (item 14 do pedido) ---------- */
+  var chatTypingTimer = null;
+  function chatBotName(){ return (state.chatBotName && state.chatBotName.trim()) || "Bússola"; }
+  function chatScrollToBottom(){
+    var body = document.getElementById("chatBody");
+    if(body) body.scrollTop = body.scrollHeight;
+  }
+  function chatAppendBubble(role, html, quick){
+    var body = document.getElementById("chatBody");
+    if(!body) return;
+    var row = document.createElement("div");
+    row.className = "chat-row chat-row-"+role;
+    if(role==="bot"){
+      row.innerHTML = '<div class="chat-avatar" aria-hidden="true">🧭</div><div class="chat-bubble chat-bubble-bot">'+html+'</div>';
+    } else {
+      row.innerHTML = '<div class="chat-bubble chat-bubble-user">'+esc(html)+'</div>';
+    }
+    body.appendChild(row);
+    if(role==="bot" && quick && quick.length>0){
+      var qwrap = document.createElement("div");
+      qwrap.className = "chat-quick-row";
+      qwrap.innerHTML = quick.map(function(q){ return '<button type="button" class="chat-quick-chip">'+esc(q)+'</button>'; }).join("");
+      qwrap.querySelectorAll(".chat-quick-chip").forEach(function(btn){
+        btn.addEventListener("click", function(){ chatSendMessage(btn.textContent); });
+      });
+      body.appendChild(qwrap);
+    }
+    chatScrollToBottom();
+  }
+  function chatShowTyping(){
+    var body = document.getElementById("chatBody");
+    if(!body) return;
+    var row = document.createElement("div");
+    row.className = "chat-row chat-row-bot"; row.id = "chatTypingRow";
+    row.innerHTML = '<div class="chat-avatar" aria-hidden="true">🧭</div><div class="chat-bubble chat-bubble-bot chat-typing"><span></span><span></span><span></span></div>';
+    body.appendChild(row);
+    chatScrollToBottom();
+  }
+  function chatHideTyping(){
+    var row = document.getElementById("chatTypingRow");
+    if(row) row.remove();
+  }
+  function chatSendMessage(text){
+    text = (text||"").trim();
+    if(!text) return;
+    var input = document.getElementById("chatInput");
+    var starters = document.getElementById("chatStarters");
+    if(starters && starters.innerHTML){ starters.innerHTML = ""; } // some vez a conversa começa, evita duplicar sugestões
+    chatAppendBubble("user", text);
+    if(input){ input.value = ""; input.style.height="auto"; }
+    chatShowTyping();
+    var delay = PREFERS_REDUCED_MOTION ? 0 : (280 + Math.min(500, text.length*8));
+    clearTimeout(chatTypingTimer);
+    chatTypingTimer = setTimeout(function(){
+      chatHideTyping();
+      var res;
+      try{ res = chatAnswer(text); }
+      catch(err){ res = chatMsg("🧭 Encontrei um problema ao calcular essa resposta. Pode tentar reformular a pergunta?"); }
+      chatAppendBubble("bot", res.html, res.quick);
+    }, delay);
+  }
+  function chatOpenPanel(){
+    var overlay = document.getElementById("chatPanel");
+    if(!overlay) return;
+    overlay.classList.remove("hidden");
+    document.getElementById("chatLauncher").classList.add("hidden-launcher");
+    var input = document.getElementById("chatInput");
+    if(input && !PREFERS_REDUCED_MOTION) setTimeout(function(){ input.focus(); }, 250);
+    chatScrollToBottom();
+  }
+  function chatClosePanel(){
+    var overlay = document.getElementById("chatPanel");
+    if(overlay) overlay.classList.add("hidden");
+    var launcher = document.getElementById("chatLauncher");
+    if(launcher) launcher.classList.remove("hidden-launcher");
+  }
+  function chatNewConversation(){
+    chatResetContext();
+    var body = document.getElementById("chatBody");
+    if(body) body.innerHTML = "";
+    var starters = document.getElementById("chatStarters");
+    if(starters){ starters.innerHTML = CHAT_STARTER_SUGGESTIONS.map(function(q){ return '<button type="button" class="chat-quick-chip">'+esc(q)+'</button>'; }).join(""); starters.querySelectorAll(".chat-quick-chip").forEach(function(btn){ btn.addEventListener("click", function(){ chatSendMessage(btn.textContent); }); }); }
+    chatAppendBubble("bot", chatHandleSaudacao().html);
+  }
+  var CHAT_STARTER_SUGGESTIONS = [
+    "Como estão minhas finanças?",
+    "Onde estou gastando mais?",
+    "Qual é minha maior oportunidade de economia?",
+    "Estou no caminho certo?",
+    "Como posso melhorar?",
+    "Analise minha situação financeira.",
+    "Quanto falta para minhas metas?",
+    "Faça uma análise completa"
+  ];
+  function initChatWidget(){
+    var launcher = document.getElementById("chatLauncher");
+    var panel = document.getElementById("chatPanel");
+    if(!launcher || !panel) return;
+
+    document.getElementById("chatBotNameLabel").textContent = chatBotName();
+    var nameInput = document.getElementById("chatBotNameInput");
+    if(nameInput) nameInput.value = state.chatBotName || "";
+
+    launcher.addEventListener("click", chatOpenPanel);
+    document.getElementById("chatCloseBtn").addEventListener("click", chatClosePanel);
+    document.getElementById("chatMinimizeBtn").addEventListener("click", chatClosePanel);
+    document.getElementById("chatNewBtn").addEventListener("click", chatNewConversation);
+    document.getElementById("chatFullAnalysisBtn").addEventListener("click", function(){ chatSendMessage("Fazer análise completa"); });
+
+    var editBtn = document.getElementById("chatEditNameBtn");
+    var nameRow = document.getElementById("chatNameEditRow");
+    if(editBtn && nameRow){
+      editBtn.addEventListener("click", function(){ nameRow.classList.toggle("hidden"); if(!nameRow.classList.contains("hidden") && nameInput) nameInput.focus(); });
+    }
+    if(nameInput){
+      function saveName(){
+        var v = nameInput.value.trim().slice(0,24);
+        state.chatBotName = v; saveState();
+        document.getElementById("chatBotNameLabel").textContent = chatBotName();
+      }
+      nameInput.addEventListener("change", saveName);
+      nameInput.addEventListener("keydown", function(e){ if(e.key==="Enter"){ saveName(); nameRow.classList.add("hidden"); } });
+    }
+
+    var input = document.getElementById("chatInput");
+    var sendBtn = document.getElementById("chatSendBtn");
+    function submitInput(){ if(input) chatSendMessage(input.value); }
+    if(sendBtn) sendBtn.addEventListener("click", submitInput);
+    if(input){
+      input.addEventListener("keydown", function(e){
+        if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); submitInput(); }
+      });
+      input.addEventListener("input", function(){
+        input.style.height = "auto";
+        input.style.height = Math.min(96, input.scrollHeight)+"px";
+      });
+    }
+
+    var startWrap = document.getElementById("chatStarters");
+    if(startWrap){
+      startWrap.innerHTML = CHAT_STARTER_SUGGESTIONS.map(function(q){ return '<button type="button" class="chat-quick-chip">'+esc(q)+'</button>'; }).join("");
+      startWrap.querySelectorAll(".chat-quick-chip").forEach(function(btn){
+        btn.addEventListener("click", function(){ chatSendMessage(btn.textContent); });
+      });
+    }
+
+    // Primeira mensagem de boas-vindas da sessão
+    var welcome = '🧭 Olá'+(state.owner?", "+esc(state.owner):"")+'! Sou a <strong>'+esc(chatBotName())+'</strong>'+(state.chatBotName?"":" (você pode me dar um nome no ícone ✎ ali em cima)")+', sua assistente financeira local. Uso só os dados que você já registrou aqui na Bússola — nada sai do seu navegador.<br><br>Pode me chamar como quiser, ou tocar numa das sugestões abaixo pra começar.';
+    chatAppendBubble("bot", welcome);
+  }
+
   /* ===== Init ===== */
   wireCategorySelect(document.getElementById("expCat"), "despesas", true, "Editar categorias de despesa");
   wireCategorySelect(document.getElementById("budgetCat"), "despesas", false);
@@ -5883,6 +7167,7 @@
   observeReveal(".rates-panel");
   observeReveal(".dica-card");
   observeReveal(".proj-params");
+  initChatWidget();
 
   // expose for automated testing only
   window.__app = {
@@ -5892,7 +7177,9 @@
     netWorth: netWorth,
     accountTotals: accountTotals,
     cardFatura: cardFatura,
-    simulateProjection: simulateProjection
+    simulateProjection: simulateProjection,
+    chatAnswer: chatAnswer,
+    chatResetContext: chatResetContext
   };
 
 })();
