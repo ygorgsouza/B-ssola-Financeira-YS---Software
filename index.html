@@ -113,6 +113,13 @@
   .cat-manage-name{flex:1; color:var(--text);}
   .cat-manage-icon{background:none; border:1px solid var(--line); border-radius:6px; width:24px; height:24px; font-size:11px; cursor:pointer; color:var(--text-soft); transition:transform .12s ease;}
   .cat-manage-icon:hover{background:var(--surface); transform:scale(1.08);}
+  .cat-manage-add-btn{
+    display:flex; align-items:center; justify-content:center; gap:5px; width:100%; margin-top:8px; padding:8px 10px;
+    background:var(--surface); border:1.5px dashed var(--brass); color:var(--brass-text); font-size:12.5px; font-weight:700;
+    border-radius:7px; cursor:pointer; transition:all .15s ease;
+  }
+  .cat-manage-add-btn:hover{ background:var(--brass-bg); border-style:solid; transform:translateY(-1px); }
+  .cat-manage-add-btn:active{ transform:translateY(0) scale(0.98); }
   .goal-tipo-pill{font-size:10px; padding:2px 8px; border-radius:999px; background:var(--brass); color:#fff; margin-left:6px;}
   .month-label{font-family:'Fraunces', serif; font-size:15px; font-weight:600; min-width:140px; text-align:center; text-transform:capitalize; color:#F4EFDF;}
 
@@ -194,12 +201,13 @@
      em vez de forçar rolagem horizontal — muito mais fácil de ler no celular. */
   @media (max-width:640px){
     #incomeTableBody, #expenseTableBody{}
-    #tab-rendimentos .ledger table, #tab-despesas .ledger table{ border:none; }
+    #tab-rendimentos .ledger table, #tab-despesas .ledger table{ border:none; display:block; width:100%; min-width:0; }
     #tab-rendimentos .ledger thead, #tab-despesas .ledger thead{ display:none; }
-    #tab-rendimentos .ledger tbody tr, #tab-despesas .ledger tbody tr{ display:block; border-bottom:1px solid var(--line); padding:10px 12px; }
+    #tab-rendimentos .ledger tbody, #tab-despesas .ledger tbody{ display:block; width:100%; }
+    #tab-rendimentos .ledger tbody tr, #tab-despesas .ledger tbody tr{ display:block; width:100%; border-bottom:1px solid var(--line); padding:10px 12px; }
     #tab-rendimentos .ledger tbody tr.empty-row, #tab-despesas .ledger tbody tr.empty-row{ padding:22px 12px; }
-    #tab-rendimentos .ledger tbody td, #tab-despesas .ledger tbody td{ display:flex; justify-content:space-between; align-items:center; padding:4px 0; border:none; text-align:left !important; }
-    #tab-rendimentos .ledger tbody td[data-label]:not([data-label=""])::before, #tab-despesas .ledger tbody td[data-label]:not([data-label=""])::before{ content:attr(data-label); font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-soft); font-weight:600; }
+    #tab-rendimentos .ledger tbody td, #tab-despesas .ledger tbody td{ display:flex; width:100%; justify-content:space-between; align-items:center; padding:4px 0; border:none; text-align:left !important; }
+    #tab-rendimentos .ledger tbody td[data-label]:not([data-label=""])::before, #tab-despesas .ledger tbody td[data-label]:not([data-label=""])::before{ content:attr(data-label); font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-soft); font-weight:600; flex-shrink:0; margin-right:10px; }
     #tab-rendimentos .ledger tbody td[data-label=""], #tab-despesas .ledger tbody td[data-label=""]{ justify-content:flex-end; }
     #tab-rendimentos .ledger tbody tr.empty-row td, #tab-despesas .ledger tbody tr.empty-row td{ display:block; text-align:center !important; }
   }
@@ -222,8 +230,14 @@
   .form-row{display:grid; grid-template-columns:1.4fr minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto; gap:10px; align-items:end;}
   .form-row.cols-6{grid-template-columns:1.2fr minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto;}
   @media (max-width:820px){ .form-row, .form-row.cols-6{grid-template-columns:minmax(0,1fr) minmax(0,1fr);} }
+  /* Itens de grid, por padrão, não encolhem abaixo do tamanho do próprio conteúdo (min-width:auto
+     implícito) — e o seletor nativo de data (input[type=date]) tem uma largura mínima própria que
+     costuma ultrapassar a célula do grid no mobile, empurrando/sobrepondo o campo seguinte (Membro).
+     Forçar min-width:0 no item e no controlo é o que corrige isso de vez, em qualquer largura de ecrã. */
+  .form-row > .field{ min-width:0; }
   .field label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-soft); margin-bottom:5px;}
-  .field input, .field select{ width:100%; padding:10px 10px; border:1px solid var(--line); border-radius:7px; background:var(--bg); font-size:14px; font-family:inherit; color:var(--text); min-height:40px; }
+  .field input, .field select{ width:100%; min-width:0; padding:10px 10px; border:1px solid var(--line); border-radius:7px; background:var(--bg); font-size:14px; font-family:inherit; color:var(--text); min-height:40px; }
+  .field input[type="date"]{ -webkit-min-logical-width:0; }
   .field input:focus, .field select:focus{border-color:var(--accent2); box-shadow:var(--glow-accent2); transition:border-color .15s ease, box-shadow .15s ease;}
   .btn{ border:none; border-radius:7px; padding:10px 16px; font-size:13.5px; font-weight:600; cursor:pointer; transition:transform .12s ease, opacity .15s ease, box-shadow .15s ease; min-height:40px; }
   .btn:hover{ transform:translateY(-1px); box-shadow:0 4px 10px -4px rgba(22,35,28,0.3); }
@@ -362,17 +376,65 @@
   .goal-sim-toggle{display:flex; gap:6px; margin:2px 0 4px;}
   .goal-sim-toggle-btn{flex:1; font-size:11px; font-weight:600; padding:5px 8px; border-radius:6px; border:1px solid var(--line); background:var(--surface); color:var(--text-soft); cursor:pointer; transition:all .15s ease;}
   .goal-sim-toggle-btn.active{background:var(--brass); color:#fff; border-color:var(--brass);}
-  .achv-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:10px;}
-  .achv-badge{border-radius:var(--radius); border:1px solid var(--line); padding:14px 12px; text-align:center; background:var(--surface); transition:transform .18s ease, box-shadow .18s ease;}
-  .achv-badge:hover{ transform:translateY(-2px); box-shadow:var(--shadow); }
-  .achv-badge.unlocked{background:var(--moss-bg); border-color:var(--moss);}
-  .achv-badge .achv-icon{font-size:22px; margin-bottom:6px;}
-  .achv-badge.locked .achv-icon{opacity:0.35; filter:grayscale(1);}
-  .achv-badge .achv-label{font-size:11.5px; font-weight:600; color:var(--text);}
+  .achv-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:14px; justify-items:center;}
+  @media (max-width:640px){ .achv-grid{grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:12px;} }
+  .achv-badge{
+    display:flex; flex-direction:column; align-items:center; text-align:center; width:100%; max-width:170px;
+    padding:18px 10px 14px; border-radius:16px; border:1px solid var(--line); background:var(--surface);
+    cursor:pointer; transition:transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease, border-color .22s ease;
+  }
+  .achv-badge:hover{ transform:translateY(-4px); box-shadow:var(--shadow); border-color:var(--brass); }
+  .achv-badge:active{ transform:translateY(-1px) scale(0.96); }
+  .achv-badge:focus-visible{ outline:2px solid var(--accent2); outline-offset:2px; }
+  .achv-badge.unlocked{ background:var(--moss-bg); border-color:var(--moss); }
+  /* O "selo": medalha circular com fitinha, inspirada em distintivos de condecoração —
+     dourada e brilhante quando desbloqueada, acinzentada e discreta quando ainda bloqueada. */
+  .achv-medal-wrap{ position:relative; margin-bottom:12px; }
+  .achv-medal{
+    position:relative; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:24px; overflow:hidden; z-index:1;
+    background:radial-gradient(circle at 34% 28%, #FFF6DE 0%, #E9CD8F 42%, #C4A05C 72%, #A9813F 100%);
+    border:3px solid #F4E2A8; box-shadow:0 3px 0 #8C6A2E, 0 7px 14px -6px rgba(140,106,46,0.55), inset 0 1px 2px rgba(255,255,255,0.6);
+    transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  .achv-badge:hover .achv-medal{ transform:scale(1.08) rotate(-4deg); }
+  .achv-medal-ribbon-l, .achv-medal-ribbon-r{ position:absolute; bottom:-5px; width:13px; height:15px; background:#C4A05C; z-index:0; }
+  .achv-medal-ribbon-l{ left:13px; transform:skewY(18deg); }
+  .achv-medal-ribbon-r{ right:13px; transform:skewY(-18deg); }
+  .achv-badge.unlocked .achv-medal::after{
+    content:""; position:absolute; inset:0; border-radius:50%;
+    background:conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.65) 8%, transparent 20%);
+    animation:achvShine 3.2s linear infinite;
+  }
+  @keyframes achvShine{ to{ transform:rotate(360deg); } }
+  .achv-badge.locked .achv-medal{
+    background:linear-gradient(160deg, #E4E9EF, #C3CBD6); border-color:#D7DEE6;
+    box-shadow:0 3px 0 #A9B3C0, inset 0 1px 2px rgba(255,255,255,0.4); filter:grayscale(0.5); opacity:0.7;
+  }
+  .achv-badge.locked .achv-medal-ribbon-l, .achv-badge.locked .achv-medal-ribbon-r{ background:#C3CBD6; }
+  .achv-badge .achv-label{font-size:12px; font-weight:700; color:var(--text); line-height:1.3;}
   .achv-badge.locked .achv-label{color:var(--text-soft);}
-  .achv-badge .achv-hint{font-size:10px; color:var(--text-soft); margin-top:4px; line-height:1.4;}
+  .achv-badge .achv-hint{font-size:10.3px; color:var(--text-soft); margin-top:5px; line-height:1.4;}
+  .achv-badge .achv-tap-hint{ font-size:9.5px; color:var(--brass); margin-top:6px; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; opacity:0.75; }
   @keyframes achvPop{ 0%{transform:scale(0.6); opacity:0;} 60%{transform:scale(1.08); opacity:1;} 100%{transform:scale(1);} }
   .achv-badge.just-unlocked{ animation:achvPop .5s cubic-bezier(.34,1.56,.64,1); }
+  @media (prefers-reduced-motion:reduce){ .achv-badge.unlocked .achv-medal::after{ animation:none; } .achv-badge.just-unlocked{ animation:none; } }
+
+  /* ===== Selos conquistados (Dashboard) — versão compacta dos mesmos selos, só desbloqueados ===== */
+  .dash-badges-grid{ display:flex; flex-wrap:wrap; gap:12px; }
+  .dash-badge-chip{
+    display:flex; align-items:center; gap:9px; background:var(--surface); border:1px solid var(--moss); border-radius:999px;
+    padding:6px 14px 6px 6px; cursor:pointer; transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
+  }
+  .dash-badge-chip:hover{ transform:translateY(-2px); box-shadow:var(--shadow); }
+  .dash-badge-chip:active{ transform:translateY(0) scale(0.97); }
+  .dash-badge-chip .dbc-medal{
+    width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;
+    background:radial-gradient(circle at 34% 28%, #FFF6DE 0%, #E9CD8F 42%, #C4A05C 72%, #A9813F 100%);
+    border:2px solid #F4E2A8; box-shadow:0 1.5px 0 #8C6A2E;
+  }
+  .dash-badge-chip .dbc-label{ font-size:12px; font-weight:700; color:var(--text); }
+  .dash-badges-empty{ font-size:13px; color:var(--text-soft); background:var(--surface-2); border-radius:10px; padding:14px 16px; }
 
   .alert-list{list-style:none; margin:0 0 20px; padding:0;}
   .alert-item{ display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border-radius:8px; margin-bottom:8px; font-size:13.3px; }
@@ -384,9 +446,6 @@
   .mood-banner.mood-positive{ background:var(--moss-bg); color:var(--moss-text); border:1px solid var(--moss); }
   .mood-banner.mood-negative{ background:var(--amber-bg); color:var(--amber-text); border:1px solid var(--amber); }
   .mood-banner.mood-neutral{ background:var(--surface-2); color:var(--text-soft); border:1px solid var(--line); }
-  .achv-grid{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
-  .achv-badge{ background:var(--accent2-bg); border:1px solid var(--accent2); color:var(--accent2-text); border-radius:999px; padding:6px 14px; font-size:12px; transition:transform .15s ease; }
-  .achv-badge:hover{ transform:translateY(-2px) scale(1.03); }
   .alert-item .dot{width:7px; height:7px; border-radius:50%; margin-top:5px; flex-shrink:0; background:currentColor;}
 
   .cashflow-bar{display:flex; height:34px; border-radius:8px; overflow:hidden; margin-top:6px;}
@@ -950,6 +1009,9 @@
 
       <div class="dash-section-head" style="margin-top:32px;"><h3>Sua direção</h3></div>
       <div id="mainGoalSection"></div>
+
+      <div class="dash-section-head" style="margin-top:32px;"><h3>Selos conquistados</h3></div>
+      <div id="dashBadgesSection"></div>
 
       <div id="insightBussolaSection" style="margin-top:22px;"></div>
 
@@ -1615,6 +1677,16 @@
     <p class="section-hint" style="margin-bottom:10px;">Tudo o que a Bússola identificou nos seus dados, organizado por tipo, não é preciso ir à Dashboard para ver.</p>
     <div id="bellContent"></div>
     <div class="modal-close-row"><button class="btn btn-primary btn-sm" id="bellCloseBtn">Fechar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="achvModalOverlay">
+  <div class="modal-box" style="max-width:360px; text-align:center;">
+    <div id="achvModalMedal" style="display:flex; justify-content:center; margin-bottom:6px;"></div>
+    <h2 id="achvModalTitle" style="margin-top:6px;"></h2>
+    <p id="achvModalDesc"></p>
+    <p id="achvModalMsg" style="font-weight:700; color:var(--brass-text); background:var(--brass-bg); border-radius:10px; padding:10px 12px; margin-top:14px;"></p>
+    <div class="modal-close-row" style="justify-content:center;"><button class="btn btn-primary" id="achvModalCloseBtn">Fechar</button></div>
   </div>
 </div>
 
@@ -2291,6 +2363,30 @@
     addOpt.value = ADD_CAT_VALUE; addOpt.textContent = "+ Nova categoria…";
     selectEl.appendChild(addOpt);
   }
+  // Criação de categoria, num só lugar, usada tanto pelo "+ Nova categoria…" dentro do próprio
+  // select quanto pelo botão "+ Criar nova categoria" do painel "Editar categorias" — assim as
+  // duas entradas continuam sempre consistentes entre si, em qualquer aba que usa categorias.
+  // selectToFocus é opcional: quando a criação parte de um <select> específico, ele já fica
+  // com a categoria nova selecionada; quando parte do painel de gerenciar, fica null.
+  function createNewCategory(group, selectToFocus){
+    var name = (typeof prompt === "function") ? prompt("Nome da nova categoria:") : null;
+    if(!name || !name.trim()){
+      if(selectToFocus) renderCategorySelect(selectToFocus, group, state.categories[group][0]);
+      return null;
+    }
+    name = name.trim();
+    if(state.categories[group].indexOf(name) === -1){
+      state.categories[group].push(name);
+      saveState();
+      showToast('Categoria "'+name+'" criada.');
+    } else {
+      showToast('A categoria "'+name+'" já existe.', "error");
+    }
+    (categorySelectRegistry[group]||[]).forEach(function(el){
+      renderCategorySelect(el, group, el===selectToFocus ? name : el.value);
+    });
+    return name;
+  }
   function wireCategorySelect(selectEl, group, showManageBtn, manageLabel){
     if(showManageBtn===undefined) showManageBtn = true;
     manageLabel = manageLabel || "Editar estas categorias";
@@ -2298,16 +2394,7 @@
     categorySelectRegistry[group].push(selectEl);
     selectEl.addEventListener("change", function(){
       if(selectEl.value === ADD_CAT_VALUE){
-        var name = (typeof prompt === "function") ? prompt("Nome da nova categoria:") : null;
-        if(name && name.trim()){
-          name = name.trim();
-          if(state.categories[group].indexOf(name) === -1){ state.categories[group].push(name); saveState(); showToast('Categoria "'+name+'" criada.'); }
-          categorySelectRegistry[group].forEach(function(el){
-            renderCategorySelect(el, group, el===selectEl ? name : el.value);
-          });
-        } else {
-          renderCategorySelect(selectEl, group, state.categories[group][0]);
-        }
+        createNewCategory(group, selectEl);
       }
     });
     renderCategorySelect(selectEl, group, state.categories[group][0]);
@@ -2347,7 +2434,7 @@
         var novo = (typeof prompt === "function") ? prompt('Novo nome para "'+cat+'":', cat) : null;
         if(novo && novo.trim() && novo.trim()!==cat){
           renameCategoryEverywhere(group, cat, novo.trim());
-          renderCategoryManagerPanel(panel, group);
+          renderCategoryManagerPanel(panel, group, manageLabel);
           showToast('Categoria renomeada para "'+novo.trim()+'".');
         }
       });
@@ -2356,13 +2443,25 @@
         var fallback = state.categories[group].find(function(c){return c!==cat;});
         if(confirm('Excluir a categoria "'+cat+'"? Itens que a usam passam a usar "'+fallback+'".')){
           deleteCategoryEverywhere(group, cat);
-          renderCategoryManagerPanel(panel, group);
+          renderCategoryManagerPanel(panel, group, manageLabel);
           showToast('Categoria "'+cat+'" excluída.');
         }
       });
       row.appendChild(nameSpan); row.appendChild(renameBtn); row.appendChild(delBtn);
       panel.appendChild(row);
     });
+    // "+ Criar nova categoria" — a mesma ação já disponível no próprio select ("+ Nova
+    // categoria…"), agora também aqui dentro do painel de gerenciar, que é onde faz mais
+    // sentido esperar encontrá-la. Presente em toda área que usa "Editar categorias", porque
+    // essa é a única função que desenha esse painel — nunca precisa ser repetido manualmente.
+    var addBtn = document.createElement("button");
+    addBtn.type = "button"; addBtn.className = "cat-manage-add-btn";
+    addBtn.innerHTML = "+ Criar nova categoria";
+    addBtn.addEventListener("click", function(){
+      var created = createNewCategory(group, null);
+      if(created) renderCategoryManagerPanel(panel, group, manageLabel);
+    });
+    panel.appendChild(addBtn);
   }
 
   function renameCategoryEverywhere(group, oldName, newName){
@@ -2514,6 +2613,8 @@
   document.getElementById("sealImgHelp").src = SEAL_DATA_URI;
   document.getElementById("helpToggle").addEventListener("click", function(){ document.getElementById("helpOverlay").classList.remove("hidden"); });
   document.getElementById("helpCloseBtn").addEventListener("click", function(){ document.getElementById("helpOverlay").classList.add("hidden"); });
+  document.getElementById("achvModalCloseBtn").addEventListener("click", function(){ document.getElementById("achvModalOverlay").classList.add("hidden"); });
+  document.getElementById("achvModalOverlay").addEventListener("click", function(e){ if(e.target.id==="achvModalOverlay") document.getElementById("achvModalOverlay").classList.add("hidden"); });
   document.querySelectorAll("#helpFaqList .faq-q").forEach(function(btn){
     btn.setAttribute("aria-expanded", "false");
     btn.addEventListener("click", function(){
@@ -3718,17 +3819,47 @@
     var pat = netWorth();
     var temRegistro = state.incomes.length>0 || state.expenses.length>0;
     var metaConcluida = state.goals.some(function(g){ var pct = g.target>0 ? (goalCurrentValue(g)/g.target)*100 : 0; return pct>=100; });
+    // desc = o que a conquista representa (mostrado no selo aberto); msg = celebração curta ao clicar.
+    // Só metadado de exibição — a condição "achieved" de cada uma é exatamente a mesma de sempre.
     return [
-      {id:"semana1", icon:"🏁", label:"Primeira semana organizada", hint:"Registre ao menos 1 rendimento ou despesa", achieved: temRegistro},
-      {id:"mes1", icon:"📅", label:"Primeiro mês registrado", hint:"Complete 1 mês com dados", achieved: months.length>=1},
-      {id:"meta1", icon:"🎯", label:"Primeira meta criada", hint:"Crie uma meta na aba Metas", achieved: state.goals.length>0},
-      {id:"invest1", icon:"📈", label:"Primeiro investimento registrado", hint:"Registre um aporte em Investimentos", achieved: state.investmentAccounts.some(function(a){return a.entries.length>0;})},
-      {id:"meses3", icon:"🗓️", label:"3 meses acompanhados", hint:"Acumule 3 meses de histórico", achieved: months.length>=3},
-      {id:"meses6", icon:"🗓️", label:"6 meses acompanhados", hint:"Acumule 6 meses de histórico", achieved: months.length>=6},
-      {id:"mil1", icon:"💰", label:"Primeiro R$ 1.000 investido", hint:"Saldo total investido ≥ R$ 1.000", achieved: totalInvestido>=1000},
-      {id:"objetivo1", icon:"🏆", label:"Primeiro objetivo concluído", hint:"Alguma meta atingiu 100%", achieved: metaConcluida},
-      {id:"pat10k", icon:"🏛️", label:"Primeiro R$ 10.000 de património", hint:"Património líquido ≥ R$ 10.000", achieved: pat>=10000}
+      {id:"semana1", icon:"🏁", label:"Primeira semana organizada", hint:"Registre ao menos 1 rendimento ou despesa", achieved: temRegistro,
+        desc:"Você registrou seu primeiro rendimento ou despesa na Bússola, o primeiro passo pra qualquer controle financeiro real.",
+        msg:"Toda jornada começa com um primeiro registro. Você já deu o seu! 🚀"},
+      {id:"mes1", icon:"📅", label:"Primeiro mês registrado", hint:"Complete 1 mês com dados", achieved: months.length>=1,
+        desc:"Você completou um mês inteiro de dados registrados na Bússola.",
+        msg:"Um mês completo de dados! Agora dá pra ver o panorama real das suas finanças. 📅"},
+      {id:"meta1", icon:"🎯", label:"Primeira meta criada", hint:"Crie uma meta na aba Metas", achieved: state.goals.length>0,
+        desc:"Você criou sua primeira meta financeira na aba Metas.",
+        msg:"Meta no papel é metade do caminho andado. Vamos atrás dela! 🎯"},
+      {id:"invest1", icon:"📈", label:"Primeiro investimento registrado", hint:"Registre um aporte em Investimentos", achieved: state.investmentAccounts.some(function(a){return a.entries.length>0;}),
+        desc:"Você registrou seu primeiro aporte numa conta de investimento.",
+        msg:"Primeiro passo no mundo dos investimentos dado! O tempo agora trabalha a seu favor. 📈"},
+      {id:"meses3", icon:"🗓️", label:"3 meses acompanhados", hint:"Acumule 3 meses de histórico", achieved: months.length>=3,
+        desc:"Você acumulou 3 meses de histórico financeiro na Bússola.",
+        msg:"3 meses de consistência! Já dá pra enxergar padrões reais nos seus números. 🗓️"},
+      {id:"meses6", icon:"🗓️", label:"6 meses acompanhados", hint:"Acumule 6 meses de histórico", achieved: months.length>=6,
+        desc:"Você acumulou 6 meses de histórico financeiro na Bússola.",
+        msg:"Meio ano de acompanhamento! Esse hábito já faz parte da sua rotina. 🗓️✨"},
+      {id:"mil1", icon:"💰", label:"Primeiro R$ 1.000 investido", hint:"Saldo total investido ≥ R$ 1.000", achieved: totalInvestido>=1000,
+        desc:"Seu saldo total investido já passou de R$ 1.000.",
+        msg:"Primeiro milhar investido! Os juros compostos agora têm algo relevante pra trabalhar. 💰"},
+      {id:"objetivo1", icon:"🏆", label:"Primeiro objetivo concluído", hint:"Alguma meta atingiu 100%", achieved: metaConcluida,
+        desc:"Uma das suas metas atingiu 100% do valor definido.",
+        msg:"Meta concluída! Prova real de que planejamento funciona. 🏆"},
+      {id:"pat10k", icon:"🏛️", label:"Primeiro R$ 10.000 de património", hint:"Património líquido ≥ R$ 10.000", achieved: pat>=10000,
+        desc:"Seu património líquido já passou de R$ 10.000.",
+        msg:"R$ 10 mil de património construído! Sua base está cada vez mais sólida. 🏛️"}
     ];
+  }
+  function achvMedalHtml(m){
+    return '<div class="achv-medal-wrap"><span class="achv-medal-ribbon-l"></span><span class="achv-medal-ribbon-r"></span><div class="achv-medal">'+m.icon+'</div></div>';
+  }
+  function openAchievementModal(m){
+    document.getElementById("achvModalMedal").innerHTML = achvMedalHtml(m);
+    document.getElementById("achvModalTitle").textContent = m.label;
+    document.getElementById("achvModalDesc").textContent = m.desc;
+    document.getElementById("achvModalMsg").textContent = m.msg;
+    document.getElementById("achvModalOverlay").classList.remove("hidden");
   }
   function renderAchievements(){
     var wrap = document.getElementById("achievementsGrid");
@@ -3736,12 +3867,18 @@
     var milestones = computeMilestones();
     var newlyUnlocked = milestones.filter(function(m){ return m.achieved && state.unlockedAchievements.indexOf(m.id)===-1; });
     wrap.innerHTML = milestones.map(function(m){
-      return '<div class="achv-badge '+(m.achieved?"unlocked":"locked")+'" data-achv="'+m.id+'">'+
-        '<div class="achv-icon">'+m.icon+'</div>'+
+      return '<div class="achv-badge '+(m.achieved?"unlocked":"locked")+'" data-achv="'+m.id+'" tabindex="0" role="button" aria-label="'+escapeHtml(m.label)+(m.achieved?" (desbloqueada)":" (bloqueada)")+'">'+
+        achvMedalHtml(m)+
         '<div class="achv-label">'+escapeHtml(m.label)+'</div>'+
-        (!m.achieved ? '<div class="achv-hint">'+escapeHtml(m.hint)+'</div>' : '')+
+        (!m.achieved ? '<div class="achv-hint">'+escapeHtml(m.hint)+'</div>' : '<div class="achv-tap-hint">Toque para ver ✨</div>')+
       '</div>';
     }).join("");
+    wrap.querySelectorAll(".achv-badge.unlocked").forEach(function(el){
+      var m = milestones.find(function(x){return x.id===el.dataset.achv;});
+      function open(){ openAchievementModal(m); }
+      el.addEventListener("click", open);
+      el.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); } });
+    });
     if(newlyUnlocked.length>0){
       state.unlockedAchievements = state.unlockedAchievements.concat(newlyUnlocked.map(function(m){return m.id;}));
       saveState();
@@ -3753,6 +3890,32 @@
         });
       });
     }
+    renderDashboardBadges(milestones);
+  }
+  /* Selos conquistados no Dashboard: só os já desbloqueados, clicáveis, levando direto para
+     a seção Conquistas (aba Metas). As ainda bloqueadas nunca aparecem aqui, só na aba mesmo. */
+  function goToAchievements(){
+    activateTab("metas");
+    requestAnimationFrame(function(){
+      var target = document.getElementById("achievementsGrid");
+      if(target) target.scrollIntoView({behavior: PREFERS_REDUCED_MOTION?"auto":"smooth", block:"start"});
+    });
+  }
+  function renderDashboardBadges(milestones){
+    var wrap = document.getElementById("dashBadgesSection");
+    if(!wrap) return;
+    milestones = milestones || computeMilestones();
+    var unlocked = milestones.filter(function(m){ return m.achieved; });
+    if(unlocked.length===0){
+      wrap.innerHTML = '<div class="dash-badges-empty">Ainda sem selos desbloqueados. Continue registrando os seus dados, o primeiro costuma vir rápido. 🏁</div>';
+      return;
+    }
+    wrap.innerHTML = '<div class="dash-badges-grid">'+unlocked.map(function(m){
+      return '<button type="button" class="dash-badge-chip" data-achv="'+m.id+'" title="'+escapeHtml(m.label)+'"><span class="dbc-medal">'+m.icon+'</span><span class="dbc-label">'+escapeHtml(m.label)+'</span></button>';
+    }).join("")+'</div>';
+    wrap.querySelectorAll(".dash-badge-chip").forEach(function(btn){
+      btn.addEventListener("click", goToAchievements);
+    });
   }
 
   var CATEGORY_TIPS = {
@@ -5443,11 +5606,10 @@
   }
 
   /* ===== FAB quick add ===== */
-  document.getElementById("fabBtn").addEventListener("click", function(){
-    activateTab("despesas");
-    document.getElementById("expDesc").focus();
-    window.scrollTo({top:0, behavior:"smooth"});
-  });
+  // Mesmo comportamento do botão "⚡ Despesa rápida": abre só o formulário rápido
+  // (Categoria + Valor), sem navegar para a aba Despesas completa. Reaproveita a mesma
+  // função (openQuickExpense), então validações, categorias e gravação são idênticas.
+  document.getElementById("fabBtn").addEventListener("click", openQuickExpense);
 
   /* ===== Sample data ===== */
   document.getElementById("sampleBtn").addEventListener("click", function(){
@@ -6075,6 +6237,102 @@
   function chatNorm(s){ return chatStripAccents(String(s||"")).toLowerCase().replace(/[^a-z0-9%$.,\s]/g," ").replace(/\s+/g," ").trim(); }
   function esc(s){ return escapeHtml(String(s==null?"":s)); }
 
+  /* ---------- 1b. Linguagem humana: abreviações, gírias, "internetês" e atalhos numéricos ----------
+     Roda depois do chatNorm, antes de qualquer interpretação — assim TODO o resto do motor já
+     recebe o texto "traduzido" para a forma mais próxima do português formal, sem precisar
+     duplicar regras em cada detector. Nunca muda o SENTIDO da frase, só a forma de escrever. */
+  function chatExpandColloquial(normText){
+    var t = " "+normText+" ";
+    var pairs = [
+      [/\bvc\b/g," voce "], [/\bvcs\b/g," voces "], [/\bpq\b/g," porque "],
+      [/\btbm\b/g," tambem "], [/\btb\b/g," tambem "], [/\bqto\b/g," quanto "], [/\bqnto\b/g," quanto "],
+      [/\bqtos\b/g," quantos "], [/\boq\b/g," o que "], [/\bpra\b/g," para "], [/\bpro\b/g," para o "],
+      [/\bblz\b/g," beleza "], [/\bvlr\b/g," valor "], [/\bvlr\.\b/g," valor "],
+      [/\bnaum\b/g," nao "], [/\bmto\b/g," muito "], [/\bmts\b/g," muitos "],
+      [/\btorei\b/g," estourei "], [/\btourei\b/g," estourei "], [/\besgotei\b/g," estourei "],
+      [/\bd\+\b/g," demais "], [/\bgrana\b/g," dinheiro "], [/\bbufunfa\b/g," dinheiro "],
+      [/\bfazer\b/g," fazer "], [/\bcredito\b/g," credito "],
+      [/\bcomeco\b/g," comeco "], [/\bcomessar\b/g," comecar "], [/\binvestir\b/g," investir "],
+      [/\binvistir\b/g," investir "], [/\binvister\b/g," investir "], [/\bimvestir\b/g," investir "],
+      [/\baplicasao\b/g," aplicacao "], [/\baposentar\b/g," aposentar "],
+      [/\bpoupansa\b/g," poupanca "], [/\breinvindicar\b/g," reivindicar "]
+    ];
+    pairs.forEach(function(p){ t = t.replace(p[0], p[1]); });
+    // "to"/"ta"/"tah" isolados quase sempre são "estou"/"esta" no registro informal
+    t = t.replace(/\bto\b/g," estou ").replace(/\btah\b/g," esta ").replace(/\bta\b/g," esta ");
+    // "n" isolado, só quando claramente é negação (seguido de um verbo comum) — evita falso positivo
+    t = t.replace(/\bn\b(?=\s+(sei|consigo|tenho|da|posso|quero|acho|entendi|sobra|tem|e\b))/g,"nao");
+    // "q" isolado quase sempre é "que" no registro informal
+    t = t.replace(/\bq\b/g," que ");
+    // atalhos de milhar: "20k", "1.5k", "50 k" → valor numérico por extenso (mantém o resto da
+    // frase intacto, então tanto a extração de dinheiro quanto o resto do motor entendem igual)
+    t = t.replace(/(\d+(?:[.,]\d+)?)\s*k\b/gi, function(_, num){
+      var n = parseFloat(String(num).replace(",", "."));
+      return isNaN(n) ? _ : "r$"+String(Math.round(n*1000));
+    });
+    return t.replace(/\s+/g," ").trim();
+  }
+
+  /* ---------- 1c. Tolerância a erros de digitação: distância de edição (Levenshtein) ----------
+     Usada só como ÚLTIMO recurso, quando a correspondência exata de palavras-chave não encontrou
+     nada — evita que um "invenstimento" ou "dvidas" mal digitado derrube a conversa. */
+  function chatLevenshtein(a, b){
+    var m=a.length, n=b.length;
+    if(Math.abs(m-n)>3) return 99;
+    var dp = []; var i, j;
+    for(i=0;i<=m;i++){ dp[i]=[i]; }
+    for(j=0;j<=n;j++){ dp[0][j]=j; }
+    for(i=1;i<=m;i++){
+      for(j=1;j<=n;j++){
+        dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1+Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+      }
+    }
+    return dp[m][n];
+  }
+  var CHAT_FUZZY_ANCHORS = {
+    despesas: ["despesa","despesas","gasto","gastos"],
+    receitas: ["receita","receitas","renda","salario"],
+    investimentos: ["investir","investimento","investimentos","aporte","aplicacao"],
+    dividas: ["divida","dividas","emprestimo","financiamento"],
+    cartoes: ["cartao","cartoes","fatura"],
+    metas: ["meta","metas","objetivo"],
+    patrimonio: ["patrimonio"],
+    orcamento: ["orcamento"]
+  };
+  function chatFuzzyTopic(normText){
+    var words = normText.split(" ").filter(function(w){ return w.length>=4; });
+    var best=null, bestDist=99;
+    words.forEach(function(w){
+      Object.keys(CHAT_FUZZY_ANCHORS).forEach(function(topic){
+        CHAT_FUZZY_ANCHORS[topic].forEach(function(anchor){
+          var maxAllowed = anchor.length>=7 ? 2 : 1;
+          var d = chatLevenshtein(w, anchor);
+          if(d<=maxAllowed && d<bestDist){ bestDist=d; best=topic; }
+        });
+      });
+    });
+    return best;
+  }
+  // A mesma tolerância a erro, mas para achar um tema de educação financeira quando a pontuação
+  // exata da KB não bateu com nada — varre as PRIMEIRAS palavras de cada keyword como "âncora".
+  function chatFuzzyEducationMatch(normText){
+    var words = normText.split(" ").filter(function(w){ return w.length>=5; });
+    if(words.length===0) return null;
+    var best=null, bestDist=99;
+    CHAT_EDUCATION_KB.forEach(function(entry){
+      entry.keywords.forEach(function(kw){
+        var anchor = kw.split(" ")[0];
+        if(anchor.length<5) return;
+        words.forEach(function(w){
+          var maxAllowed = anchor.length>=8 ? 2 : 1;
+          var d = chatLevenshtein(w, anchor);
+          if(d<=maxAllowed && d<bestDist){ bestDist=d; best=entry; }
+        });
+      });
+    });
+    return best;
+  }
+
   /* ---------- 2a. Números, dinheiro e percentuais citados na frase ---------- */
   function chatParseMoneyToken(tok){
     if(!tok) return null;
@@ -6087,13 +6345,14 @@
   }
   function chatExtractMoneyValues(normText){
     var out = [];
-    var re = /r\$\s*([\d.,]+)|([\d.,]+)\s*mil\b|([\d.,]+)\s*reais\b/g;
+    // "r$50 mil" precisa vir antes de "r$50" sozinho, senão o "mil" fica de fora da conta.
+    var re = /r\$\s*([\d.,]+)\s*mil\b|r\$\s*([\d.,]+)|([\d.,]+)\s*mil\b|([\d.,]+)\s*reais\b/g;
     var m;
     while((m = re.exec(normText))){
-      var raw = m[1]||m[2]||m[3];
+      var raw = m[1]||m[2]||m[3]||m[4];
       var val = chatParseMoneyToken(raw);
       if(val==null) continue;
-      if(m[2]) val *= 1000; // "5 mil"
+      if(m[1]||m[3]) val *= 1000; // "r$50 mil" ou "50 mil"
       out.push(val);
     }
     return out;
@@ -6355,7 +6614,7 @@
     { id:"guardar-vs-investir", keywords:["guardar e investir e a mesma coisa","diferenca entre guardar e investir","guardar dinheiro parado","mesma coisa que investir","o mesmo que investir","guardar e a mesma coisa"],
       answer:'Guardar (deixar parado, sem render) e investir (colocar para render) não são a mesma coisa. Dinheiro parado perde poder de compra com o tempo por causa da inflação. Investir é colocar esse dinheiro para render, ainda que em algo simples e de baixo risco como o Tesouro Selic, mesmo um rendimento modesto já é melhor do que deixar parado perdendo valor.',
       quick:["O que é inflação?","O que é Tesouro Direto?"] },
-    { id:"poupanca", keywords:["vale a pena a poupanca","poupanca ainda vale a pena","poupanca ou tesouro"],
+    { id:"poupanca", keywords:["vale a pena a poupanca","poupanca ainda vale a pena","poupanca ou tesouro","poupanca","cdb e melhor que poupanca","cdb ou poupanca"],
       answer:'A poupança é simples e tem liquidez diária, mas costuma render menos do que outras opções de baixo risco disponíveis hoje, como o Tesouro Selic ou um bom CDB de liquidez diária, que, além de renderem mais na maioria dos cenários, também são protegidos (Tesouro pelo governo, CDB pelo FGC até o limite). Vale comparar antes de deixar tudo parado só na poupança por hábito.',
       quick:["O que é Tesouro Selic?","O que é CDB?"] },
     { id:"fgc", keywords:["o que e o fgc","fundo garantidor de creditos","fgc"],
@@ -6478,6 +6737,9 @@
     { id:"imposto-de-renda-geral", keywords:["o que e imposto de renda","o que e o imposto de renda","imposto de renda pessoa fisica","ir pessoa fisica","o que e ir","imposto de renda"],
       answer:'O Imposto de Renda (IR) é o principal tributo federal cobrado sobre os rendimentos de pessoas físicas e jurídicas no Brasil, administrado pela Receita Federal. Para pessoa física, ele incide sobre salário (numa tabela progressiva mensal), aluguéis recebidos, a maioria dos investimentos de renda fixa, ganho de capital em vendas de bens e ações, entre outros, cada tipo de rendimento segue sua própria regra de cálculo e recolhimento.<br><br>Uma vez por ano, quem se enquadra nos critérios da Receita precisa apresentar a <strong>declaração anual</strong>, informando tudo o que recebeu, os bens que possui e as deduções a que tem direito, dela pode sair uma restituição (quando você pagou IR a mais ao longo do ano) ou um valor a pagar. Como as regras, alíquotas e prazos mudam todo ano, confirme sempre os valores vigentes no site oficial da Receita Federal (gov.br) antes de declarar.',
       quick:["Como declarar imposto de renda?","O que são rendimentos tributáveis e isentos?","Como funciona o imposto de renda sobre investimentos?"] },
+    { id:"o-que-e-investimento", keywords:["o que e investimento","o que e um investimento","o que sao investimentos","o que significa investir","investimento"],
+      answer:'Investir é colocar seu dinheiro para trabalhar e gerar mais dinheiro com o tempo, em vez de deixá-lo parado perdendo valor para a inflação. Na prática, você abre mão de usar aquele valor agora em troca de uma expectativa de retorno no futuro, seja como juros (renda fixa), participação nos lucros de uma empresa (ações), aluguel (fundos imobiliários) ou valorização do próprio ativo.<br><br>Todo investimento envolve algum grau de risco (a chance de o retorno ser menor que o esperado, ou até negativo) em troca do potencial de retorno, quanto mais previsível e seguro, geralmente menor o retorno esperado; quanto maior o retorno buscado, geralmente maior o risco assumido.',
+      quick:["Quais tipos de investimento existem?","O que fazer para começar a investir?","O que é reserva de emergência?"] },
     { id:"tipos-de-investimento", keywords:["quais investimentos existem","quais investimentos que existem","tipos de investimento","quais os tipos de investimento","quais opcoes de investimento","entender mais sobre investimentos","entender sobre investimentos","quais sao os investimentos","tipos de investimentos que existem"],
       answer:'Existem algumas famílias principais de investimento, cada uma com um papel diferente numa carteira:<br><br>' +
         '<strong>💰 Renda fixa</strong> (a mais previsível, costuma ser a base de qualquer carteira): Tesouro Direto, CDB, LCI/LCA, debêntures.<br>' +
@@ -6500,7 +6762,31 @@
       quick:["O que são ações?","O que são fundos imobiliários?","O que é diversificação?"] },
     { id:"cdb-vs-lci", keywords:["cdb ou lci","comparar cdb e lci","cdb ou lca","cdb x lci","lci","lca"],
       answer:'CDB e LCI/LCA competem para o mesmo tipo de dinheiro (renda fixa de médio prazo), com uma diferença central: <strong>CDB tem IR</strong> (tabela regressiva), <strong>LCI/LCA é isento</strong> de IR para pessoa física. Isso significa que uma LCI/LCA a uma taxa nominal um pouco menor pode render, líquido, mais do que um CDB de taxa nominal maior, vale sempre comparar a rentabilidade líquida (depois do imposto), não a taxa anunciada. Em compensação, LCI/LCA costuma ter prazo de carência (sem liquidez diária), enquanto muitos CDBs oferecem resgate a qualquer momento, o que pesa mais depende de quando você vai precisar do dinheiro.',
-      quick:["O que é LCI/LCA?","O que é CDB?","Como funciona o imposto de renda sobre investimentos?"] }
+      quick:["O que é LCI/LCA?","O que é CDB?","Como funciona o imposto de renda sobre investimentos?"] },
+    { id:"dividendos", keywords:["o que sao dividendos","o que e dividendo","dividendos","juros sobre capital proprio","jcp"],
+      answer:'Dividendos são a parte do lucro de uma empresa distribuída aos acionistas, proporcional à quantidade de ações que cada um tem, geralmente isentos de IR para pessoa física. Juros sobre Capital Próprio (JCP) são parecidos, mas contabilizados de forma diferente pela empresa (como despesa financeira) e têm 15% de IR retido na fonte. Empresas não são obrigadas a distribuir tudo, uma parte do lucro pode ser reinvestida no próprio negócio. Ações "boas pagadoras de dividendos" costumam atrair quem busca renda passiva recorrente, mas o valor pago varia ano a ano, conforme o resultado da empresa.',
+      quick:["O que são ações?","Como funciona o imposto de renda sobre investimentos?"] },
+    { id:"risco-liquidez-rentabilidade", keywords:["risco liquidez e rentabilidade","triangulo do investimento","risco x retorno","relacao entre risco e retorno"],
+      answer:'Risco, liquidez e rentabilidade formam uma espécie de "triângulo" onde raramente dá pra maximizar os três ao mesmo tempo: quanto maior o potencial de <strong>rentabilidade</strong>, geralmente maior o <strong>risco</strong> assumido; e ativos com alta <strong>liquidez</strong> (fácil de resgatar) tendem a pagar um pouco menos do que os que exigem carência. Reserva de emergência prioriza liquidez e segurança, abrindo mão de rentabilidade máxima, de propósito. Investimentos de longo prazo podem abrir mão de liquidez em troca de rentabilidade maior, já que não vão precisar do dinheiro tão cedo.',
+      quick:["O que é liquidez?","O que é diversificação?","O que é meu perfil de investidor?"] },
+    { id:"dre", keywords:["o que e dre","dre","demonstracao do resultado do exercicio","demonstrativo de resultado"],
+      answer:'A DRE (Demonstração do Resultado do Exercício) mostra se uma empresa deu lucro ou prejuízo num período, partindo da receita e descontando, em ordem, os custos e despesas: Receita Bruta → (–) impostos sobre vendas → Receita Líquida → (–) Custo dos produtos/serviços → Lucro Bruto → (–) despesas operacionais (administrativas, comerciais) → Lucro Operacional → (–) despesas financeiras e impostos → Lucro Líquido. É o "extrato de desempenho" do negócio num período (mês, trimestre, ano) — diferente do balanço patrimonial, que é uma foto de um momento específico, não de um período.',
+      quick:["O que é balanço patrimonial?","O que é margem de lucro?"] },
+    { id:"balanco-patrimonial", keywords:["balanco patrimonial","o que e balanco patrimonial","ativo passivo e patrimonio liquido da empresa"],
+      answer:'O balanço patrimonial é uma "foto" da situação financeira de uma empresa (ou de uma pessoa, no conceito equivalente) num momento específico, dividida em três partes que sempre se equilibram: <strong>Ativos</strong> (tudo que a empresa possui e pode gerar valor: caixa, estoque, imóveis, equipamentos), <strong>Passivos</strong> (tudo que a empresa deve: fornecedores, empréstimos, impostos a pagar) e <strong>Patrimônio Líquido</strong> (Ativos − Passivos, o que "sobra" para os donos). É o mesmo princípio usado no card de Património da Bússola, só que aplicado a uma pessoa física em vez de uma empresa.',
+      quick:["O que é DRE?","Quanto tenho de patrimônio?"] },
+    { id:"capital-de-giro", keywords:["capital de giro","o que e capital de giro"],
+      answer:'Capital de giro é o dinheiro que uma empresa precisa ter disponível para financiar sua operação do dia a dia, pagar fornecedores, salários, contas, enquanto espera receber dos seus próprios clientes. Um negócio pode até dar lucro "no papel" e ainda assim quebrar por falta de capital de giro, se o prazo para pagar as contas for menor que o prazo para receber dos clientes. É basicamente o "colchão de segurança" de uma empresa, o equivalente à reserva de emergência de uma pessoa física.',
+      quick:["O que é fluxo de caixa pessoal?","O que é reserva de emergência?"] },
+    { id:"ponto-de-equilibrio", keywords:["ponto de equilibrio","o que e ponto de equilibrio","break even"],
+      answer:'Ponto de equilíbrio é o volume de vendas necessário para que a receita cubra exatamente todos os custos e despesas, sem lucro nem prejuízo. Abaixo dele, a empresa opera no vermelho; acima, começa a lucrar. Calculado, de forma simplificada, dividindo os custos fixos pela margem de contribuição (preço de venda menos custo variável de cada unidade). É uma referência importante para decidir preços, metas de venda e se vale a pena um novo investimento no negócio.',
+      quick:["O que é margem de lucro?","O que é capital de giro?"] },
+    { id:"margem-lucro", keywords:["margem de lucro","o que e margem","margem bruta","margem liquida","margem operacional"],
+      answer:'Margem de lucro mostra que fatia da receita "sobra" como lucro, em percentual. As mais comuns: <strong>Margem bruta</strong> = (Receita − Custo direto) ÷ Receita, mostra a rentabilidade só do produto/serviço em si. <strong>Margem operacional</strong> desconta também as despesas operacionais do negócio. <strong>Margem líquida</strong> = Lucro Líquido ÷ Receita, o que sobra depois de absolutamente tudo, inclusive impostos e despesas financeiras. Comparar margens ao longo do tempo (ou com concorrentes do mesmo setor) ajuda a enxergar se o negócio está ficando mais ou menos eficiente, não só se está vendendo mais.',
+      quick:["O que é DRE?","O que é ponto de equilíbrio?"] },
+    { id:"ativo-passivo-pf", keywords:["ativo e passivo pessoal","o que e ativo","o que e passivo","diferenca entre ativo e passivo"],
+      answer:'No sentido financeiro pessoal (popularizado pelo livro "Pai Rico, Pai Pobre"): <strong>ativo</strong> é algo que coloca dinheiro no seu bolso (um investimento que rende, um imóvel alugado gerando renda); <strong>passivo</strong> é algo que tira dinheiro do seu bolso (uma dívida, um carro que só gera manutenção e desvalorização, sem gerar renda). Tecnicamente em contabilidade a definição é um pouco diferente (ativo = tudo que você possui, mesmo que não gere renda), mas essa versão popular ajuda bastante a decidir prioridades: quanto mais ativos (que geram renda) e menos passivos (que consomem renda) você acumula, mais rápido caminha para a independência financeira.',
+      quick:["O que é independência financeira?","Quanto tenho de patrimônio?"] }
   ];
   function chatScoreEducationMatch(normText){
     var best=null, bestScore=0;
@@ -6516,7 +6802,7 @@
   // um conceito geral), pra não roubar perguntas como "o que é minha situação financeira".
   function chatIsEducationalTrigger(normText){
     if(/\b(meu|minha|meus|minhas)\b/.test(normText)) return false;
-    return /^o que e\b|^oque e\b|^o que sao\b|^o que significa\b|^o que quer dizer\b|^o que fazer com\b|^como funciona\b|^como funcionam\b|^como declarar\b|^como fazer\b|^pra que serve\b|^para que serve\b|^explica\b|^me explica\b|^explique\b|^diferenca entre\b|^qual a diferenca\b|^vale a pena\b|^e bom investir\b|^e seguro\b|^como sair\b|^como montar\b|^como definir\b|^como organizar\b|^quero aprender\b|^me ensina\b|^ensina\b|^conte sobre\b|^fala sobre\b|^me fala sobre\b|^quais (sao|os) erros\b|^comparar\b|^quais\b.*\bexistem\b|^quais\b.*\btipos\b|^quais\b.*\bopcoes\b|qual e melhor\b|qual o melhor\b|qual a melhor opcao\b|qual e a melhor opcao\b|toda divida e ruim\b|e a mesma coisa\b|e o mesmo que\b|entender mais sobre\b|entender sobre\b|quero entender\b|queria entender\b|gostaria de entender\b/.test(normText);
+    return /^o que e\b|^oque e\b|^o que sao\b|^o que significa\b|^o que quer dizer\b|^o que fazer com\b|^como funciona\b|^como funcionam\b|^como declarar\b|^como fazer\b|^pra que serve\b|^para que serve\b|^explica\b|^me explica\b|^explique\b|^diferenca entre\b|^qual a diferenca\b|^vale a pena\b|^e bom investir\b|^e seguro\b|^como sair\b|^como montar\b|^como definir\b|^como organizar\b|^quero aprender\b|^me ensina\b|^ensina\b|^conte sobre\b|^fala sobre\b|^me fala sobre\b|^quais (sao|os) erros\b|^comparar\b|^quais\b.*\bexistem\b|^quais\b.*\btipos\b|^quais\b.*\bopcoes\b|qual e melhor\b|qual o melhor\b|qual a melhor opcao\b|qual e a melhor opcao\b|toda divida e ruim\b|e a mesma coisa\b|e o mesmo que\b|entender mais sobre\b|entender sobre\b|quero entender\b|queria entender\b|gostaria de entender\b|e melhor que\b|melhor do que\b|e melhor q\b/.test(normText);
   }
   function chatAnswerEducation(entry, ctx){
     if(ctx){ ctx.topic="educacao"; ctx.lastEduEntry=entry; }
@@ -6555,7 +6841,7 @@
   function chatWantsMax(t){ return /\bmaior\b|\bmais alta\b|\bmais alto\b|\bmais caro\b|\bprincipal\b|\btop\b|\bmais gastei\b|\bmais pesou\b/.test(t); }
   function chatWantsMin(t){ return /\bmenor\b|\bmais baixa\b|\bmais baixo\b|\bmais barato\b/.test(t); }
   function chatWantsComparison(t){ return /compar|aumentou|aumentaram|diminuiu|diminuiram|cresceu|cresceram|caiu|cairam|subiu|subiram|desceu|desceram|em relacao a|versus|\bvs\b|variou|variacao|mudou/.test(t); }
-  function chatWantsPercent(t){ return /percentual|porcentagem|por cento|%|representa|proporcao|fatia|parcela da renda/.test(t); }
+  function chatWantsPercent(t){ return /percentual|porcentagem|por cento|%|representa|proporcao|fatia|parcela da renda|e muito\b|isso e muito|muito alto|valor alto|e caro demais|e exagerado|pesa muito/.test(t); }
   function chatWantsTrend(t){ return /tendencia|evolu|historico|ao longo do tempo|nos ultimos meses/.test(t); }
   function chatWantsList(t){ return /\bquais\b|\bliste\b|\blistar\b|\bme mostra\b|\bmostre\b|\bmostrar\b|\bdetalh/.test(t); }
   function chatWantsWhen(t){ return /\bquando\b|\bdaqui a quanto tempo\b|\bquanto tempo falta\b|\bem quantos meses\b/.test(t); }
@@ -6875,8 +7161,13 @@
       }
       if(chatWantsPercent(normText) || /represent/.test(normText)){
         var totalInc = chatSumIncome(period.months);
-        var pctRenda = totalInc>0 ? chatPct(totalCat, totalInc) : "—";
-        return chatMsg('💸 <strong>'+esc(cat)+'</strong> somou '+fmtMoney(totalCat)+' '+period.label+', isso é '+chatPct(totalCat,totalGeral)+' das suas despesas totais'+(totalInc>0?" e "+pctRenda+" da sua renda do período":"")+'.');
+        var pctRendaNum = totalInc>0 ? (totalCat/totalInc)*100 : null;
+        var pctRenda = pctRendaNum!==null ? pctRendaNum.toFixed(0)+"%" : "—";
+        var leitura = pctRendaNum===null ? "" :
+          (pctRendaNum>=30 ? " Isso é uma fatia bem alta, categorias acima de 30% da renda merecem atenção especial." :
+           pctRendaNum>=15 ? " É uma fatia considerável, categorias acima de 15% da renda costumam valer uma segunda olhada." :
+           " Não é um valor fora do comum, dentro de uma faixa saudável.");
+        return chatMsg('💸 <strong>'+esc(cat)+'</strong> somou '+fmtMoney(totalCat)+' '+period.label+', isso é '+chatPct(totalCat,totalGeral)+' das suas despesas totais'+(totalInc>0?" e "+pctRenda+" da sua renda do período":"")+'.'+leitura);
       }
       var tip = computeCategoryTipForMonth(period.months[period.months.length-1]);
       var tipHtml = (tip && tip.cat===cat) ? '<br><br>💡 '+esc(tip.tip) : "";
@@ -7259,13 +7550,13 @@
      essencial, perguntar só isso → se já tiver, entregar o plano em etapas menores, sempre
      com os números reais por trás, nunca prometendo resultado. */
   function chatWantsDistressHelp(t){
-    return /estou lascado|to lascado|tou lascado|completamente perdido|perdido financeiramente|nao sei o que fazer|nao sei por onde comecar|por onde (eu )?comeco|cheio de dividas|cartao estourad|estourei o cartao|nao chega ao fim do mes|nao consigo guardar dinheiro|nao consigo economizar nada|gastando mais do que ganho|atrasado com varias contas|atrasado com as contas|medo de nao conseguir pagar|desorganizado financeiramente|completamente desorganizado|nao sei como reverter isso|quero reverter isso|contas atrasadas.*por onde/.test(t);
+    return /estou lascado|to lascado|tou lascado|completamente perdido|perdido financeiramente|nao sei o que fazer|nao sei por onde comecar|por onde (eu )?comeco|cheio de dividas|cartao estourad|estourei o cartao|nao chega ao fim do mes|nao consigo guardar dinheiro|nao consigo economizar nada|gastando mais do que ganho|atrasado com varias contas|atrasado com as contas|medo de nao conseguir pagar|desorganizado financeiramente|completamente desorganizado|nao sei como reverter isso|quero reverter isso|contas atrasadas.*por onde|sair do vermelho|saio do vermelho|dinheiro evapora|o dinheiro some|meu dinheiro some|nao sobra nada|nunca sobra nada/.test(t);
   }
   function chatDistressOpener(normText){
-    if(/divida|estourad|lascado/.test(normText)){
+    if(/divida|estourad|estourei|lascado/.test(normText)){
       return '🧭 Primeiro, vamos tirar isso do campo de "tá tudo errado" e colocar em números: isso já ajuda a enxergar melhor. Posso te ajudar a organizar passo a passo.';
     }
-    if(/nao chega ao fim do mes|gastando mais do que ganho|nao consigo guardar|nao consigo economizar/.test(normText)){
+    if(/nao chega ao fim do mes|gastando mais do que ganho|nao consigo guardar|nao consigo economizar|evapora|dinheiro some|vermelho/.test(normText)){
       return '🧭 Isso é mais comum do que parece, e dá pra entender exatamente onde o dinheiro está indo, vamos olhar os números com calma, sem julgamento.';
     }
     if(/perdido|desorganizado|nao sei o que fazer|nao sei por onde/.test(normText)){
@@ -7407,12 +7698,62 @@
     return chatMsg('🔮 Guardando <strong>'+fmtMoney(v)+'/mês</strong>, você chegaria aos '+fmtMoney(ctx.planTarget)+' em cerca de <strong>'+mesesNec+' '+(mesesNec===1?'mês':'meses')+'</strong> (~'+(mesesNec/12).toFixed(1)+' anos), numa conta simples, sem juros.', chatQuick(["Comparar "+fmtMoney(v)+", "+fmtMoney(v2)+" e "+fmtMoney(v3)+" por mês","O que é juros compostos?"]));
   }
 
+  /* ---------- "Tenho R$X, o que faço com isso?" — decisão financeira guiada -----------
+     Regra fundamental pedida: nunca travar por falta de dado — em vez de recomendar às cegas
+     OU desistir, pergunta objetivo/reserva/dívida/prazo (só o que falta), e só então raciocina.
+     Nunca usa dados da Bússola aqui (o valor é hipotético, dito na conversa, não registrado). */
+  function chatWantsMoneyDecision(normText){
+    var hasMoney = chatExtractMoneyValues(normText).length>0;
+    var wantsWhatToDo = /o que faco|oque faco|onde coloco|onde invisto|onde investir|onde aplicar|pra onde vai|o que fazer com (esse|isso|ess dinheiro)|dinheiro parado|parado na conta|parado no banco/.test(normText);
+    return hasMoney && wantsWhatToDo;
+  }
+  function chatHandleMoneyDecisionStart(normText, ctx){
+    var vals = chatExtractMoneyValues(normText);
+    var amount = vals[0];
+    ctx.topic = "money_decision"; ctx.mdAmount = amount;
+    return chatMsg('🧭 Antes de indicar um caminho, me conta um pouco mais sobre esse valor'+(amount?(' ('+fmtMoney(amount)+')'):'')+', pra eu não te dar um palpite genérico:<br><br>'+
+      '• Isso é <strong>toda a sua reserva</strong>, ou você já tem uma reserva de emergência à parte?<br>'+
+      '• Você tem alguma <strong>dívida em aberto</strong> agora?<br>'+
+      '• Para quando pretende <strong>usar esse dinheiro</strong> (curto, médio ou longo prazo)?<br><br>'+
+      'Pode responder tudo de uma vez ou aos poucos, do seu jeito.',
+      chatQuick(["Já tenho reserva, sem dívidas, longo prazo","Ainda não tenho reserva","Tenho dívidas em aberto"]));
+  }
+  function chatHandleMoneyDecisionAnswer(normText, ctx){
+    var temReserva = /(ja tenho reserva|tenho reserva|possuo reserva)/.test(normText) ? true : (/nao tenho reserva|ainda nao tenho reserva|sem reserva/.test(normText) ? false : null);
+    var temDivida = /tenho divida|tenho dividas|com divida|tenho um emprestimo|tenho financiamento/.test(normText) ? true : (/nao tenho divida|sem divida|nenhuma divida|sem dividas/.test(normText) ? false : null);
+    var prazo = /curto prazo/.test(normText) ? "curto" : /medio prazo/.test(normText) ? "medio" : /longo prazo/.test(normText) ? "longo" : null;
+    var amount = ctx.mdAmount;
+    var parts = [];
+    if(temDivida===true){
+      parts.push('Como você tem dívida em aberto, o primeiro passo costuma valer mais a pena: compare a taxa de juros dessa dívida com o rendimento esperado de um investimento seguro. Dificilmente algo de baixo risco rende mais do que uma dívida cara (cartão, cheque especial, consignado com juros altos) está cobrando, então quitar ou reduzir essa dívida primeiro tende a "render" mais do que investir agora.');
+    }
+    if(temReserva===false){
+      parts.push('Como você ainda não tem reserva de emergência separada, faz sentido destinar uma parte desse valor, referência de 3 a 6 meses das suas despesas essenciais, para isso primeiro, em algo de alta liquidez como Tesouro Selic ou um CDB com liquidez diária, antes de qualquer outro investimento.');
+    }
+    if(temReserva===true && temDivida!==true){
+      if(prazo==="longo"){
+        parts.push('Como você já tem reserva, não tem dívida em aberto e o prazo é longo, dá pra pensar numa combinação de renda fixa com uma parcela de renda variável (ações, FIIs, ETFs), na proporção que fizer sentido pro seu perfil de risco. Prazo longo é justamente onde os juros compostos e a renda variável tendem a compensar mais.');
+      } else if(prazo==="curto" || prazo==="medio"){
+        parts.push('Como o prazo é '+(prazo==="curto"?"curto":"médio")+', o mais seguro costuma ser priorizar renda fixa de boa liquidez (Tesouro Selic, CDB, LCI/LCA). Renda variável não é indicada pra quem pode precisar do dinheiro em breve, o preço pode estar em baixa justamente na hora que for preciso sacar.');
+      } else {
+        parts.push('Sem saber o prazo exato, o caminho mais seguro por padrão é começar pela renda fixa (Tesouro Selic, CDB, LCI/LCA), e, conforme for definindo objetivo e prazo de cada parte do valor, ir diversificando melhor.');
+      }
+    }
+    if(parts.length===0){
+      parts.push('Com o que você me contou até aqui, o caminho mais seguro costuma ser: garantir reserva de emergência primeiro (se ainda não tiver), ficar de olho em dívidas caras (se houver), e só depois diversificar o restante entre renda fixa e variável, de acordo com o prazo de cada objetivo.');
+    }
+    var header = '🧭 Com base no que você me contou'+(amount?(' sobre os '+fmtMoney(amount)):'')+':';
+    var footer = '<span style="opacity:.75; font-size:11px;">Isso é uma orientação geral, não uma recomendação de investimento personalizada, quanto mais claro for o seu objetivo e prazo, mais preciso eu consigo ser. Para decisões grandes, vale considerar também um profissional certificado.</span>';
+    ctx.topic = null; ctx.mdAmount = null;
+    return chatMsg([header].concat(parts).concat([footer]).join('<br><br>'), chatQuick(["O que é reserva de emergência?","O que é Tesouro Selic?","Quero aprender a investir"]));
+  }
+
   /* ---------- Jornadas de aprendizagem guiadas (item 5 do pedido) ----------
      Quando o cliente diz que quer aprender a investir, organizar a vida financeira ou sair
      das dívidas, em vez de uma resposta solta, conduz um primeiro passo estruturado usando
      os dados reais dele (quando existirem) e já emenda no próximo passo natural. */
   function chatDetectJornada(normText){
-    if(/quero aprender a investir|comecar a investir|quero comecar a investir|como comecar a investir|do zero.*investir|investir comecando do (zero|0)|comecando do (zero|0).*investir|melhor (opcao|forma) (para|pra) investir|por onde comecar a investir|o que fazer para comecar a investir/.test(normText)) return "investir";
+    if(/quero aprender a investir|comecar a investir|quero comecar a investir|como comecar a investir|do zero.*investir|investir comecando do (zero|0)|comecando do (zero|0).*investir|melhor (opcao|forma) (para|pra) investir|por onde comecar a investir|o que fazer para comecar a investir|investir.*(sou burro|nao entendo nada|nao sei nada|nunca investi|sou leigo)|(sou burro|nao entendo nada|nao sei nada|sou leigo).*investir/.test(normText)) return "investir";
     if(/organizar minha vida financeira|organizar minhas financas|organizar a vida financeira|colocar as financas em ordem/.test(normText)) return "organizar";
     if(/sair das dividas|quero sair das dividas|me livrar das dividas|ficar livre das dividas/.test(normText)) return "dividas";
     return null;
@@ -7474,10 +7815,12 @@
 
     if(/econom|guardar|poupar/.test(normText) && moneyVals.length>0){
       var valor = moneyVals[0]; var n = mesesAlvo || 12; var total = valor*n;
-      return chatMsg('🔮 <strong>Simulação (estimativa):</strong> economizando '+fmtMoney(valor)+' por mês, em '+n+' '+(n===1?'mês':'meses')+' você teria acumulado <strong>'+fmtMoney(total)+'</strong> (soma simples, sem juros). Se investir esse valor, o total tende a ser maior, dependendo do rendimento.');
+      ctx.lastSimType = "economizar"; ctx.lastSimMeses = n;
+      return chatMsg('🔮 <strong>Simulação (estimativa):</strong> economizando '+fmtMoney(valor)+' por mês, em '+n+' '+(n===1?'mês':'meses')+' você teria acumulado <strong>'+fmtMoney(total)+'</strong> (soma simples, sem juros). Se investir esse valor, o total tende a ser maior, dependendo do rendimento.', chatQuick(["E se eu fizer diferente, tipo o dobro?","O que é juros compostos?"]));
     }
     if(/investir/.test(normText) && moneyVals.length>0){
       var valor2 = moneyVals[0]; var n2 = mesesAlvo || 12;
+      ctx.lastSimType = "investir"; ctx.lastSimMeses = n2;
       var totalInv = chatTotalInvested();
       var rendaPassivaMedia = state.investmentAccounts.reduce(function(s,a){ var at=accountTotals(a); return s + (at.monthlyYieldPct!==null && at.saldoAtual>0 ? at.saldoAtual*(at.monthlyYieldPct/100) : 0); },0);
       var taxaMensal = totalInv>0 ? rendaPassivaMedia/totalInv : 0;
@@ -7523,6 +7866,31 @@
       return chatMsg('🔮 No seu ritmo médio recente ('+fmtMoney(pace)+'/mês), você atingiria a meta "<strong>'+esc(g2.name)+'</strong>" em cerca de <strong>'+mesesR+' '+(mesesR===1?'mês':'meses')+'</strong>, estimativa baseada no seu histórico, não uma garantia.');
     }
 
+    // Continuação de uma simulação anterior ("e se eu fizer diferente, tipo 800?") — sem repetir
+    // "economizar"/"investir" explicitamente, mas com um valor novo e um tipo de simulação já
+    // em andamento nesta conversa, refaz a MESMA conta com o novo valor. Aceita até um número
+    // solto (sem "R$"), porque nesse contexto já está claro que é um valor em dinheiro.
+    if(ctx.lastSimType){
+      var moneyValsRe = moneyVals.length>0 ? moneyVals : (function(){ var bare=normText.match(/\b(\d{2,6}(?:[.,]\d+)?)\b/); return bare ? [chatParseMoneyToken(bare[1])] : []; })();
+      if(moneyValsRe.length>0){
+        var nRe = mesesAlvo || ctx.lastSimMeses || 12;
+        if(ctx.lastSimType==="economizar"){
+          var totalRe = moneyValsRe[0]*nRe;
+          return chatMsg('🔮 <strong>Simulação (estimativa):</strong> economizando '+fmtMoney(moneyValsRe[0])+' por mês em vez do valor anterior, em '+nRe+' '+(nRe===1?'mês':'meses')+' você teria acumulado <strong>'+fmtMoney(totalRe)+'</strong> (soma simples, sem juros).');
+        }
+        if(ctx.lastSimType==="investir"){
+          var totalInvRe = chatTotalInvested();
+          var rendaPassivaMediaRe = state.investmentAccounts.reduce(function(s,a){ var at=accountTotals(a); return s + (at.monthlyYieldPct!==null && at.saldoAtual>0 ? at.saldoAtual*(at.monthlyYieldPct/100) : 0); },0);
+          var taxaMensalRe = totalInvRe>0 ? rendaPassivaMediaRe/totalInvRe : 0;
+          var saldoRe = 0;
+          for(var iRe=0;iRe<nRe;iRe++){ saldoRe = saldoRe*(1+taxaMensalRe) + moneyValsRe[0]; }
+          var caudaRe = taxaMensalRe>0
+            ? ', você acumularia aproximadamente <strong>'+fmtMoney(saldoRe)+'</strong> (rendimento médio atual, '+(taxaMensalRe*100).toFixed(2)+'% a.m.).'
+            : ', você teria acumulado <strong>'+fmtMoney(moneyValsRe[0]*nRe)+'</strong> (soma simples, sem uma taxa de rendimento real sua registrada).';
+          return chatMsg('🔮 <strong>Simulação (estimativa):</strong> investindo '+fmtMoney(moneyValsRe[0])+' por mês em vez do valor anterior, durante '+nRe+' '+(nRe===1?'mês':'meses')+caudaRe);
+        }
+      }
+    }
     return chatMsg('🔮 Posso simular coisas como:<br>• "Se eu economizar R$500 por mês, quanto terei em 1 ano?"<br>• "Se eu investir mais R$300 por mês?"<br>• "Se minhas despesas aumentarem 10%?"<br>• "Se eu reduzir alimentação em 20%?"<br>• "Quanto preciso investir por mês para atingir minha meta?"<br><br>Tenta reescrever sua pergunta em um formato parecido?');
   }
 
@@ -7607,8 +7975,24 @@
     var nome = state.chatBotName || "Bússola";
     return chatMsg('🧭 Eu sou a <strong>'+esc(nome)+'</strong>, o motor de inteligência financeira local da Bússola. Tudo roda aqui no seu navegador, usando os dados que você já registrou, nenhuma informação sai daqui, e eu não uso nenhuma IA externa.<br><br>Posso responder sobre receitas, despesas, cartões, dívidas, investimentos, património, metas e orçamento, fazer comparações e simulações, e dar dicas. Também posso explicar conceitos de educação financeira em geral (reserva de emergência, CDI, juros compostos, como sair de dívidas…), mesmo sem ligação com os seus dados. Veja mais exemplos na Central de Ajuda, em "🧭 Converse com a Bússola".', chatQuick(["Faça uma análise completa","O que é a regra 50/30/20?"]));
   }
-  function chatFallback(){
-    return chatMsg('🧭 Não tive certeza de ter entendido essa pergunta. Você pode perguntar sobre os seus dados, por exemplo:<br>'+
+  var CHAT_BROAD_FINANCIAL_WORDS = ["dinheiro","financ","banco","conta","cartao","credito","debito","pagar","pagamento","comprar","compra","preco","valor","salario","emprego","trabalho","economi","poupar","poupanca","juro","taxa","imposto","renda","gasto","despesa","receita","divida","emprestimo","investir","investimento","aposentar","reforma","seguro","patrimonio","rico","pobre","milionario","mil","reais","euro","dolar","fatura","limite","cdi","selic","tesouro","cdb","acao","acoes","fundo","fii"];
+  function chatHasBroadFinancialSignal(normText){
+    return CHAT_BROAD_FINANCIAL_WORDS.some(function(w){ return normText.indexOf(w)!==-1; });
+  }
+  // Regra fundamental: nunca simplesmente dizer que não sabe ou que a pergunta está fora de
+  // alcance. Se detectar QUALQUER sinal financeiro na frase, pergunta o que falta pra entender
+  // em vez de desistir; só cai no redirecionamento mais genérico quando não há sinal nenhum.
+  function chatFallback(normText){
+    normText = normText || "";
+    if(chatHasBroadFinancialSignal(normText)){
+      return chatMsg('🧭 Entendi que isso é sobre dinheiro, mas não captei exatamente o quê. Me ajuda com um pouco mais de contexto?<br><br>'+
+        '• É sobre <strong>os seus dados</strong> registrados aqui na Bússola (receitas, despesas, dívidas, investimentos...)?<br>'+
+        '• É uma <strong>dúvida geral</strong> (o que é algo, como funciona, vale a pena)?<br>'+
+        '• Você quer uma <strong>simulação</strong> ou um <strong>plano</strong> pra uma situação específica?<br><br>'+
+        'Pode só reescrever com mais detalhes, do seu jeito, ou tocar numa sugestão abaixo.',
+        chatQuick(["Faça uma análise completa","O que é a regra 50/30/20?","Onde estou gastando mais?"]));
+    }
+    return chatMsg('🧭 Não captei muito bem essa, mas posso ajudar com praticamente qualquer coisa sobre dinheiro. Você pode perguntar sobre os seus dados, por exemplo:<br>'+
       '• "Quanto gastei este mês?"<br>'+
       '• "Como estão minhas finanças?"<br>'+
       '• "Quanto falta para minha meta?"<br><br>'+
@@ -7621,13 +8005,22 @@
   }
 
   /* ---------- 5. Contexto da conversa + despachante principal (item 10) ---------- */
-  var chatContext = {topic:null, category:null, period:null, prevPeriod:null, planTarget:null, planMonths:null, lastEduEntry:null};
-  function chatResetContext(){ chatContext = {topic:null, category:null, period:null, prevPeriod:null, planTarget:null, planMonths:null, lastEduEntry:null}; }
+  var chatContext = {topic:null, category:null, period:null, prevPeriod:null, planTarget:null, planMonths:null, lastEduEntry:null, mdAmount:null, lastSimType:null, lastSimMeses:null};
+  function chatResetContext(){ chatContext = {topic:null, category:null, period:null, prevPeriod:null, planTarget:null, planMonths:null, lastEduEntry:null, mdAmount:null, lastSimType:null, lastSimMeses:null}; }
 
   function chatAnswer(raw){
-    var normText = chatNorm(raw);
+    var normText = chatExpandColloquial(chatNorm(raw));
     if(!normText){ return chatFallback(); }
 
+    // Continuação de um fluxo de decisão financeira já iniciado ("tenho R$X, o que faço?")
+    // — checado antes de tudo, porque a resposta a essas perguntas de esclarecimento (reserva,
+    // dívida, prazo) não deveria disparar nenhum outro gatilho por engano.
+    if(chatContext.topic==="money_decision" && chatContext.mdAmount!=null){
+      return chatHandleMoneyDecisionAnswer(normText, chatContext);
+    }
+    if(chatWantsMoneyDecision(normText)){
+      return chatHandleMoneyDecisionStart(normText, chatContext);
+    }
     if(/analise completa|analise minha situacao|faca uma analise|analise financeira completa|fazer analise/.test(normText)){
       return chatFullAnalysis();
     }
@@ -7654,7 +8047,9 @@
     // pontuação de tópico, porque essas frases também soam como pergunta comum de investimentos.
     var jornada = chatDetectJornada(normText);
     if(jornada){
-      if(jornada==="investir") return chatHandleJornadaInvestir(chatContext);
+      var reassurance = /sou burro|sou ruim com dinheiro|nao entendo nada disso|nao sei nada disso|sou leigo/.test(normText) ?
+        '🧭 Ninguém nasce sabendo, e isso não é sinal de "ser ruim com números", é só falta de contato com o assunto ainda. Vamos com calma. <br><br>' : '';
+      if(jornada==="investir"){ var r1 = chatHandleJornadaInvestir(chatContext); if(reassurance) r1.html = reassurance+r1.html; return r1; }
       if(jornada==="organizar") return chatHandleJornadaOrganizar(chatContext);
       if(jornada==="dividas") return chatHandleJornadaDividas(chatContext);
     }
@@ -7667,8 +8062,19 @@
     // Educação financeira geral — perguntas conceituais ("o que é X", "como funciona X",
     // "vale a pena X"), sem estarem ligadas aos dados pessoais do cliente.
     if(chatIsEducationalTrigger(normText)){
-      var eduHit = chatScoreEducationMatch(normText);
+      // "e o Tesouro Selic, qual é melhor?" depois de já ter falado de CDB — a frase sozinha não
+      // cita "cdb" de novo, então injeta o tema anterior da conversa antes de pontuar a KB, é
+      // isso que faz a comparação ser encontrada em vez de só explicar o tema novo isolado.
+      var textForEduMatch = normText;
+      if(/qual e melhor|melhor que|melhor do que|qual o melhor/.test(normText) && chatContext.lastEduEntry && chatContext.lastEduEntry.keywords && chatContext.lastEduEntry.keywords[0]){
+        textForEduMatch = normText+" "+chatContext.lastEduEntry.keywords[0];
+      }
+      var eduHit = chatScoreEducationMatch(textForEduMatch);
       if(eduHit) return chatAnswerEducation(eduHit, chatContext);
+      // Ainda nada? Tenta com tolerância a erro de digitação antes de cair pros dados pessoais,
+      // já que a frase claramente pediu uma explicação ("o que é X"), não um número da conta.
+      var eduFuzzyEarly = chatFuzzyEducationMatch(normText);
+      if(eduFuzzyEarly) return chatAnswerEducation(eduFuzzyEarly, chatContext);
     }
     // Continuação de um planejamento livre já em andamento ("e se eu guardar R$700/mês?",
     // "comparar R$700, R$1000 e R$1500 por mês") — checado antes da simulação genérica,
@@ -7700,7 +8106,24 @@
       // frase-gatilho estrita) — é o que estende o chat para além dos dados da Bússola.
       var eduLoose = chatScoreEducationMatch(normText);
       if(eduLoose) return chatAnswerEducation(eduLoose, chatContext);
-      return chatFallback();
+      // Ainda nada? Tolerância a erro de digitação como último recurso, antes de admitir que
+      // não entendeu — regra fundamental: nunca desistir sem tentar entender de outro jeito.
+      var fuzzyTopic = chatFuzzyTopic(normText);
+      if(fuzzyTopic){
+        switch(fuzzyTopic){
+          case "receitas": return chatHandleReceitas(normText, chatContext);
+          case "despesas": return chatHandleDespesas(normText, chatContext);
+          case "cartoes": return chatHandleCartoes(normText, chatContext);
+          case "dividas": return chatHandleDividas(normText, chatContext);
+          case "investimentos": return chatHandleInvestimentos(normText, chatContext);
+          case "patrimonio": return chatHandlePatrimonio(normText, chatContext);
+          case "metas": return chatHandleMetas(normText, chatContext);
+          case "orcamento": return chatHandleOrcamento(normText, chatContext);
+        }
+      }
+      var fuzzyEdu = chatFuzzyEducationMatch(normText);
+      if(fuzzyEdu) return chatAnswerEducation(fuzzyEdu, chatContext);
+      return chatFallback(normText);
     }
 
     switch(topic){
@@ -7715,7 +8138,7 @@
       case "dicas": return chatHandleDicas(normText, chatContext);
       case "situacao": return chatFullAnalysis();
       case "educacao": return chatHandleEducacaoFollowUp(normText, chatContext);
-      default: return chatFallback();
+      default: return chatFallback(normText);
     }
   }
 
