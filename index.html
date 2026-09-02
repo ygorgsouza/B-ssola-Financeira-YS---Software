@@ -90,12 +90,36 @@
   .info-dot{width:15px; height:15px; border-radius:50%; border:1px solid currentColor; background:none; color:inherit; font-size:9.5px; font-weight:700; cursor:pointer; padding:0; line-height:1; opacity:0.9; vertical-align:middle; margin-left:2px;}
   .info-dot:hover{ opacity:1; }
   .health-card{border-radius:var(--radius); border:1px solid var(--line); padding:18px 20px; background:var(--surface);}
-  .health-top{display:flex; align-items:center; gap:12px; margin-bottom:12px;}
-  .health-emoji{font-size:26px;}
+  .health-card-empty{ display:flex; align-items:flex-start; gap:14px; }
+  .health-empty-icon{ font-size:28px; flex-shrink:0; line-height:1; }
   .health-title{font-family:'Fraunces', serif; font-size:17px; font-weight:600;}
-  .health-factors{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:10px; margin-top:12px;}
-  .health-factor{display:flex; align-items:center; gap:8px; font-size:12.5px; padding:8px 10px; border-radius:8px; background:var(--surface-2);}
-  .health-factor .hf-dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
+  .health-score-btn{ display:flex; align-items:center; gap:18px; width:100%; text-align:left; background:none; border:none; padding:0; cursor:pointer; border-radius:12px; transition:transform .15s ease; }
+  .health-score-btn:hover{ transform:translateY(-1px); }
+  .health-score-btn:hover .health-gauge-wrap{ filter:brightness(1.04); }
+  .health-score-btn:focus-visible{ outline:2px solid var(--accent2); outline-offset:4px; }
+  .health-gauge-wrap{ position:relative; width:88px; height:88px; flex-shrink:0; }
+  .health-gauge{ width:100%; height:100%; transform:rotate(-90deg); }
+  .health-gauge-track{ fill:none; stroke:var(--surface-2); stroke-width:9; }
+  .health-gauge-fill{ fill:none; stroke-width:9; stroke-linecap:round; }
+  .health-gauge-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:'IBM Plex Mono', monospace; }
+  .health-gauge-center #healthScoreNum{ font-size:22px; font-weight:700; color:var(--text); line-height:1; }
+  .health-gauge-max{ font-size:10px; color:var(--text-soft); margin-top:1px; }
+  .health-score-text{ flex:1; min-width:0; }
+  .health-score-title{ font-family:'Fraunces', serif; font-size:16px; font-weight:600; line-height:1.3; }
+  .health-score-sub{ font-size:11.5px; color:var(--text-soft); margin-top:4px; }
+  @media (max-width:640px){
+    .health-score-btn{ gap:14px; }
+    .health-gauge-wrap{ width:72px; height:72px; }
+    .health-gauge-center #healthScoreNum{ font-size:19px; }
+    .health-score-title{ font-size:14.5px; }
+    .health-score-sub{ font-size:11px; }
+  }
+  @media (prefers-reduced-motion:reduce){ .health-gauge-fill{ transition:none !important; } }
+  .health-modal-group{ margin-top:14px; }
+  .health-modal-group-title{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-soft); font-weight:700; margin-bottom:7px; }
+  .health-modal-item{ font-size:13px; padding:7px 10px; border-radius:8px; margin-bottom:5px; line-height:1.4; }
+  .health-modal-item.pos{ background:var(--moss-bg); color:var(--moss-text); }
+  .health-modal-item.neg{ background:var(--amber-bg); color:var(--amber-text); }
   .theme-toggle:hover{background:rgba(255,255,255,0.16);}
 
   select.has-add{cursor:pointer;}
@@ -172,6 +196,14 @@
   .grid-4{grid-template-columns:repeat(4,minmax(0,1fr)); align-items:start;}
   @media (max-width:820px){ .grid-4{grid-template-columns:minmax(0,1fr) minmax(0,1fr);} .grid-3{grid-template-columns:minmax(0,1fr) minmax(0,1fr);} }
   @media (max-width:560px){ .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;} }
+  /* Listas de cards (cartões, dívidas, contas, metas): em telas largas, aproveitar o espaço
+     lado a lado em vez de um card esticado ocupando a largura inteira sem necessidade — cada
+     card mantém sua largura natural de leitura, e um segundo cabe ao lado quando há espaço.
+     auto-fit (não auto-fill) faz o card único de estado vazio esticar sozinho, sem ficar
+     "encolhido" numa coluna estreita. Colapsa para 1 coluna normalmente no mobile. */
+  .card-grid-2{ display:grid; grid-template-columns:repeat(auto-fit, minmax(420px, 1fr)); gap:16px; align-items:start; }
+  .card-grid-2 > .acct-card, .card-grid-2 > .debt-item, .card-grid-2 > .cc-card, .card-grid-2 > .goal-card{ margin-bottom:0; }
+  @media (max-width:900px){ .card-grid-2{ grid-template-columns:1fr; } }
 
   .stat-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 18px 16px; transition:transform .18s ease, box-shadow .18s ease; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; min-height:96px; }
   .stat-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow); }
@@ -229,7 +261,20 @@
   .form-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-top:14px; }
   .form-row{display:grid; grid-template-columns:1.4fr minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto; gap:10px; align-items:end;}
   .form-row.cols-6{grid-template-columns:1.2fr minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto;}
-  @media (max-width:820px){ .form-row, .form-row.cols-6{grid-template-columns:minmax(0,1fr) minmax(0,1fr);} }
+  .form-row-cartao{ grid-template-columns:1.4fr 1fr 1fr auto; }
+  .form-row-conta{ grid-template-columns:1.3fr 1fr 1fr auto; }
+  @media (max-width:820px){
+    .form-row, .form-row.cols-6{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+    /* Cartões: nome, limite e dia de vencimento em 1 coluna só no mobile, com campos maiores
+       e placeholders legíveis, cada um com espaço de verdade, além de área de toque melhor. */
+    .form-row-cartao{ grid-template-columns:1fr; gap:12px; }
+    .form-row-cartao .field input{ font-size:16px; padding:12px 12px; min-height:46px; }
+    .form-row-cartao .field label{ font-size:12px; }
+    .form-row-cartao #addCardBtn{ width:100%; padding:13px; font-size:15px; }
+    .form-row-conta{ grid-template-columns:1fr; gap:12px; }
+    .form-row-conta .field input, .form-row-conta .field select{ font-size:16px; padding:12px 12px; min-height:46px; }
+    .form-row-conta #addAcctBtn{ width:100%; padding:13px; font-size:15px; }
+  }
   /* Itens de grid, por padrão, não encolhem abaixo do tamanho do próprio conteúdo (min-width:auto
      implícito) — e o seletor nativo de data (input[type=date]) tem uma largura mínima própria que
      costuma ultrapassar a célula do grid no mobile, empurrando/sobrepondo o campo seguinte (Membro).
@@ -237,7 +282,15 @@
   .form-row > .field{ min-width:0; }
   .field label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-soft); margin-bottom:5px;}
   .field input, .field select{ width:100%; min-width:0; padding:10px 10px; border:1px solid var(--line); border-radius:7px; background:var(--bg); font-size:14px; font-family:inherit; color:var(--text); min-height:40px; }
-  .field input[type="date"]{ -webkit-min-logical-width:0; max-width:100%; }
+  .field input[type="date"]{ -webkit-min-logical-width:0; max-width:100%; width:100%; box-sizing:border-box; }
+  /* Correção para o campo Data "ultrapassar" ligeiramente o card no mobile: alguns motores de
+     input[type=date] nativos (sobretudo em iOS) calculam a própria largura mínima de forma
+     diferente do resto do formulário, ignorando um pouco o width:100%. Neutralizar a aparência
+     nativa (appearance:none) força esse controlo a respeitar a caixa como qualquer outro campo,
+     só no mobile — no desktop o calendário nativo continua exatamente como sempre foi. */
+  @media (max-width:820px){
+    .field input[type="date"]{ -webkit-appearance:none; appearance:none; max-width:100%; }
+  }
   .field input:focus, .field select:focus{border-color:var(--accent2); box-shadow:var(--glow-accent2); transition:border-color .15s ease, box-shadow .15s ease;}
   /* Correção definitiva para Data + Membro no mobile: em vez de depender só do encolhimento
      do grid (que ainda pode variar entre motores de renderização de input[type=date] nativos
@@ -265,7 +318,7 @@
 
   .dash-section-head{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;}
 
-  /* ===== Cockpit: hero de património, saudação, insight, meta principal ===== */
+  /* ===== Cockpit: hero de patrimônio, saudação, insight, meta principal ===== */
   .dash-greeting{font-size:13px; color:var(--text-soft); margin:0 0 2px; text-transform:uppercase; letter-spacing:0.04em; font-weight:600;}
   .dash-date{font-size:12.5px; color:var(--text-soft); margin:0; opacity:0.75;}
   .dash-top-row{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;}
@@ -275,6 +328,15 @@
   }
   .quick-expense-btn:hover{ transform:translateY(-2px); box-shadow:0 8px 20px -6px rgba(0,0,0,0.35); }
   .quick-expense-btn:active{ transform:translateY(0); }
+  .quick-add-icon-btn{
+    width:40px; height:40px; border-radius:50%; flex-shrink:0; background:var(--surface); border:1.5px solid var(--brass);
+    color:var(--brass-text); font-size:19px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s ease, background .15s ease;
+  }
+  .quick-add-icon-btn:hover{ transform:translateY(-2px) rotate(90deg); box-shadow:var(--shadow); background:var(--brass-bg); }
+  .quick-add-icon-btn:active{ transform:translateY(0) rotate(90deg) scale(0.92); }
+  .quick-add-icon-btn:focus-visible{ outline:2px solid var(--accent2); outline-offset:2px; }
+  @media (max-width:760px){ .quick-add-icon-btn{ display:none; } }
   .quick-expense-box{ max-width:400px; }
   .quick-expense-box #quickExpCat{ font-size:16px; padding:14px 12px; min-height:52px; }
   .quick-expense-value-input{ font-size:26px !important; font-family:'IBM Plex Mono', monospace; font-weight:700; text-align:center; padding:16px 12px !important; min-height:64px !important; }
@@ -383,8 +445,29 @@
   .goal-sim-toggle{display:flex; gap:6px; margin:2px 0 4px;}
   .goal-sim-toggle-btn{flex:1; font-size:11px; font-weight:600; padding:5px 8px; border-radius:6px; border:1px solid var(--line); background:var(--surface); color:var(--text-soft); cursor:pointer; transition:all .15s ease;}
   .goal-sim-toggle-btn.active{background:var(--brass); color:#fff; border-color:var(--brass);}
+  /* Chips de "onde guardo o dinheiro da meta" — mesmo espírito visual dos toggle de simulação,
+     só que permitem mais de um selecionado ao mesmo tempo (exceto "Ainda não defini", que é
+     sempre exclusivo, porque não faz sentido combinar com um local concreto). */
+  .goal-local-chips{ display:flex; flex-wrap:wrap; gap:7px; }
+  .goal-local-chip{ font-size:12px; font-weight:600; padding:7px 12px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--text-soft); cursor:pointer; transition:all .15s ease; }
+  .goal-local-chip:hover{ border-color:var(--brass); transform:translateY(-1px); }
+  .goal-local-chip.active{ background:var(--accent2-bg); border-color:var(--accent2); color:var(--accent2-text); }
+  .goal-local-invest-picker{ display:flex; flex-wrap:wrap; gap:6px 14px; margin-top:9px; padding:10px 12px; background:var(--surface-2); border-radius:8px; }
+  .goal-local-invest-picker label{ display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text); cursor:pointer; }
+  .goal-local-outro-input{ width:100%; margin-top:9px; padding:9px 11px; border:1px solid var(--line); border-radius:7px; background:var(--bg); font-size:13px; font-family:inherit; color:var(--text); }
+  .goal-local-invest-picker.hidden, .goal-local-outro-input.hidden{ display:none; }
+  .goal-locais-tag{ font-size:11px; color:var(--text-soft); background:var(--surface-2); border-radius:7px; padding:6px 10px; margin-top:8px; line-height:1.5; }
   .achv-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:14px; justify-items:center;}
-  @media (max-width:640px){ .achv-grid{grid-template-columns:repeat(auto-fit, minmax(120px,1fr)); gap:12px;} }
+  @media (max-width:640px){
+    .achv-grid{grid-template-columns:repeat(3, 1fr); gap:8px;}
+    .achv-badge{ padding:10px 4px 8px; border-radius:12px; max-width:none; }
+    .achv-medal-wrap{ margin-bottom:6px; }
+    .achv-medal{ width:42px; height:42px; font-size:17px; }
+    .achv-medal-ribbon-l, .achv-medal-ribbon-r{ width:9px; height:11px; }
+    .achv-badge .achv-label{ font-size:10px; line-height:1.2; }
+    .achv-badge .achv-hint{ font-size:9px; margin-top:3px; }
+    .achv-badge .achv-tap-hint{ font-size:8px; margin-top:3px; }
+  }
   .achv-badge{
     display:flex; flex-direction:column; align-items:center; text-align:center; width:100%; max-width:170px;
     padding:18px 10px 14px; border-radius:16px; border:1px solid var(--line); background:var(--surface);
@@ -823,6 +906,32 @@
     background:var(--bg); border:1px solid var(--line); border-radius:14px; max-width:560px; width:100%;
     max-height:85vh; overflow-y:auto; padding:26px; box-shadow:var(--shadow);
   }
+  @media (max-width:640px){
+    .modal-overlay{ align-items:flex-end; padding:0; }
+    .modal-box{ max-width:100%; width:100%; max-height:92vh; border-radius:20px 20px 0 0; padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px)); }
+    .modal-overlay:not(.hidden) .modal-box{ animation:modalSheetIn .25s cubic-bezier(.16,.8,.3,1); }
+  }
+  @keyframes modalSheetIn{ from{transform:translateY(100%);} to{transform:translateY(0);} }
+  .quick-launcher-box{ max-width:480px; }
+  .quick-launcher-box h2{ font-family:'Fraunces', serif; font-size:20px; }
+  .quick-launcher-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:18px; }
+  .quick-launcher-card{
+    display:flex; flex-direction:column; align-items:flex-start; gap:6px; text-align:left;
+    background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 16px;
+    cursor:pointer; transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease, border-color .18s ease;
+    min-height:112px;
+  }
+  .quick-launcher-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); border-color:var(--brass); }
+  .quick-launcher-card:active{ transform:translateY(-1px) scale(0.97); }
+  .quick-launcher-card:focus-visible{ outline:2px solid var(--accent2); outline-offset:3px; }
+  .quick-launcher-card .ql-icon{ font-size:26px; line-height:1; }
+  .quick-launcher-card .ql-title{ font-family:'Fraunces', serif; font-weight:700; font-size:15px; color:var(--text); }
+  .quick-launcher-card .ql-desc{ font-size:11.5px; color:var(--text-soft); line-height:1.35; }
+  @media (max-width:480px){
+    .quick-launcher-card{ padding:16px 14px; min-height:100px; }
+    .quick-launcher-card .ql-icon{ font-size:23px; }
+    .quick-launcher-card .ql-title{ font-size:14px; }
+  }
   .modal-box h2{font-size:19px; margin:0 0 6px;}
   .modal-box h3{font-size:14.5px; margin:16px 0 6px;}
   .modal-box p, .modal-box li{font-size:13.5px; line-height:1.6; color:var(--text-soft);}
@@ -940,8 +1049,8 @@
       <button class="tab" data-tab="cartoes" title="Dinheiro" role="tab" aria-selected="false">Cartões</button>
       <button class="tab" data-tab="dividas" title="Dinheiro" role="tab" aria-selected="false">Dívidas</button>
       <span class="tab-divider" aria-hidden="true"></span>
-      <button class="tab" data-tab="investimentos" title="Património" role="tab" aria-selected="false">Investimentos</button>
-      <button class="tab" data-tab="metas" title="Património" role="tab" aria-selected="false">Metas</button>
+      <button class="tab" data-tab="investimentos" title="Patrimônio" role="tab" aria-selected="false">Investimentos</button>
+      <button class="tab" data-tab="metas" title="Patrimônio" role="tab" aria-selected="false">Metas</button>
       <span class="tab-divider" aria-hidden="true"></span>
       <button class="tab" data-tab="projecoes" title="Planejamento" role="tab" aria-selected="false">Projeções</button>
       <span class="tab-divider" aria-hidden="true"></span>
@@ -962,11 +1071,14 @@
           <p class="dash-greeting" id="dashGreeting">Olá</p>
           <p class="dash-date" id="dashDate"></p>
         </div>
-        <button type="button" class="quick-expense-btn" id="quickExpenseBtn">⚡ Despesa rápida</button>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <button type="button" class="quick-add-icon-btn" id="quickAddIconBtn" aria-label="Registrar um novo lançamento" title="O que você quer registrar?">+</button>
+          <button type="button" class="quick-expense-btn" id="quickExpenseBtn">⚡ Despesa rápida</button>
+        </div>
       </div>
 
       <div class="hero-patrimonio">
-        <div class="hero-patrimonio-label">Sua situação financeira <button type="button" class="info-dot" data-help-cat="Património" title="Como isso é calculado?">?</button></div>
+        <div class="hero-patrimonio-label">Sua situação financeira <button type="button" class="info-dot" data-help-cat="Patrimônio" title="Como isso é calculado?">?</button></div>
         <div class="hero-patrimonio-value num" id="statPatrimonio">—</div>
         <div id="statPatrimonioTrend"></div>
         <div class="hero-patrimonio-sub" id="statPatrimonioTooltip">= Ativos (caixa acumulado + investimentos) − Passivos (dívidas + faturas de cartão em aberto)</div>
@@ -1001,6 +1113,9 @@
           <div id="statSaldoTrend"></div>
         </div>
       </div>
+
+      <div class="dash-section-head" style="margin-top:32px;"><h3>Como estou financeiramente?</h3></div>
+      <div id="healthScoreSection"></div>
 
       <div class="dash-section-head" style="margin-top:36px;">
         <h3>Sua evolução</h3>
@@ -1053,7 +1168,6 @@
           </div>
 
           <div id="patrimonioEvoSection"></div>
-          <div id="healthScoreSection" style="margin-top:22px;"></div>
         </div>
       </details>
     </section>
@@ -1071,8 +1185,8 @@
           <div class="field"><label for="incTipo">Tipo</label>
             <select id="incTipo" class="has-add"></select>
           </div>
-          <div class="field"><label for="incValor">Valor</label><input type="text" id="incValor" placeholder="0,00" class="money-input"></div>
-          <div class="field"><label for="incData">Data</label><input type="date" id="incData"></div>
+          <div class="field field-full-mobile"><label for="incValor">Valor</label><input type="text" id="incValor" placeholder="0,00" class="money-input"></div>
+          <div class="field field-full-mobile"><label for="incData">Data</label><input type="date" id="incData"></div>
           <div class="field"><label for="incMembro">Membro</label><select id="incMembro" class="has-add"></select></div>
           <div class="field"><button class="btn btn-primary" id="addIncomeBtn">Adicionar</button></div>
         </div>
@@ -1152,7 +1266,7 @@
       <div id="cardsSummary"></div>
 
       <div class="form-card" style="margin-top:18px;">
-        <div class="form-row" style="grid-template-columns:1.4fr 1fr 1fr auto;">
+        <div class="form-row form-row-cartao">
           <div class="field"><label for="cardNome">Nome do cartão</label><input type="text" id="cardNome" placeholder="Ex: Nubank"></div>
           <div class="field"><label for="cardLimite">Limite</label><input type="text" id="cardLimite" placeholder="0,00" class="money-input"></div>
           <div class="field"><label for="cardVenc">Dia de vencimento</label><input type="number" id="cardVenc" min="1" max="31" placeholder="Ex: 10"></div>
@@ -1160,7 +1274,7 @@
         </div>
       </div>
 
-      <div id="cardsList" style="margin-top:18px;"></div>
+      <div id="cardsList" class="card-grid-2" style="margin-top:18px;"></div>
     </section>
 
     <!-- ===== DÍVIDAS ===== -->
@@ -1170,7 +1284,7 @@
 
       <div id="debtsSummary"></div>
 
-      <p class="section-hint" style="margin-top:16px;">⚠️ Ao cadastrar um financiamento (ex.: de um imóvel ou carro), o valor total entra imediatamente como dívida no Património líquido do Dashboard, isso é esperado, pois representa tudo que você ainda deve. O valor do próprio bem (o imóvel, o carro) não é somado automaticamente; se quiser refletir isso, cadastre-o como uma conta em "Investimentos".</p>
+      <p class="section-hint" style="margin-top:16px;">⚠️ Ao cadastrar um financiamento (ex.: de um imóvel ou carro), o valor total entra imediatamente como dívida no Patrimônio líquido do Dashboard, isso é esperado, pois representa tudo que você ainda deve. O valor do próprio bem (o imóvel, o carro) não é somado automaticamente; se quiser refletir isso, cadastre-o como uma conta em "Investimentos".</p>
 
       <div class="form-card">
         <div class="form-row cols-6">
@@ -1183,7 +1297,7 @@
         </div>
       </div>
 
-      <div id="debtsList" style="margin-top:18px;"></div>
+      <div id="debtsList" class="card-grid-2" style="margin-top:18px;"></div>
 
       <h3 style="margin-top:22px; font-size:15px;">Dívidas quitadas</h3>
       <div id="debtsListQuitadas" style="margin-top:10px;"></div>
@@ -1206,14 +1320,16 @@
 
       <div class="dash-section-head" style="margin-top:28px;"><h3>Minhas contas</h3></div>
       <div class="form-card" style="margin-top:12px;">
-        <div class="form-row" style="grid-template-columns:1.4fr 1fr auto;">
+        <div class="form-row form-row-conta">
           <div class="field"><label for="acctNome">Nome da conta</label><input type="text" id="acctNome" placeholder="Ex: Reserva CDI, Ações XP"></div>
           <div class="field"><label for="acctCategoria">Categoria</label><select id="acctCategoria" class="has-add"></select></div>
+          <div class="field"><label for="acctSaldoInicial">Saldo inicial (opcional)</label><input type="text" id="acctSaldoInicial" placeholder="0,00" class="money-input"></div>
           <div class="field"><button class="btn btn-primary" id="addAcctBtn">Criar conta</button></div>
         </div>
+        <p class="section-hint" style="margin-top:8px;">Já tem essa conta com algum valor guardado? Informe o saldo inicial aqui, a Bússola já cria a conta com esse valor contado como seu, sem precisar registrar um aporte separado depois.</p>
       </div>
 
-      <div id="acctsList" style="margin-top:18px;"></div>
+      <div id="acctsList" class="card-grid-2" style="margin-top:18px;"></div>
     </section>
 
     <!-- ===== PROJEÇÕES ===== -->
@@ -1295,14 +1411,26 @@
           <div class="field" id="goalAccountField"><label for="goalAccount">Conta vinculada</label><select id="goalAccount"></select></div>
           <div class="field" id="goalCurrentField" style="display:none;"><label for="goalCurrent">Valor atual</label><input type="text" id="goalCurrent" placeholder="0,00" class="money-input"></div>
         </div>
+        <div style="margin-top:14px;">
+          <label style="display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-soft); margin-bottom:7px;">Onde você está guardando o dinheiro desta meta? <span style="text-transform:none; opacity:.7;">(opcional, pode escolher mais de um)</span></label>
+          <div class="goal-local-chips" id="goalLocalChips">
+            <button type="button" class="goal-local-chip" data-local="conta_bancaria">🏦 Conta bancária</button>
+            <button type="button" class="goal-local-chip" data-local="investimento">📈 Investimento</button>
+            <button type="button" class="goal-local-chip" data-local="dinheiro_fisico">💵 Dinheiro físico</button>
+            <button type="button" class="goal-local-chip" data-local="outro">📍 Outro local</button>
+            <button type="button" class="goal-local-chip" data-local="nao_defini">❓ Ainda não defini</button>
+          </div>
+          <div id="goalLocalInvestPicker" class="goal-local-invest-picker hidden"></div>
+          <input type="text" id="goalLocalOutroDesc" class="goal-local-outro-input hidden" placeholder="Descreva o outro local (ex: poupança do Banco X)…" maxlength="60">
+        </div>
         <div style="margin-top:10px; text-align:right;"><button class="btn btn-primary" id="addGoalBtn">Criar meta</button></div>
       </div>
 
       <h3 style="margin-top:22px; font-size:15px;">Metas de investimento</h3>
-      <div id="goalsListInvest" style="margin-top:10px;"></div>
+      <div id="goalsListInvest" class="card-grid-2" style="margin-top:10px;"></div>
 
       <h3 style="margin-top:22px; font-size:15px;">Metas de reserva</h3>
-      <div id="goalsListReserva" style="margin-top:10px;"></div>
+      <div id="goalsListReserva" class="card-grid-2" style="margin-top:10px;"></div>
 
       <h3 style="margin-top:28px; font-size:15px;">Conquistas</h3>
       <p class="section-hint" style="margin-bottom:12px;">Desbloqueadas automaticamente com base no que você já registrou, sem pressão, só um resumo do seu progresso.</p>
@@ -1384,8 +1512,8 @@
       <div id="portfolioBars" class="bars-grid" style="margin-top:12px; margin-bottom:8px;"></div>
 
       <div class="an-section-num">6</div>
-      <div class="dash-section-head" style="margin-top:8px;"><h3>Património</h3></div>
-      <p class="section-hint" style="margin-bottom:8px;">A evolução completa do património líquido está na Dashboard, no card em destaque e em "Ver mais detalhes deste mês", para não repetir o mesmo gráfico em dois lugares. <button type="button" class="ib-cta" data-tab="dashboard">Ver no Dashboard →</button></p>
+      <div class="dash-section-head" style="margin-top:8px;"><h3>Patrimônio</h3></div>
+      <p class="section-hint" style="margin-bottom:8px;">A evolução completa do patrimônio líquido está na Dashboard, no card em destaque e em "Ver mais detalhes deste mês", para não repetir o mesmo gráfico em dois lugares. <button type="button" class="ib-cta" data-tab="dashboard">Ver no Dashboard →</button></p>
 
       <div class="an-section-num">7</div>
       <div class="dash-section-head" style="margin-top:8px;"><h3>Metas</h3></div>
@@ -1468,7 +1596,7 @@
         <h3><span class="idx">5</span> Como usar este painel</h3>
         <ul>
           <li>Registre <strong>toda</strong> entrada na aba Rendimentos e <strong>todo</strong> gasto em Despesas.</li>
-          <li>Mantenha cartões e dívidas atualizados, eles entram direto no cálculo do património líquido.</li>
+          <li>Mantenha cartões e dívidas atualizados, eles entram direto no cálculo do patrimônio líquido.</li>
           <li>Crie metas concretas e use "Exportar backup" regularmente.</li>
         </ul>
       </div>
@@ -1542,7 +1670,7 @@
   </div>
 </main>
 
-<button class="fab" id="fabBtn" aria-label="Adicionar gasto rápido">+</button>
+<button class="fab" id="fabBtn" aria-label="Registrar um novo lançamento">+</button>
 
 <!-- ===== 🧭 CONVERSE COM A BÚSSOLA — chat local, sem API externa ===== -->
 <button class="chat-launcher" id="chatLauncher" aria-label="Converse com a Bússola" title="🧭 Converse com a Bússola">
@@ -1578,6 +1706,93 @@
     <button type="button" class="chat-send-btn" id="chatSendBtn" aria-label="Enviar">➤</button>
   </div>
   <div class="chat-footer-note">🔒 Motor de inteligência financeira local, sem IA externa, sem servidor.</div>
+</div>
+
+<div class="modal-overlay hidden" id="quickLauncherOverlay">
+  <div class="modal-box quick-launcher-box">
+    <h2>O que você quer registrar?</h2>
+    <div class="quick-launcher-grid">
+      <button type="button" class="quick-launcher-card" id="qlDespesaBtn">
+        <span class="ql-icon">💸</span>
+        <span class="ql-title">Despesa</span>
+        <span class="ql-desc">Registrar uma nova despesa</span>
+      </button>
+      <button type="button" class="quick-launcher-card" id="qlReceitaBtn">
+        <span class="ql-icon">💰</span>
+        <span class="ql-title">Receita</span>
+        <span class="ql-desc">Registrar uma nova receita</span>
+      </button>
+      <button type="button" class="quick-launcher-card" id="qlAporteBtn">
+        <span class="ql-icon">📈</span>
+        <span class="ql-title">Aporte</span>
+        <span class="ql-desc">Registrar um novo aporte/investimento</span>
+      </button>
+      <button type="button" class="quick-launcher-card" id="qlCartaoBtn">
+        <span class="ql-icon">💳</span>
+        <span class="ql-title">Compra no cartão</span>
+        <span class="ql-desc">Registrar uma compra realizada no cartão</span>
+      </button>
+    </div>
+    <button type="button" class="btn btn-ghost btn-sm" id="quickLauncherCancelBtn" style="width:100%; margin-top:14px;">Cancelar</button>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="quickIncomeOverlay">
+  <div class="modal-box quick-expense-box">
+    <h2>💰 Receita rápida</h2>
+    <p class="section-hint">Tipo, valor e pronto, os outros detalhes (descrição, membro) continuam disponíveis no lançamento completo em Rendimentos, se quiser adicioná-los depois.</p>
+    <div class="field" style="margin-top:16px;">
+      <label for="quickIncTipo">Tipo</label>
+      <select id="quickIncTipo"></select>
+    </div>
+    <div class="field" style="margin-top:14px;">
+      <label for="quickIncValor">Valor</label>
+      <input type="text" id="quickIncValor" class="money-input quick-expense-value-input" placeholder="0,00" inputmode="decimal" autocomplete="off">
+    </div>
+    <div id="quickIncomeError" class="quick-expense-error hidden"></div>
+    <button type="button" class="btn btn-primary quick-expense-submit" id="quickIncomeSubmitBtn">Registrar receita</button>
+    <button type="button" class="btn btn-ghost btn-sm" id="quickIncomeCancelBtn" style="width:100%; margin-top:8px;">Cancelar</button>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="quickAporteOverlay">
+  <div class="modal-box quick-expense-box">
+    <h2>📈 Aporte rápido</h2>
+    <p class="section-hint">Escolha a conta e o valor, os outros detalhes continuam disponíveis no lançamento completo em Investimentos.</p>
+    <div class="field" style="margin-top:16px;">
+      <label for="quickAporteConta">Conta</label>
+      <select id="quickAporteConta"></select>
+    </div>
+    <div class="field" style="margin-top:14px;">
+      <label for="quickAporteValor">Valor</label>
+      <input type="text" id="quickAporteValor" class="money-input quick-expense-value-input" placeholder="0,00" inputmode="decimal" autocomplete="off">
+    </div>
+    <div id="quickAporteError" class="quick-expense-error hidden"></div>
+    <button type="button" class="btn btn-primary quick-expense-submit" id="quickAporteSubmitBtn">Registrar aporte</button>
+    <button type="button" class="btn btn-ghost btn-sm" id="quickAporteCancelBtn" style="width:100%; margin-top:8px;">Cancelar</button>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="quickCardOverlay">
+  <div class="modal-box quick-expense-box">
+    <h2>💳 Compra no cartão</h2>
+    <p class="section-hint">Escolha o cartão, descreva a compra e informe o valor. Ela entra direto na fatura em aberto.</p>
+    <div class="field" style="margin-top:16px;">
+      <label for="quickCardSelect">Cartão</label>
+      <select id="quickCardSelect"></select>
+    </div>
+    <div class="field" style="margin-top:14px;">
+      <label for="quickCardDesc">Descrição</label>
+      <input type="text" id="quickCardDesc" placeholder="Ex: Supermercado" autocomplete="off">
+    </div>
+    <div class="field" style="margin-top:14px;">
+      <label for="quickCardValor">Valor</label>
+      <input type="text" id="quickCardValor" class="money-input quick-expense-value-input" placeholder="0,00" inputmode="decimal" autocomplete="off">
+    </div>
+    <div id="quickCardError" class="quick-expense-error hidden"></div>
+    <button type="button" class="btn btn-primary quick-expense-submit" id="quickCardSubmitBtn">Registrar compra</button>
+    <button type="button" class="btn btn-ghost btn-sm" id="quickCardCancelBtn" style="width:100%; margin-top:8px;">Cancelar</button>
+  </div>
 </div>
 
 <div class="modal-overlay hidden" id="quickExpenseOverlay">
@@ -1635,7 +1850,7 @@
         <div class="onboard-roadmap-item">02, Despesas</div>
         <div class="onboard-roadmap-item">03, Investimentos</div>
         <div class="onboard-roadmap-item">04, Metas</div>
-        <div class="onboard-roadmap-item">05, Património</div>
+        <div class="onboard-roadmap-item">05, Patrimônio</div>
       </div>
       <label class="check-row" style="margin-top:14px; font-size:12px;"><input type="checkbox" id="onboardDontShowAgain" checked> Não mostrar esta apresentação automaticamente da próxima vez</label>
     </div>
@@ -1665,8 +1880,8 @@
     </div>
     <div class="onboard-step" data-step="6">
       <div class="onboard-num">05</div>
-      <h2>Património</h2>
-      <p>Com cartões e dívidas atualizados em suas abas, o Dashboard calcula seu <strong>património líquido</strong> de verdade, e mostra sua evolução mês a mês.</p>
+      <h2>Patrimônio</h2>
+      <p>Com cartões e dívidas atualizados em suas abas, o Dashboard calcula seu <strong>patrimônio líquido</strong> de verdade, e mostra sua evolução mês a mês.</p>
       <p style="margin-top:14px; font-weight:600; color:var(--moss-text);" id="onboardClosingMsg">Perfeito. Sua Bússola está pronta para começar a mostrar sua evolução.</p>
       <p style="font-size:12px; color:var(--text-soft); margin-top:6px;">Quer testar tudo antes com dados fictícios? Use "Carregar dados de exemplo" no rodapé a qualquer momento.</p>
     </div>
@@ -1697,6 +1912,16 @@
   </div>
 </div>
 
+<div class="modal-overlay hidden" id="healthScoreOverlay">
+  <div class="modal-box" style="max-width:420px;">
+    <p class="section-eyebrow" style="margin-bottom:2px;">Sua saúde financeira</p>
+    <h2 id="healthModalScore" style="font-family:'IBM Plex Mono', monospace; font-size:32px;"></h2>
+    <div id="healthModalTitle" style="font-family:'Fraunces', serif; font-size:16px; font-weight:600; margin-top:2px;"></div>
+    <div id="healthModalBody"></div>
+    <div class="modal-close-row"><button class="btn btn-primary btn-sm" id="healthScoreCloseBtn">Fechar</button></div>
+  </div>
+</div>
+
 <div class="modal-overlay hidden" id="helpOverlay">
   <div class="modal-box">
     <h2>Central de Ajuda</h2>
@@ -1717,7 +1942,7 @@
       </div>
       <div class="faq-item" data-cat="Começando">
         <button class="faq-q" type="button">Como funciona a Dashboard<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>Mostra o retrato do <strong>mês selecionado</strong> (troque o mês nas setas do topo): quanto entrou, quanto saiu, quanto foi investido e o património líquido atual. Depois vem a evolução ao longo dos meses, a distribuição da renda, e por último os alertas que precisam da sua atenção.</p></div>
+        <div class="faq-a"><p>Mostra o retrato do <strong>mês selecionado</strong> (troque o mês nas setas do topo): quanto entrou, quanto saiu, quanto foi investido e o patrimônio líquido atual. Depois vem a evolução ao longo dos meses, a distribuição da renda, e por último os alertas que precisam da sua atenção.</p></div>
       </div>
       <div class="faq-item" data-cat="Começando">
         <button class="faq-q" type="button">Como interpretar os indicadores<span class="chevron">▾</span></button>
@@ -1726,7 +1951,7 @@
 
       <div class="faq-item" data-cat="Chat">
         <button class="faq-q" type="button">🧭 O que é "Converse com a Bússola"?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>É um motor de inteligência financeira que responde perguntas em português sobre os seus próprios dados, receitas, despesas, cartões, dívidas, investimentos, património, metas e orçamento. Você pode escrever a pergunta do jeito que quiser ("quanto gastei?", "quanto saiu esse mês?", "minhas despesas foram quanto?", tudo funciona), e pode dar um nome a ela e chamá-la por esse nome durante a conversa.</p></div>
+        <div class="faq-a"><p>É um motor de inteligência financeira que responde perguntas em português sobre os seus próprios dados, receitas, despesas, cartões, dívidas, investimentos, patrimônio, metas e orçamento. Você pode escrever a pergunta do jeito que quiser ("quanto gastei?", "quanto saiu esse mês?", "minhas despesas foram quanto?", tudo funciona), e pode dar um nome a ela e chamá-la por esse nome durante a conversa.</p></div>
       </div>
       <div class="faq-item" data-cat="Chat">
         <button class="faq-q" type="button">Isso usa alguma IA externa (ChatGPT, Claude, Gemini)?<span class="chevron">▾</span></button>
@@ -1734,7 +1959,7 @@
       </div>
       <div class="faq-item" data-cat="Chat">
         <button class="faq-q" type="button">Como o motor interpreta a minha pergunta?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>Ele identifica o assunto (receitas, despesas, cartões, dívidas, investimentos, património, metas, orçamento…), o período (hoje, este mês, mês passado, este ano, últimos 3/6/12 meses, um mês ou ano específico) e a categoria citados na frase, busca os dados reais correspondentes, faz os cálculos e monta a resposta, sem inventar nenhum número. Se não encontrar dados suficientes, ele avisa isso claramente em vez de chutar uma resposta.</p></div>
+        <div class="faq-a"><p>Ele identifica o assunto (receitas, despesas, cartões, dívidas, investimentos, patrimônio, metas, orçamento…), o período (hoje, este mês, mês passado, este ano, últimos 3/6/12 meses, um mês ou ano específico) e a categoria citados na frase, busca os dados reais correspondentes, faz os cálculos e monta a resposta, sem inventar nenhum número. Se não encontrar dados suficientes, ele avisa isso claramente em vez de chutar uma resposta.</p></div>
       </div>
       <div class="faq-item faq-tall" data-cat="Chat">
         <button class="faq-q" type="button">O que o chat consegue fazer, na prática?<span class="chevron">▾</span></button>
@@ -1744,7 +1969,7 @@
           <p><strong>💸 Despesas</strong><br>"Quanto gastei com alimentação?" · "Qual foi minha maior categoria?" · "Isso aumentou em relação ao mês passado?" · "Onde estou gastando mais?"</p>
           <p><strong>💳 Cartões e dívidas</strong><br>"Quanto está em aberto no cartão?" · "Quando vence minha fatura?" · "Quanto estou comprometido com dívidas?" · "Alguma dívida está atrasada?"</p>
           <p><strong>📈 Investimentos</strong><br>"Quanto investi este ano?" · "Quanto já rendeu?" · "Como está minha alocação por categoria?"</p>
-          <p><strong>🏆 Património</strong><br>"Quanto tenho de património?" · "Meu património aumentou?"</p>
+          <p><strong>🏆 Patrimônio</strong><br>"Quanto tenho de patrimônio?" · "Meu patrimônio aumentou?"</p>
           <p><strong>🎯 Metas</strong><br>"Quanto falta para minha meta?" · "Estou perto de atingir?" · "Quando vou atingir minha meta nesse ritmo?"</p>
           <p><strong>📊 Análises</strong><br>"Como estão minhas finanças?" · "Estou gastando demais?" · "Qual é meu maior problema financeiro?" · "Faça uma análise completa"</p>
           <p><strong>🔮 Simulações</strong><br>"Se eu economizar R$500 por mês, quanto terei em um ano?" · "Se eu reduzir alimentação em 20%?" · "Quanto preciso investir por mês para atingir minha meta?"</p>
@@ -1763,7 +1988,7 @@
       </div>
       <div class="faq-item" data-cat="Chat">
         <button class="faq-q" type="button">O que é o botão "🔎 Fazer análise completa"?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>Pede ao motor uma leitura completa da sua situação financeira de uma vez: pontos fortes, pontos de atenção, maior despesa, evolução do património, capacidade de poupança, investimentos, dívidas, progresso das metas e recomendações, terminando sempre com "🧭 Seu próximo passo", a ação mais prioritária no momento.</p></div>
+        <div class="faq-a"><p>Pede ao motor uma leitura completa da sua situação financeira de uma vez: pontos fortes, pontos de atenção, maior despesa, evolução do patrimônio, capacidade de poupança, investimentos, dívidas, progresso das metas e recomendações, terminando sempre com "🧭 Seu próximo passo", a ação mais prioritária no momento.</p></div>
       </div>
 
       <div class="faq-item" data-cat="Receitas">
@@ -1785,7 +2010,7 @@
       </div>
       <div class="faq-item" data-cat="Despesas">
         <button class="faq-q" type="button">Como uma compra no cartão é contabilizada?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>Compras no cartão (aba Cartões) <strong>não</strong> entram na "Despesa do mês" do Dashboard no momento da compra, elas viram fatura em aberto, que conta como dívida no Património. Só quando você paga a fatura (total ou parcial) é que vira uma despesa registrada, na categoria "Cartão de Crédito".</p></div>
+        <div class="faq-a"><p>Compras no cartão (aba Cartões) <strong>não</strong> entram na "Despesa do mês" do Dashboard no momento da compra, elas viram fatura em aberto, que conta como dívida no Patrimônio. Só quando você paga a fatura (total ou parcial) é que vira uma despesa registrada, na categoria "Cartão de Crédito".</p></div>
       </div>
       <div class="faq-item" data-cat="Despesas">
         <button class="faq-q" type="button">Como o orçamento por categoria funciona?<span class="chevron">▾</span></button>
@@ -1836,24 +2061,24 @@
         <div class="faq-a"><p>Soma, de todas as suas contas de investimento, o rendimento mensal estimado (saldo atual × rendimento % a.m. de cada conta), dá uma ideia de quanto seu dinheiro investido está gerando por mês, no ritmo atual. É uma estimativa, não uma garantia.</p></div>
       </div>
 
-      <div class="faq-item" data-cat="Património">
-        <button class="faq-q" type="button">O que é património líquido?<span class="chevron">▾</span></button>
+      <div class="faq-item" data-cat="Patrimônio">
+        <button class="faq-q" type="button">O que é patrimônio líquido?<span class="chevron">▾</span></button>
         <div class="faq-a"><p>É a diferença entre seus <strong>ativos</strong> (tudo que você possui: dinheiro em caixa + investimentos) e seus <strong>passivos</strong> (tudo que você deve: dívidas + faturas de cartão em aberto). Em outras palavras: se você vendesse tudo e pagasse tudo o que deve hoje, quanto sobraria.</p></div>
       </div>
-      <div class="faq-item" data-cat="Património">
-        <button class="faq-q" type="button">Bens como carro ou imóvel entram no património?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>Não automaticamente. A Bússola não classifica um carro ou imóvel como investimento só para fazê-lo aparecer no património: isso distorceria o cálculo. Se quiser refletir o valor de um bem físico, cadastre-o manualmente como uma conta em Investimentos, com o valor que você atribui a ele.</p></div>
+      <div class="faq-item" data-cat="Patrimônio">
+        <button class="faq-q" type="button">Bens como carro ou imóvel entram no patrimônio?<span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Não automaticamente. A Bússola não classifica um carro ou imóvel como investimento só para fazê-lo aparecer no patrimônio: isso distorceria o cálculo. Se quiser refletir o valor de um bem físico, cadastre-o manualmente como uma conta em Investimentos, com o valor que você atribui a ele.</p></div>
       </div>
-      <div class="faq-item" data-cat="Património">
+      <div class="faq-item" data-cat="Patrimônio">
         <button class="faq-q" type="button">Como é calculado exatamente?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p><strong>Património líquido = Ativos − Passivos.</strong><br><strong>Ativos</strong> = caixa acumulado (soma de todo saldo mensal desde o início) + saldo atual dos investimentos.<br><strong>Passivos</strong> = dívidas restantes + faturas de cartão em aberto.<br>Exemplo: se seus ativos somam R$ 30.000,00 e seus passivos R$ 8.000,00, o património líquido é R$ 22.000,00. É recalculado no valor de hoje, não muda retroativamente para meses passados.</p></div>
+        <div class="faq-a"><p><strong>Patrimônio líquido = Ativos − Passivos.</strong><br><strong>Ativos</strong> = caixa acumulado (soma de todo saldo mensal desde o início) + saldo atual dos investimentos.<br><strong>Passivos</strong> = dívidas restantes + faturas de cartão em aberto.<br>Exemplo: se seus ativos somam R$ 30.000,00 e seus passivos R$ 8.000,00, o patrimônio líquido é R$ 22.000,00. É recalculado no valor de hoje, não muda retroativamente para meses passados.</p></div>
       </div>
-      <div class="faq-item" data-cat="Património">
-        <button class="faq-q" type="button">O que aumenta o património?<span class="chevron">▾</span></button>
+      <div class="faq-item" data-cat="Patrimônio">
+        <button class="faq-q" type="button">O que aumenta o patrimônio?<span class="chevron">▾</span></button>
         <div class="faq-a"><p>Sobrar dinheiro no mês (receita maior que despesa+investido), o rendimento dos seus investimentos, e quitar dívidas.</p></div>
       </div>
-      <div class="faq-item" data-cat="Património">
-        <button class="faq-q" type="button">O que reduz o património?<span class="chevron">▾</span></button>
+      <div class="faq-item" data-cat="Patrimônio">
+        <button class="faq-q" type="button">O que reduz o patrimônio?<span class="chevron">▾</span></button>
         <div class="faq-a"><p>Gastar mais do que ganha, contrair uma nova dívida ou financiamento (entra imediatamente como dívida integral), e deixar faturas de cartão em aberto acumularem.</p></div>
       </div>
 
@@ -1888,7 +2113,7 @@
       </div>
       <div class="faq-item" data-cat="Metas">
         <button class="faq-q" type="button">Como saber quanto preciso investir por mês?<span class="chevron">▾</span></button>
-        <div class="faq-a"><p>Cada meta tem um simulador embutido: alterne entre "Definir aporte mensal" (você diz quanto vai investir e a Bússola calcula o tempo estimado) ou "Definir prazo desejado" (você diz em quantos meses quer chegar lá e ela calcula o valor mensal necessário). Tudo atualiza em tempo real, sem sair da aba Metas.</p></div>
+        <div class="faq-a"><p>Cada meta tem um simulador embutido: alterne entre "Simular aporte mensal" (você diz quanto vai investir e a Bússola calcula o tempo estimado) ou "Simular prazo desejado" (você diz em quantos meses quer chegar lá e ela calcula o valor mensal necessário). Tudo atualiza em tempo real, sem sair da aba Metas.</p></div>
       </div>
       <div class="faq-item" data-cat="Metas">
         <button class="faq-q" type="button">O que é o indicador de ritmo (🟢/🟡/🔴)?<span class="chevron">▾</span></button>
@@ -2622,6 +2847,15 @@
   document.getElementById("helpCloseBtn").addEventListener("click", function(){ document.getElementById("helpOverlay").classList.add("hidden"); });
   document.getElementById("achvModalCloseBtn").addEventListener("click", function(){ document.getElementById("achvModalOverlay").classList.add("hidden"); });
   document.getElementById("achvModalOverlay").addEventListener("click", function(e){ if(e.target.id==="achvModalOverlay") document.getElementById("achvModalOverlay").classList.add("hidden"); });
+  // ESC fecha o modal/overlay que estiver aberto no momento, em qualquer um deles (launcher
+  // incluído), sem mudar o botão de fechar já existente em cada um.
+  document.addEventListener("keydown", function(ev){
+    if(ev.key!=="Escape") return;
+    var open = document.querySelector(".modal-overlay:not(.hidden)");
+    if(open) open.classList.add("hidden");
+  });
+  document.getElementById("healthScoreCloseBtn").addEventListener("click", function(){ document.getElementById("healthScoreOverlay").classList.add("hidden"); });
+  document.getElementById("healthScoreOverlay").addEventListener("click", function(e){ if(e.target.id==="healthScoreOverlay") document.getElementById("healthScoreOverlay").classList.add("hidden"); });
   document.querySelectorAll("#helpFaqList .faq-q").forEach(function(btn){
     btn.setAttribute("aria-expanded", "false");
     btn.addEventListener("click", function(){
@@ -2633,7 +2867,7 @@
   });
   var setHelpCategory = function(){}; // substituída abaixo por initHelpCategoryFilters
   (function initHelpCategoryFilters(){
-    var CAT_ORDER = ["Todos","Começando","Chat","Receitas","Despesas","Cartões","Dívidas","Investimentos","Património","Análises","Metas","Projeções","Geral"];
+    var CAT_ORDER = ["Todos","Começando","Chat","Receitas","Despesas","Cartões","Dívidas","Investimentos","Patrimônio","Análises","Metas","Projeções","Geral"];
     var present = Array.from(new Set(Array.from(document.querySelectorAll("#helpFaqList .faq-item")).map(function(el){return el.dataset.cat;})));
     var cats = ["Todos"].concat(CAT_ORDER.filter(function(c){return c!=="Todos" && present.indexOf(c)!==-1;}));
     var current = "Todos";
@@ -2879,6 +3113,124 @@
   document.getElementById("quickExpValor").addEventListener("keydown", function(ev){
     if(ev.key==="Enter"){ ev.preventDefault(); submitQuickExpense(); }
   });
+
+  /* ===== Launcher do "+": "O que você quer registrar?" =====
+     Cada opção abre o fluxo rápido correspondente, que reaproveita exatamente as mesmas
+     funções/estruturas de dados dos formulários completos (nada de sistema paralelo). */
+  function openQuickLauncher(){ document.getElementById("quickLauncherOverlay").classList.remove("hidden"); }
+  function closeQuickLauncher(){ document.getElementById("quickLauncherOverlay").classList.add("hidden"); }
+  document.getElementById("quickLauncherCancelBtn").addEventListener("click", closeQuickLauncher);
+  document.getElementById("quickLauncherOverlay").addEventListener("click", function(ev){ if(ev.target===this) closeQuickLauncher(); });
+  document.getElementById("qlDespesaBtn").addEventListener("click", function(){ closeQuickLauncher(); openQuickExpense(); });
+  document.getElementById("qlReceitaBtn").addEventListener("click", function(){ closeQuickLauncher(); openQuickIncome(); });
+  document.getElementById("qlAporteBtn").addEventListener("click", function(){ closeQuickLauncher(); openQuickAporte(); });
+  document.getElementById("qlCartaoBtn").addEventListener("click", function(){ closeQuickLauncher(); openQuickCard(); });
+
+  /* ---- Receita rápida (mesma estrutura de dados de state.incomes) ---- */
+  function openQuickIncome(){
+    var sel = document.getElementById("quickIncTipo");
+    sel.innerHTML = state.categories.rendimentos.map(function(c){ return '<option value="'+escapeHtml(c)+'">'+escapeHtml(c)+'</option>'; }).join("");
+    var valInp = document.getElementById("quickIncValor");
+    valInp.value = "";
+    document.getElementById("quickIncomeError").classList.add("hidden");
+    document.getElementById("quickIncomeOverlay").classList.remove("hidden");
+    setTimeout(function(){ valInp.focus(); }, 50);
+  }
+  function closeQuickIncome(){ document.getElementById("quickIncomeOverlay").classList.add("hidden"); }
+  document.getElementById("quickIncomeCancelBtn").addEventListener("click", closeQuickIncome);
+  document.getElementById("quickIncomeOverlay").addEventListener("click", function(ev){ if(ev.target===this) closeQuickIncome(); });
+  attachMoneyMask(document.getElementById("quickIncValor"));
+  function submitQuickIncome(){
+    var tipo = document.getElementById("quickIncTipo").value;
+    var valorEl = document.getElementById("quickIncValor");
+    var valor = parseMoneyInput(valorEl);
+    var errEl = document.getElementById("quickIncomeError");
+    if(!valorEl.value.trim() || !valor || valor<=0){
+      errEl.textContent = !valorEl.value.trim() ? "Informe um valor." : "Informe um valor válido, maior que zero.";
+      errEl.classList.remove("hidden"); valorEl.focus(); return;
+    }
+    errEl.classList.add("hidden");
+    state.incomes.push({id:uid(), desc:tipo, tipo:tipo, valor:valor, data:todayISO(), membro:""});
+    saveState(); renderAll(); closeQuickIncome();
+    showToast("Receita registrada, "+tipo+" · "+fmtMoney(valor));
+  }
+  document.getElementById("quickIncomeSubmitBtn").addEventListener("click", submitQuickIncome);
+  document.getElementById("quickIncValor").addEventListener("keydown", function(ev){ if(ev.key==="Enter"){ ev.preventDefault(); submitQuickIncome(); } });
+
+  /* ---- Aporte rápido (mesma função addAccountEntry do formulário completo) ---- */
+  function openQuickAporte(){
+    if(state.investmentAccounts.length===0){
+      showToast("Crie uma conta de investimento primeiro, na aba Investimentos.", "error");
+      activateTab("investimentos");
+      return;
+    }
+    var sel = document.getElementById("quickAporteConta");
+    sel.innerHTML = state.investmentAccounts.map(function(a){ return '<option value="'+a.id+'">'+escapeHtml(a.nome)+'</option>'; }).join("");
+    var valInp = document.getElementById("quickAporteValor");
+    valInp.value = "";
+    document.getElementById("quickAporteError").classList.add("hidden");
+    document.getElementById("quickAporteOverlay").classList.remove("hidden");
+    setTimeout(function(){ valInp.focus(); }, 50);
+  }
+  function closeQuickAporte(){ document.getElementById("quickAporteOverlay").classList.add("hidden"); }
+  document.getElementById("quickAporteCancelBtn").addEventListener("click", closeQuickAporte);
+  document.getElementById("quickAporteOverlay").addEventListener("click", function(ev){ if(ev.target===this) closeQuickAporte(); });
+  attachMoneyMask(document.getElementById("quickAporteValor"));
+  function submitQuickAporte(){
+    var accId = document.getElementById("quickAporteConta").value;
+    var valorEl = document.getElementById("quickAporteValor");
+    var valor = parseMoneyInput(valorEl);
+    var errEl = document.getElementById("quickAporteError");
+    if(!valorEl.value.trim() || !valor || valor<=0){
+      errEl.textContent = !valorEl.value.trim() ? "Informe um valor." : "Informe um valor válido, maior que zero.";
+      errEl.classList.remove("hidden"); valorEl.focus(); return;
+    }
+    errEl.classList.add("hidden");
+    var acc = state.investmentAccounts.find(function(a){return a.id===accId;});
+    if(!addAccountEntry(accId, "Aporte", valor, todayISO())) return;
+    renderAll(); closeQuickAporte();
+    showToast("Aporte registrado, "+(acc?acc.nome:"")+" · "+fmtMoney(valor));
+  }
+  document.getElementById("quickAporteSubmitBtn").addEventListener("click", submitQuickAporte);
+  document.getElementById("quickAporteValor").addEventListener("keydown", function(ev){ if(ev.key==="Enter"){ ev.preventDefault(); submitQuickAporte(); } });
+
+  /* ---- Compra no cartão rápida (mesma função lancarCompra do formulário completo) ---- */
+  function openQuickCard(){
+    if(state.cards.length===0){
+      showToast("Cadastre um cartão primeiro, na aba Cartões.", "error");
+      activateTab("cartoes");
+      return;
+    }
+    var sel = document.getElementById("quickCardSelect");
+    sel.innerHTML = state.cards.map(function(c){ return '<option value="'+c.id+'">'+escapeHtml(c.nome)+'</option>'; }).join("");
+    document.getElementById("quickCardDesc").value = "";
+    var valInp = document.getElementById("quickCardValor");
+    valInp.value = "";
+    document.getElementById("quickCardError").classList.add("hidden");
+    document.getElementById("quickCardOverlay").classList.remove("hidden");
+    setTimeout(function(){ document.getElementById("quickCardDesc").focus(); }, 50);
+  }
+  function closeQuickCard(){ document.getElementById("quickCardOverlay").classList.add("hidden"); }
+  document.getElementById("quickCardCancelBtn").addEventListener("click", closeQuickCard);
+  document.getElementById("quickCardOverlay").addEventListener("click", function(ev){ if(ev.target===this) closeQuickCard(); });
+  attachMoneyMask(document.getElementById("quickCardValor"));
+  function submitQuickCard(){
+    var cardId = document.getElementById("quickCardSelect").value;
+    var desc = document.getElementById("quickCardDesc").value.trim();
+    var valorEl = document.getElementById("quickCardValor");
+    var valor = parseMoneyInput(valorEl);
+    var errEl = document.getElementById("quickCardError");
+    if(!desc){ errEl.textContent = "Informe uma descrição."; errEl.classList.remove("hidden"); document.getElementById("quickCardDesc").focus(); return; }
+    if(!valorEl.value.trim() || !valor || valor<=0){
+      errEl.textContent = !valorEl.value.trim() ? "Informe um valor." : "Informe um valor válido, maior que zero.";
+      errEl.classList.remove("hidden"); valorEl.focus(); return;
+    }
+    errEl.classList.add("hidden");
+    closeQuickCard();
+    lancarCompra(cardId, desc, valor); // já faz saveState + renderAll + toast
+  }
+  document.getElementById("quickCardSubmitBtn").addEventListener("click", submitQuickCard);
+  document.getElementById("quickCardValor").addEventListener("keydown", function(ev){ if(ev.key==="Enter"){ ev.preventDefault(); submitQuickCard(); } });
 
   function deleteExpense(id){
     var item = state.expenses.find(function(e){return e.id===id;});
@@ -3236,7 +3588,7 @@
     var restante = Math.max(0, d.valorTotal - jaPago);
     var naoPagasIdx = [];
     d.parcelas.forEach(function(p, idx){ if(!p.paga) naoPagasIdx.push(idx); });
-    if(naoPagasIdx.length===0){ showToast("Já não há parcelas pendentes.", "error"); return; }
+    if(naoPagasIdx.length===0){ showToast("Não há mais parcelas pendentes.", "error"); return; }
     if(!confirm("Marcar todas as "+naoPagasIdx.length+" parcelas restantes como pagas, totalizando "+fmtMoney(restante)+"? Isso lança "+fmtMoney(restante)+" em Despesas.")) return;
     var share = restante/naoPagasIdx.length;
     naoPagasIdx.forEach(function(idx){ markParcelaPaid(d, idx, share); });
@@ -3351,7 +3703,11 @@
     var aportado = aportes - retiradas;
     var saldos = acc.entries.filter(function(e){return e.tipo==="Saldo";}).slice().sort(function(a,b){return a.data.localeCompare(b.data);});
     var saldoAtual = saldos.length ? saldos[saldos.length-1].valor : aportado;
-    var rendimento = saldoAtual - aportado;
+    // Sem nenhum aporte registrado (ex.: conta criada só com "saldo inicial", sem histórico de
+    // quanto foi de fato investido), não há uma base de custo pra comparar, então não dá pra
+    // calcular rendimento de verdade — melhor mostrar 0 do que tratar o saldo inteiro como se
+    // fosse 100% de ganho.
+    var rendimento = aportado>0 ? (saldoAtual - aportado) : 0;
     var rendPct = aportado>0 ? (rendimento/aportado)*100 : 0;
     var dailyYield = null, monthlyYieldPct = null;
     if(saldos.length>=2){
@@ -3371,11 +3727,22 @@
   document.getElementById("addAcctBtn").addEventListener("click", function(){
     var nome = document.getElementById("acctNome").value.trim();
     var categoria = document.getElementById("acctCategoria").value;
+    var saldoInicial = parseMoneyInput(document.getElementById("acctSaldoInicial"));
     if(!nome){ showToast("Dê um nome para a conta.", "error"); return; }
-    state.investmentAccounts.push({id:uid(), nome:nome, categoria:categoria, entries:[]});
+    var novaConta = {id:uid(), nome:nome, categoria:categoria, entries:[]};
+    // Saldo inicial = dinheiro que o utilizador já tinha antes de começar a usar a Bússola.
+    // Registrado só como "Saldo" (não como "Aporte"): isso faz accountTotals mostrar o valor
+    // certo sem inventar 100% de "rendimento" (não há uma base de custo pra comparar), e também
+    // evita que o mês atual pareça ter tido uma saída de caixa de R$X só por causa da conta nova
+    // (o cálculo de patrimônio usa exatamente essa mesma diferença Aporte/Saldo já existente).
+    if(saldoInicial && saldoInicial>0){
+      novaConta.entries.push({id:uid(), tipo:"Saldo", valor:saldoInicial, data:todayISO()});
+    }
+    state.investmentAccounts.push(novaConta);
     saveState();
     document.getElementById("acctNome").value="";
-    renderAll(); showToast("Conta criada.");
+    document.getElementById("acctSaldoInicial").value="";
+    renderAll(); showToast(saldoInicial>0 ? "Conta criada com saldo inicial de "+fmtMoney(saldoInicial)+"." : "Conta criada.");
   });
   function deleteAccount(id){ if(confirm("Excluir esta conta e todo o seu histórico?")){ state.investmentAccounts = state.investmentAccounts.filter(function(a){return a.id!==id;}); saveState(); renderAll(); } }
   function deleteAccountEntry(accId, entryId){
@@ -3412,6 +3779,23 @@
 
   var acctLedgerFilter = {}; // { [accId]: "Todos"|"Aporte"|"Retirada"|"Saldo" }
   var acctExpanded = {};
+  // Lançamento de aporte/retirada/saldo numa conta de investimento, num só lugar — usada tanto
+  // pelo formulário completo da aba Investimentos quanto pelo Aporte rápido do botão "+".
+  function addAccountEntry(accId, tipo, valor, data){
+    var acc = state.investmentAccounts.find(function(a){return a.id===accId;});
+    if(!acc || !valor || valor<=0) return false;
+    data = data || todayISO();
+    var beforeSaldo = accountTotals(acc).saldoAtual;
+    acc.entries.push({id:uid(), tipo:tipo, valor:valor, data:data});
+    // aporte/retirada já atualiza o saldo real automaticamente, para os números nunca ficarem defasados
+    if(tipo === "Aporte"){
+      acc.entries.push({id:uid(), tipo:"Saldo", valor:beforeSaldo + valor, data:data});
+    } else if(tipo === "Retirada"){
+      acc.entries.push({id:uid(), tipo:"Saldo", valor:Math.max(0, beforeSaldo - valor), data:data});
+    }
+    saveState();
+    return true;
+  }
   function renderAccounts(){
     var wrap = document.getElementById("acctsList"); wrap.innerHTML="";
     var totalAportado=0, totalSaldo=0, totalRend=0, totalRendaPassiva=0;
@@ -3506,7 +3890,7 @@
         renderAccounts();
       });
     });
-    wrap.querySelectorAll(".acct-add-btn").forEach(function(btn){
+  wrap.querySelectorAll(".acct-add-btn").forEach(function(btn){
       btn.addEventListener("click", function(){
         var accId = btn.dataset.acc;
         var tipoSel = wrap.querySelector('.acct-tipo-input[data-acc="'+accId+'"]');
@@ -3514,18 +3898,10 @@
         var dataInp = wrap.querySelector('.acct-data-input[data-acc="'+accId+'"]');
         var valor = parseMoneyInput(valorInp);
         if(!valor || valor<=0){ showToast("Informe um valor válido.", "error"); return; }
-        var acc = state.investmentAccounts.find(function(a){return a.id===accId;});
         var tipo = tipoSel.value;
         var data = dataInp.value || todayISO();
-        var beforeSaldo = accountTotals(acc).saldoAtual;
-        acc.entries.push({id:uid(), tipo:tipo, valor:valor, data:data});
-        // aporte/retirada já atualiza o saldo real automaticamente, para os números nunca ficarem defasados
-        if(tipo === "Aporte"){
-          acc.entries.push({id:uid(), tipo:"Saldo", valor:beforeSaldo + valor, data:data});
-        } else if(tipo === "Retirada"){
-          acc.entries.push({id:uid(), tipo:"Saldo", valor:Math.max(0, beforeSaldo - valor), data:data});
-        }
-        saveState(); renderAll(); showToast("Lançamento adicionado.");
+        if(!addAccountEntry(accId, tipo, valor, data)) return;
+        renderAll(); showToast("Lançamento adicionado.");
       });
     });
     wrap.querySelectorAll(".acct-entry-form").forEach(wireEnterSubmit);
@@ -3555,6 +3931,51 @@
   populateGoalAccountSelect();
   toggleGoalTipoFields();
 
+  /* ===== "Onde você está guardando o dinheiro desta meta?" (chips de local) =====
+     Estado do formulário de criação, só em memória (não é a meta em si, é o rascunho até
+     clicar em "Criar meta"). Resetado a cada criação bem-sucedida. */
+  var goalLocalDraft = { selected: {}, investAccts: {} };
+  function renderGoalLocalInvestPicker(){
+    var picker = document.getElementById("goalLocalInvestPicker");
+    if(!goalLocalDraft.selected.investimento){ picker.classList.add("hidden"); picker.innerHTML=""; return; }
+    picker.classList.remove("hidden");
+    if(state.investmentAccounts.length===0){
+      picker.innerHTML = '<span style="font-size:12px; color:var(--text-soft);">Nenhuma conta de investimento cadastrada ainda, tudo bem, você pode marcar isso mesmo assim e vincular depois.</span>';
+      return;
+    }
+    picker.innerHTML = state.investmentAccounts.map(function(a){
+      var checked = goalLocalDraft.investAccts[a.id] ? "checked" : "";
+      return '<label><input type="checkbox" class="goal-local-invest-cb" data-acct="'+a.id+'" '+checked+'> '+escapeHtml(a.nome)+'</label>';
+    }).join("");
+    picker.querySelectorAll(".goal-local-invest-cb").forEach(function(cb){
+      cb.addEventListener("change", function(){ goalLocalDraft.investAccts[cb.dataset.acct] = cb.checked; });
+    });
+  }
+  function resetGoalLocalDraft(){
+    goalLocalDraft = { selected: {}, investAccts: {} };
+    document.querySelectorAll(".goal-local-chip").forEach(function(c){ c.classList.remove("active"); });
+    document.getElementById("goalLocalOutroDesc").value = "";
+    document.getElementById("goalLocalOutroDesc").classList.add("hidden");
+    renderGoalLocalInvestPicker();
+  }
+  document.querySelectorAll(".goal-local-chip").forEach(function(chip){
+    chip.addEventListener("click", function(){
+      var local = chip.dataset.local;
+      var nowActive = !goalLocalDraft.selected[local];
+      if(local==="nao_defini" && nowActive){
+        // "Ainda não defini" é sempre sozinho, não faz sentido junto de um local concreto.
+        goalLocalDraft.selected = {}; document.querySelectorAll(".goal-local-chip").forEach(function(c){ c.classList.remove("active"); });
+      } else if(nowActive){
+        goalLocalDraft.selected.nao_defini = false;
+        document.querySelector('.goal-local-chip[data-local="nao_defini"]').classList.remove("active");
+      }
+      goalLocalDraft.selected[local] = nowActive;
+      chip.classList.toggle("active", nowActive);
+      renderGoalLocalInvestPicker();
+      document.getElementById("goalLocalOutroDesc").classList.toggle("hidden", !goalLocalDraft.selected.outro);
+    });
+  });
+
   document.getElementById("addGoalBtn").addEventListener("click", function(){
     var name = document.getElementById("goalName").value.trim();
     var tipo = document.getElementById("goalTipo").value;
@@ -3569,11 +3990,41 @@
     } else {
       goal.current = parseMoneyInput(document.getElementById("goalCurrent"));
     }
+    // Monta g.locais a partir dos chips marcados — puramente informativo (não afeta nenhum
+    // cálculo de progresso), só ajuda o utilizador a lembrar onde está guardando o dinheiro.
+    var locais = [];
+    if(goalLocalDraft.selected.conta_bancaria) locais.push({tipo:"conta_bancaria"});
+    if(goalLocalDraft.selected.investimento){
+      var contaIds = Object.keys(goalLocalDraft.investAccts).filter(function(id){return goalLocalDraft.investAccts[id];});
+      locais.push({tipo:"investimento", contaIds:contaIds});
+    }
+    if(goalLocalDraft.selected.dinheiro_fisico) locais.push({tipo:"dinheiro_fisico"});
+    if(goalLocalDraft.selected.outro){
+      var outroDesc = document.getElementById("goalLocalOutroDesc").value.trim();
+      locais.push({tipo:"outro", desc:outroDesc});
+    }
+    if(goalLocalDraft.selected.nao_defini || locais.length===0) locais.push({tipo:"nao_defini"});
+    goal.locais = locais;
     state.goals.push(goal);
     saveState();
     document.getElementById("goalName").value=""; document.getElementById("goalTarget").value=""; document.getElementById("goalCurrent").value="";
+    resetGoalLocalDraft();
     renderGoals(); showToast("Meta criada.");
   });
+  function goalLocaisLabel(g){
+    if(!g.locais || g.locais.length===0 || (g.locais.length===1 && g.locais[0].tipo==="nao_defini")) return "❓ Ainda não definiu onde guarda esse dinheiro";
+    var partes = g.locais.map(function(l){
+      if(l.tipo==="conta_bancaria") return "🏦 Conta bancária";
+      if(l.tipo==="dinheiro_fisico") return "💵 Dinheiro físico";
+      if(l.tipo==="outro") return "📍 "+(l.desc ? escapeHtml(l.desc) : "Outro local");
+      if(l.tipo==="investimento"){
+        var nomes = (l.contaIds||[]).map(function(id){ var a=state.investmentAccounts.find(function(x){return x.id===id;}); return a ? a.nome : null; }).filter(Boolean);
+        return "📈 Investimento"+(nomes.length ? " ("+nomes.map(escapeHtml).join(", ")+")" : "");
+      }
+      return null;
+    }).filter(Boolean);
+    return partes.length ? "💰 Guardado em: "+partes.join(" · ") : "❓ Ainda não definiu onde guarda esse dinheiro";
+  }
   function updateGoalCurrent(id, value){ var g=state.goals.find(function(g){return g.id===id;}); if(g){ g.current=parseMoneyStr(value)||0; saveState(); renderGoals(); renderAnalytics(); } }
   function deleteGoal(id){ state.goals = state.goals.filter(function(g){return g.id!==id;}); saveState(); renderGoals(); }
 
@@ -3626,14 +4077,15 @@
       (subtitle ? '<div style="font-size:11.5px; color:var(--text-soft); margin-bottom:6px;">'+subtitle+'</div>' : '')+
       '<div class="goal-track"><div class="goal-fill" data-target-pct="'+pct+'" style="width:0%;"></div></div>'+
       '<div class="goal-meta"><span>'+fmtMoney(current)+' de '+fmtMoney(g.target)+'</span><span>'+pct.toFixed(0)+'%</span></div>'+
+      '<div class="goal-locais-tag">'+goalLocaisLabel(g)+'</div>'+
       (g.tipo==="Reserva" ? '<div class="field" style="margin-top:10px; max-width:200px;"><label>Atualizar valor atual</label><input type="text" value="'+g.current+'" data-goal="'+g.id+'" class="goal-input money-input"></div>' : '')+
       (falta>0 ? (
         '<div class="goal-sim">'+
           '<div class="goal-sim-row"><span class="k">Falta</span><span class="v">'+fmtMoney(falta)+'</span></div>'+
           paceHtml+
           '<div class="goal-sim-toggle">'+
-            '<button type="button" class="goal-sim-toggle-btn'+(mode==="aporte"?" active":"")+'" data-goal-mode="aporte" data-goal="'+g.id+'">Definir aporte mensal</button>'+
-            '<button type="button" class="goal-sim-toggle-btn'+(mode==="prazo"?" active":"")+'" data-goal-mode="prazo" data-goal="'+g.id+'">Definir prazo desejado</button>'+
+            '<button type="button" class="goal-sim-toggle-btn'+(mode==="aporte"?" active":"")+'" data-goal-mode="aporte" data-goal="'+g.id+'">Simular aporte mensal</button>'+
+            '<button type="button" class="goal-sim-toggle-btn'+(mode==="prazo"?" active":"")+'" data-goal-mode="prazo" data-goal="'+g.id+'">Simular prazo desejado</button>'+
           '</div>'+
           (mode==="aporte" ?
             '<div class="goal-sim-row"><span class="k">Se investir por mês</span><input type="text" class="goal-sim-input money-input" data-goal-sim="'+g.id+'" value="'+defaultAporte+'"></div>'+
@@ -3753,7 +4205,7 @@
     return {income:inc, expense:exp, invest:inv, saldo: inc-exp-inv};
   }
 
-  /* Património líquido = ATIVOS − PASSIVOS.
+  /* Patrimônio líquido = ATIVOS − PASSIVOS.
      ATIVOS  = caixa acumulado (soma do saldo mensal desde o início) + saldo atual investido.
      PASSIVOS = dívidas restantes + faturas de cartão em aberto.
      Não classificamos bens físicos (carro, imóvel) como investimento automaticamente —
@@ -3853,9 +4305,9 @@
       {id:"objetivo1", icon:"🏆", label:"Primeiro objetivo concluído", hint:"Alguma meta atingiu 100%", achieved: metaConcluida,
         desc:"Uma das suas metas atingiu 100% do valor definido.",
         msg:"Meta concluída! Prova real de que planejamento funciona. 🏆"},
-      {id:"pat10k", icon:"🏛️", label:"Primeiro R$ 10.000 de património", hint:"Património líquido ≥ R$ 10.000", achieved: pat>=10000,
-        desc:"Seu património líquido já passou de R$ 10.000.",
-        msg:"R$ 10 mil de património construído! Sua base está cada vez mais sólida. 🏛️"}
+      {id:"pat10k", icon:"🏛️", label:"Primeiro R$ 10.000 de patrimônio", hint:"Patrimônio líquido ≥ R$ 10.000", achieved: pat>=10000,
+        desc:"Seu patrimônio líquido já passou de R$ 10.000.",
+        msg:"R$ 10 mil de patrimônio construído! Sua base está cada vez mais sólida. 🏛️"}
     ];
   }
   function achvMedalHtml(m){
@@ -4014,7 +4466,7 @@
      desde o primeiro mês registrado. É uma aproximação honesta de "construção de patrimônio":
      soma cumulativa de (renda − despesas) + quanto foi investido em cada mês. NÃO inclui
      rendimento acumulado dos investimentos nem dívidas — esses só são conhecidos no valor
-     atual (ver o card "Património líquido" no topo, que já os contabiliza no presente).*/
+     atual (ver o card "Patrimônio líquido" no topo, que já os contabiliza no presente).*/
   function computeCapitalAccumSeries(){
     var months = allMonthsSorted();
     var running = 0;
@@ -4030,15 +4482,15 @@
     var wrap = document.getElementById("patrimonioEvoSection");
     var series = computeCapitalAccumSeries();
     if(series.length < 2){
-      wrap.innerHTML = '<div class="patrimonio-evo-card"><h3>Património ao longo do tempo</h3><p class="pe-sub">Registre pelo menos 2 meses de rendimentos e despesas para desbloquear esta visão de evolução.</p></div>';
+      wrap.innerHTML = '<div class="patrimonio-evo-card"><h3>Patrimônio ao longo do tempo</h3><p class="pe-sub">Registre pelo menos 2 meses de rendimentos e despesas para desbloquear esta visão de evolução.</p></div>';
       return;
     }
     var melhor = series.reduce(function(a,b){ return b.contrib>a.contrib ? b : a; });
     var pior = series.reduce(function(a,b){ return b.contrib<a.contrib ? b : a; });
     var atual = series[series.length-1].value;
     wrap.innerHTML = '<div class="patrimonio-evo-card">'+
-      '<h3>Património ao longo do tempo</h3>'+
-      '<p class="pe-sub">Capital acumulado (caixa + valor investido) desde '+monthLabel(series[0].month)+'. Não inclui rendimento dos investimentos nem dívidas: isso já está no card "Património líquido" acima, no valor atual.</p>'+
+      '<h3>Patrimônio ao longo do tempo</h3>'+
+      '<p class="pe-sub">Capital acumulado (caixa + valor investido) desde '+monthLabel(series[0].month)+'. Não inclui rendimento dos investimentos nem dívidas: isso já está no card "Patrimônio líquido" acima, no valor atual.</p>'+
       '<div id="patrimonioEvoChartWrap" class="chart-interactive"></div>'+
       '<div class="pe-stats">'+
         '<div class="pe-stat"><div class="k">Acumulado até hoje</div><div class="v">'+fmtMoney(atual)+'</div></div>'+
@@ -4250,7 +4702,7 @@
     var eduTips = [
       {icon:"📚", title:"Você sabia?", desc:"Patrimônio líquido é diferente de saldo em conta: ele soma seus investimentos e subtrai suas dívidas.", cta:"Entender", tab:"guia"},
       {icon:"📚", title:"Você sabia?", desc:"Despesas fixas e variáveis são tratadas de forma diferente nas Análises, vale sempre categorizar corretamente.", cta:"Ver Análises", tab:"analises"},
-      {icon:"📚", title:"Você sabia?", desc:"Uma compra no cartão só vira despesa registrada quando a fatura é paga, até lá, ela conta como dívida no Património.", cta:"Entender", tab:"guia"}
+      {icon:"📚", title:"Você sabia?", desc:"Uma compra no cartão só vira despesa registrada quando a fatura é paga, até lá, ela conta como dívida no Patrimônio.", cta:"Entender", tab:"guia"}
     ];
     education.push(eduTips[parseInt(state.viewMonth.slice(5,7),10) % eduTips.length]);
 
@@ -4398,24 +4850,125 @@
       var d = capSeries[capSeries.length-1].value - capSeries[capSeries.length-2].value;
       patOk = d>=0; patNote = d>=0 ? "crescendo este mês" : "em queda este mês";
     }
-    factors.push({label:"Património", ok:patOk, note:patNote});
+    factors.push({label:"Patrimônio", ok:patOk, note:patNote});
     var temMeta = state.goals.length>0;
     factors.push({label:"Metas", ok:temMeta, note: temMeta ? state.goals.length+" definida(s)" : "nenhuma definida ainda"});
+    // ---- Fatores adicionais (item 2 do pedido: saldo, reserva, uso de cartão) ----
+    // Mesma regra dos de cima: só entra na conta quando há dado real suficiente pra avaliar.
+    if(t.income>0 || t.expense>0){
+      factors.push({label:"Saldo do mês", ok: t.saldo>=0, note: t.saldo>=0 ? "positivo ("+fmtMoney(t.saldo)+")" : "negativo ("+fmtMoney(t.saldo)+")"});
+    }
+    if(state.cards.length>0){
+      var totalLimiteHF = state.cards.reduce(function(s,c){return s+(c.limite||0);},0);
+      var totalFaturaHF = state.cards.reduce(function(s,c){return s+cardFatura(c);},0);
+      var usoHF = totalLimiteHF>0 ? (totalFaturaHF/totalLimiteHF)*100 : 0;
+      factors.push({label:"Uso do cartão", ok: usoHF<70, note: usoHF.toFixed(0)+"% do limite usado (meta: <70%)"});
+    }
+    var reservaAccsHF = state.investmentAccounts.filter(function(a){ return a.categoria==="Reserva de Emergência"; });
+    if(reservaAccsHF.length>0){
+      var reservaSaldoHF = reservaAccsHF.reduce(function(s,a){ return s+accountTotals(a).saldoAtual; }, 0);
+      var recentHF = allMonthsSorted().slice(-3);
+      var essMedHF = recentHF.length>0 ? recentHF.reduce(function(s,m){ return s+monthEntries(state.expenses,m).filter(function(e){return ESSENCIAIS.indexOf(e.cat)!==-1;}).reduce(function(a,e){return a+e.valor;},0); },0)/recentHF.length : 0;
+      if(essMedHF>0){
+        var mesesCobertosHF = reservaSaldoHF/essMedHF;
+        factors.push({label:"Reserva de emergência", ok: mesesCobertosHF>=3, note: mesesCobertosHF.toFixed(1)+" mês(es) de despesas essenciais (meta: ≥3)"});
+      }
+    }
     return factors;
+  }
+  /* Pontuação 0–100: proporção de fatores positivos entre os que foram de fato avaliados
+     (nunca conta um fator sem dado suficiente, nem a favor nem contra — ver computeHealthFactors).
+     Faixas de cor só para guiar a leitura visual; o texto sempre explica o "porquê" ao lado. */
+  function computeFinancialScore(){
+    var factors = computeHealthFactors();
+    if(factors.length===0) return {score:null, factors:factors};
+    var goodCount = factors.filter(function(f){return f.ok;}).length;
+    var score = Math.round((goodCount/factors.length)*100);
+    var tier;
+    if(score>=90) tier = {emoji:"🟢", label:"Sua saúde financeira está excelente", color:"var(--moss)", colorText:"var(--moss-text)"};
+    else if(score>=75) tier = {emoji:"🟢", label:"Sua saúde financeira está boa", color:"var(--moss)", colorText:"var(--moss-text)"};
+    else if(score>=60) tier = {emoji:"🟡", label:"Sua situação é razoável, dá pra melhorar", color:"var(--amber)", colorText:"var(--amber-text)"};
+    else if(score>=40) tier = {emoji:"🟠", label:"Sua situação financeira merece atenção", color:"var(--amber)", colorText:"var(--amber-text)"};
+    else tier = {emoji:"🔴", label:"Precisamos melhorar alguns pontos", color:"var(--rust)", colorText:"var(--rust-text)"};
+    return {score:score, factors:factors, goodCount:goodCount, tier:tier};
   }
   function renderHealthScore(){
     var wrap = document.getElementById("healthScoreSection");
-    if(allMonthsSorted().length<2){ wrap.innerHTML=""; return; }
-    var factors = computeHealthFactors();
-    var goodCount = factors.filter(function(f){return f.ok;}).length;
-    var verdict = goodCount>=4 ? {emoji:"🟢", label:"Boa evolução"} : (goodCount>=2 ? {emoji:"🟡", label:"Atenção necessária"} : {emoji:"🔴", label:"Precisa de atenção"});
+    if(allMonthsSorted().length<2){
+      wrap.innerHTML = '<div class="health-card health-card-empty">'+
+        '<div class="health-empty-icon">🧭</div>'+
+        '<div><div class="health-title">Como estou financeiramente?</div>'+
+        '<p style="font-size:12.5px; color:var(--text-soft); margin:4px 0 0;">Ainda não temos dados suficientes para calcular sua saúde financeira com precisão. Registre rendimentos e despesas por pelo menos 2 meses para desbloquear essa visão.</p></div>'+
+      '</div>';
+      return;
+    }
+    var result = computeFinancialScore();
+    if(result.score===null){
+      wrap.innerHTML = '<div class="health-card health-card-empty"><div class="health-empty-icon">🧭</div><div><div class="health-title">Como estou financeiramente?</div><p style="font-size:12.5px; color:var(--text-soft); margin:4px 0 0;">Ainda não temos dados suficientes para calcular sua saúde financeira com precisão.</p></div></div>';
+      return;
+    }
+    var circumference = 2*Math.PI*42;
     wrap.innerHTML = '<div class="health-card">'+
-      '<div class="health-top"><span class="health-emoji">'+verdict.emoji+'</span><div><div class="health-title">Sua saúde financeira: '+verdict.label+'</div><div style="font-size:11.5px; color:var(--text-soft);">'+goodCount+' de '+factors.length+' fatores positivos em '+monthLabel(state.viewMonth)+'</div></div></div>'+
-      '<div class="health-factors">'+factors.map(function(f){
-        return '<div class="health-factor"><span class="hf-dot" style="background:'+(f.ok?"var(--moss)":"var(--rust)")+';"></span><strong>'+f.label+':</strong>&nbsp;'+f.note+'</div>';
-      }).join("")+'</div>'+
-      '<p style="font-size:11px; color:var(--text-soft); margin-top:12px;">Calculado a partir de 5 fatores objetivos: despesas ≤80% da renda, investimento ≥10% da renda, dívidas em dia, património crescendo, e ao menos uma meta definida. Não é um conselho financeiro, é só um resumo dos seus próprios números.</p>'+
+      '<button type="button" class="health-score-btn" id="healthScoreBtn" aria-label="Ver detalhes da sua saúde financeira">'+
+        '<div class="health-gauge-wrap">'+
+          '<svg viewBox="0 0 100 100" class="health-gauge" aria-hidden="true">'+
+            '<circle cx="50" cy="50" r="42" class="health-gauge-track"></circle>'+
+            '<circle cx="50" cy="50" r="42" class="health-gauge-fill" id="healthGaugeFill" style="stroke:'+result.tier.color+'; stroke-dasharray:'+circumference.toFixed(1)+'; stroke-dashoffset:'+circumference.toFixed(1)+';"></circle>'+
+          '</svg>'+
+          '<div class="health-gauge-center"><span id="healthScoreNum">0</span><span class="health-gauge-max">/100</span></div>'+
+        '</div>'+
+        '<div class="health-score-text">'+
+          '<div class="health-score-title">'+result.tier.emoji+' '+result.tier.label+'</div>'+
+          '<div class="health-score-sub">'+result.goodCount+' de '+result.factors.length+' indicadores positivos em '+monthLabel(state.viewMonth)+' · toque para entender por quê</div>'+
+        '</div>'+
+      '</button>'+
     '</div>';
+    // Animação de contagem (0 → score) e preenchimento do anel, respeitando prefers-reduced-motion.
+    var numEl = document.getElementById("healthScoreNum");
+    var fillEl = document.getElementById("healthGaugeFill");
+    var target = result.score;
+    var offsetTarget = circumference*(1-target/100);
+    if(PREFERS_REDUCED_MOTION){
+      numEl.textContent = target;
+      fillEl.style.strokeDashoffset = offsetTarget;
+    } else {
+      requestAnimationFrame(function(){ fillEl.style.transition = "stroke-dashoffset 1.1s cubic-bezier(.22,.9,.25,1)"; fillEl.style.strokeDashoffset = offsetTarget; });
+      var start = null, duration = 900;
+      function step(ts){
+        if(!start) start = ts;
+        var p = Math.min(1, (ts-start)/duration);
+        var eased = 1-Math.pow(1-p, 3);
+        numEl.textContent = Math.round(eased*target);
+        if(p<1) requestAnimationFrame(step); else numEl.textContent = target;
+      }
+      requestAnimationFrame(step);
+    }
+    document.getElementById("healthScoreBtn").addEventListener("click", function(){ openHealthScoreModal(result); });
+  }
+  function openHealthScoreModal(result){
+    result = result || computeFinancialScore();
+    var pos = result.factors.filter(function(f){return f.ok;});
+    var neg = result.factors.filter(function(f){return !f.ok;});
+    document.getElementById("healthModalScore").textContent = result.score!==null ? result.score+"/100" : "—";
+    document.getElementById("healthModalTitle").textContent = result.tier ? result.tier.emoji+" "+result.tier.label : "Ainda sem dados suficientes";
+    var body = document.getElementById("healthModalBody");
+    var html = "";
+    if(pos.length>0){
+      html += '<div class="health-modal-group"><div class="health-modal-group-title">Pontos positivos</div>'+
+        pos.map(function(f){ return '<div class="health-modal-item pos">✓ <strong>'+escapeHtml(f.label)+'</strong>: '+escapeHtml(f.note)+'</div>'; }).join("")+
+      '</div>';
+    }
+    if(neg.length>0){
+      html += '<div class="health-modal-group"><div class="health-modal-group-title">Pontos de atenção</div>'+
+        neg.map(function(f){ return '<div class="health-modal-item neg">⚠ <strong>'+escapeHtml(f.label)+'</strong>: '+escapeHtml(f.note)+'</div>'; }).join("")+
+      '</div>';
+    }
+    if(pos.length===0 && neg.length===0){
+      html = '<p style="font-size:13px; color:var(--text-soft);">Ainda não temos dados suficientes para calcular sua saúde financeira com precisão. Registre rendimentos e despesas para desbloquear essa análise.</p>';
+    }
+    html += '<p style="font-size:11px; color:var(--text-soft); margin-top:14px;">Calculado só com base nos seus próprios números: cada indicador entra na conta apenas quando há dado suficiente pra avaliar, nunca é chutado. Não é um conselho financeiro.</p>';
+    body.innerHTML = html;
+    document.getElementById("healthScoreOverlay").classList.remove("hidden");
   }
   /* Classifica a porcentagem de cada barra da distribuição de renda em verde (dentro do
      limite saudável), amarelo (perto do limite) ou vermelho (fora do limite recomendado).
@@ -4851,7 +5404,7 @@
     }
     if(pctRenda!==null && pctDesp!==null){
       if(pctDesp > pctRenda + 3){ frases.push("Suas despesas cresceram mais rapidamente que suas receitas no período, "+pctDesp.toFixed(0)+"% contra "+pctRenda.toFixed(0)+"%."); }
-      else if(pctRenda > pctDesp + 3){ frases.push("Suas receitas cresceram mais rapidamente que suas despesas no período, bom sinal para o património."); }
+      else if(pctRenda > pctDesp + 3){ frases.push("Suas receitas cresceram mais rapidamente que suas despesas no período, bom sinal para o patrimônio."); }
     }
     if(mediaRenda>0){
       frases.push("Seu investimento médio mensal foi de "+fmtMoney(mediaInvest)+", representando "+((mediaInvest/mediaRenda)*100).toFixed(0)+"% da sua renda no período.");
@@ -5511,14 +6064,14 @@
     var crescimento = startSaldo>0 ? ((saldoFinal/startSaldo-1)*100) : null;
     var anos = (meses/12).toFixed(1).replace(".0","");
     wrap.innerHTML = '<div class="hero-invest">'+
-      '<div class="hero-invest-label">Saldo de investimentos projetado <button type="button" class="info-dot" data-help-cat="Projeções" title="Diferença entre património atual e projetado">?</button></div>'+
+      '<div class="hero-invest-label">Saldo de investimentos projetado <button type="button" class="info-dot" data-help-cat="Projeções" title="Diferença entre patrimônio atual e projetado">?</button></div>'+
       '<div class="hero-invest-value num">'+fmtMoney(saldoFinal)+'</div>'+
       '<div class="hero-invest-row">'+
-        '<div class="hi-stat"><div class="k">Património líquido hoje (real)</div><div class="v">'+fmtMoney(patrimonioAtual)+'</div></div>'+
+        '<div class="hi-stat"><div class="k">Patrimônio líquido hoje (real)</div><div class="v">'+fmtMoney(patrimonioAtual)+'</div></div>'+
         '<div class="hi-stat"><div class="k">Saldo investido hoje (real)</div><div class="v">'+fmtMoney(startSaldo)+'</div></div>'+
         '<div class="hi-stat"><div class="k">Período · crescimento estimado</div><div class="v">'+anos+' ano'+(anos==="1"?"":"s")+(crescimento!==null?' · +'+crescimento.toFixed(0)+'%':'')+'</div></div>'+
       '</div>'+
-      '<div style="font-size:11px; color:var(--text-soft); margin-top:12px; line-height:1.5;">O "património líquido" soma caixa e investimentos e subtrai dívidas, a projeção abaixo simula apenas o crescimento do saldo investido, não o patrimônio inteiro.</div>'+
+      '<div style="font-size:11px; color:var(--text-soft); margin-top:12px; line-height:1.5;">O "patrimônio líquido" soma caixa e investimentos e subtrai dívidas, a projeção abaixo simula apenas o crescimento do saldo investido, não o patrimônio inteiro.</div>'+
     '</div>';
   }
 
@@ -5616,7 +6169,8 @@
   // Mesmo comportamento do botão "⚡ Despesa rápida": abre só o formulário rápido
   // (Categoria + Valor), sem navegar para a aba Despesas completa. Reaproveita a mesma
   // função (openQuickExpense), então validações, categorias e gravação são idênticas.
-  document.getElementById("fabBtn").addEventListener("click", openQuickExpense);
+  document.getElementById("fabBtn").addEventListener("click", openQuickLauncher);
+  document.getElementById("quickAddIconBtn").addEventListener("click", openQuickLauncher);
 
   /* ===== Sample data ===== */
   document.getElementById("sampleBtn").addEventListener("click", function(){
@@ -5861,7 +6415,7 @@
         '<div style="display:flex; gap:32px; margin-top:36px; flex-wrap:wrap;">'+
           '<div><div style="font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:#9FE6D8; margin-bottom:4px;">Saldo do mês</div><div style="font-family:\'IBM Plex Mono\',monospace; font-size:21px; font-weight:700;">'+fmtMoney(t.saldo)+'</div></div>'+
           '<div><div style="font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:#9FE6D8; margin-bottom:4px;">Taxa de poupança</div><div style="font-family:\'IBM Plex Mono\',monospace; font-size:21px; font-weight:700;">'+pctPoupanca.toFixed(0)+'%</div></div>'+
-          '<div><div style="font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:#9FE6D8; margin-bottom:4px;">Património líquido</div><div style="font-family:\'IBM Plex Mono\',monospace; font-size:21px; font-weight:700;">'+fmtMoney(netWorth())+'</div></div>'+
+          '<div><div style="font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:#9FE6D8; margin-bottom:4px;">Patrimônio líquido</div><div style="font-family:\'IBM Plex Mono\',monospace; font-size:21px; font-weight:700;">'+fmtMoney(netWorth())+'</div></div>'+
         '</div>'+
         '<div style="margin-top:44px; font-size:10.5px; color:#C9BFA0; line-height:1.85; max-width:430px;">Este relatório reúne resumo executivo, receitas, despesas e orçamento, investimentos, cartões e dívidas, metas, diagnóstico financeiro completo e plano de ação, tudo calculado a partir dos dados que você mesmo registrou na Bússola.</div>'+
       '</div></div>'
@@ -5889,7 +6443,7 @@
     pages.push('<div class="rp-page">'+hf1.header+
       '<div class="rp-h2">Resumo executivo</div><div class="rp-h2-sub">Visão geral de '+monthLabel(month)+'</div>'+
       '<div class="rp-kpi-grid">'+
-        rpKpi("Património líquido", fmtMoney(netWorth()), netWorth()>=0?"pos":"neg")+
+        rpKpi("Patrimônio líquido", fmtMoney(netWorth()), netWorth()>=0?"pos":"neg")+
         rpKpi("Renda do mês", fmtMoney(t.income))+
         rpKpi("Despesas do mês", fmtMoney(t.expense))+
         rpKpi("Investido no mês", fmtMoney(t.invest))+
@@ -5898,10 +6452,10 @@
       '</div>'+
       '<div class="rp-h3">Comparativo com o mês anterior</div>'+
       rpTable(["Indicador","Este mês","Mês anterior","Variação"], compRows, [1,2]) +
-      '<p style="font-size:10.5px; color:#57667A; line-height:1.6; margin:6px 0 4px;">Ativos (caixa acumulado + investimentos): <strong>'+fmtMoney(apBrk.ativos)+'</strong> · Passivos (dívidas + faturas em aberto): <strong>'+fmtMoney(apBrk.passivos)+'</strong>. O património líquido é a diferença entre os dois, é o retrato mais completo da sua saúde financeira, mais importante do que olhar só o saldo do mês isolado.</p>'+
+      '<p style="font-size:10.5px; color:#57667A; line-height:1.6; margin:6px 0 4px;">Ativos (caixa acumulado + investimentos): <strong>'+fmtMoney(apBrk.ativos)+'</strong> · Passivos (dívidas + faturas em aberto): <strong>'+fmtMoney(apBrk.passivos)+'</strong>. O patrimônio líquido é a diferença entre os dois, é o retrato mais completo da sua saúde financeira, mais importante do que olhar só o saldo do mês isolado.</p>'+
       topExpCats+
       rpTrendChart("Evolução do saldo, últimos meses", allMonths, function(m){ return monthTotals(m).saldo; })+
-      '<div class="rp-callout">A taxa de poupança mostra qual fatia da sua renda vira investimento em vez de consumo, quanto mais perto (ou acima) de 20%, mais rápido o seu património líquido cresce ao longo do tempo.</div>'+
+      '<div class="rp-callout">A taxa de poupança mostra qual fatia da sua renda vira investimento em vez de consumo, quanto mais perto (ou acima) de 20%, mais rápido o seu patrimônio líquido cresce ao longo do tempo.</div>'+
       hf1.footer+'</div>'
     );
 
@@ -6780,7 +7334,7 @@
       answer:'A DRE (Demonstração do Resultado do Exercício) mostra se uma empresa deu lucro ou prejuízo num período, partindo da receita e descontando, em ordem, os custos e despesas: Receita Bruta → (–) impostos sobre vendas → Receita Líquida → (–) Custo dos produtos/serviços → Lucro Bruto → (–) despesas operacionais (administrativas, comerciais) → Lucro Operacional → (–) despesas financeiras e impostos → Lucro Líquido. É o "extrato de desempenho" do negócio num período (mês, trimestre, ano) — diferente do balanço patrimonial, que é uma foto de um momento específico, não de um período.',
       quick:["O que é balanço patrimonial?","O que é margem de lucro?"] },
     { id:"balanco-patrimonial", keywords:["balanco patrimonial","o que e balanco patrimonial","ativo passivo e patrimonio liquido da empresa"],
-      answer:'O balanço patrimonial é uma "foto" da situação financeira de uma empresa (ou de uma pessoa, no conceito equivalente) num momento específico, dividida em três partes que sempre se equilibram: <strong>Ativos</strong> (tudo que a empresa possui e pode gerar valor: caixa, estoque, imóveis, equipamentos), <strong>Passivos</strong> (tudo que a empresa deve: fornecedores, empréstimos, impostos a pagar) e <strong>Patrimônio Líquido</strong> (Ativos − Passivos, o que "sobra" para os donos). É o mesmo princípio usado no card de Património da Bússola, só que aplicado a uma pessoa física em vez de uma empresa.',
+      answer:'O balanço patrimonial é uma "foto" da situação financeira de uma empresa (ou de uma pessoa, no conceito equivalente) num momento específico, dividida em três partes que sempre se equilibram: <strong>Ativos</strong> (tudo que a empresa possui e pode gerar valor: caixa, estoque, imóveis, equipamentos), <strong>Passivos</strong> (tudo que a empresa deve: fornecedores, empréstimos, impostos a pagar) e <strong>Patrimônio Líquido</strong> (Ativos − Passivos, o que "sobra" para os donos). É o mesmo princípio usado no card de Patrimônio da Bússola, só que aplicado a uma pessoa física em vez de uma empresa.',
       quick:["O que é DRE?","Quanto tenho de patrimônio?"] },
     { id:"capital-de-giro", keywords:["capital de giro","o que e capital de giro"],
       answer:'Capital de giro é o dinheiro que uma empresa precisa ter disponível para financiar sua operação do dia a dia, pagar fornecedores, salários, contas, enquanto espera receber dos seus próprios clientes. Um negócio pode até dar lucro "no papel" e ainda assim quebrar por falta de capital de giro, se o prazo para pagar as contas for menor que o prazo para receber dos clientes. É basicamente o "colchão de segurança" de uma empresa, o equivalente à reserva de emergência de uma pessoa física.',
@@ -7368,17 +7922,17 @@
     if(chatWantsTrend(normText) || chatWantsComparison(normText)){
       var series = computeCapitalAccumSeries();
       if(series.length<2){
-        return chatMsg('📊 Seu património líquido atual é <strong>'+fmtMoney(atual)+'</strong>. Registre pelo menos 2 meses de dados para eu conseguir mostrar a evolução ao longo do tempo.');
+        return chatMsg('📊 Seu patrimônio líquido atual é <strong>'+fmtMoney(atual)+'</strong>. Registre pelo menos 2 meses de dados para eu conseguir mostrar a evolução ao longo do tempo.');
       }
       var delta = series[series.length-1].value - series[series.length-2].value;
       var dirTxt = delta>=0 ? "cresceu 📈" : "caiu 📉";
-      return chatMsg('📊 Seu património líquido é <strong>'+fmtMoney(atual)+'</strong>. No último mês, o capital acumulado (caixa + investido) '+dirTxt+' '+fmtMoney(Math.abs(delta))+' em relação ao mês anterior.', chatQuick(["Como está minha situação financeira?","Quanto tenho investido?"]));
+      return chatMsg('📊 Seu patrimônio líquido é <strong>'+fmtMoney(atual)+'</strong>. No último mês, o capital acumulado (caixa + investido) '+dirTxt+' '+fmtMoney(Math.abs(delta))+' em relação ao mês anterior.', chatQuick(["Como está minha situação financeira?","Quanto tenho investido?"]));
     }
     if(/ativos|passivos|composicao/.test(normText)){
-      return chatMsg('📊 Ativos (caixa acumulado + investimentos): <strong>'+fmtMoney(brk.ativos)+'</strong>. Passivos (dívidas + faturas em aberto): <strong>'+fmtMoney(brk.passivos)+'</strong>. Património líquido = ativos − passivos = <strong>'+fmtMoney(atual)+'</strong>.');
+      return chatMsg('📊 Ativos (caixa acumulado + investimentos): <strong>'+fmtMoney(brk.ativos)+'</strong>. Passivos (dívidas + faturas em aberto): <strong>'+fmtMoney(brk.passivos)+'</strong>. Patrimônio líquido = ativos − passivos = <strong>'+fmtMoney(atual)+'</strong>.');
     }
-    var out = '🏆 Seu património líquido atual é <strong>'+fmtMoney(atual)+'</strong> (ativos de '+fmtMoney(brk.ativos)+' menos passivos de '+fmtMoney(brk.passivos)+').';
-    return chatMsg(out, chatQuick(["Meu património aumentou?","Como está minha situação financeira?"]));
+    var out = '🏆 Seu patrimônio líquido atual é <strong>'+fmtMoney(atual)+'</strong> (ativos de '+fmtMoney(brk.ativos)+' menos passivos de '+fmtMoney(brk.passivos)+').';
+    return chatMsg(out, chatQuick(["Meu patrimônio aumentou?","Como está minha situação financeira?"]));
   }
 
   function chatHandleMetas(normText, ctx){
@@ -7976,11 +8530,11 @@
   /* ---------- 4h. Saudação, ajuda sobre o próprio chat e fallback (item 11) ---------- */
   function chatHandleSaudacao(){
     var nome = state.chatBotName || "Bússola";
-    return chatMsg('🧭 Olá'+(state.owner?", "+esc(state.owner):"")+'! Sou a <strong>'+esc(nome)+'</strong>, sua assistente financeira local. Pode perguntar sobre receitas, despesas, cartões, dívidas, investimentos, património, metas ou orçamento, ou pedir uma análise completa.', chatQuick(["Como estão minhas finanças?","Onde estou gastando mais?","Faça uma análise completa"]));
+    return chatMsg('🧭 Olá'+(state.owner?", "+esc(state.owner):"")+'! Sou a <strong>'+esc(nome)+'</strong>, sua assistente financeira local. Pode perguntar sobre receitas, despesas, cartões, dívidas, investimentos, patrimônio, metas ou orçamento, ou pedir uma análise completa.', chatQuick(["Como estão minhas finanças?","Onde estou gastando mais?","Faça uma análise completa"]));
   }
   function chatHandleAjudaChat(){
     var nome = state.chatBotName || "Bússola";
-    return chatMsg('🧭 Eu sou a <strong>'+esc(nome)+'</strong>, o motor de inteligência financeira local da Bússola. Tudo roda aqui no seu navegador, usando os dados que você já registrou, nenhuma informação sai daqui, e eu não uso nenhuma IA externa.<br><br>Posso responder sobre receitas, despesas, cartões, dívidas, investimentos, património, metas e orçamento, fazer comparações e simulações, e dar dicas. Também posso explicar conceitos de educação financeira em geral (reserva de emergência, CDI, juros compostos, como sair de dívidas…), mesmo sem ligação com os seus dados. Veja mais exemplos na Central de Ajuda, em "🧭 Converse com a Bússola".', chatQuick(["Faça uma análise completa","O que é a regra 50/30/20?"]));
+    return chatMsg('🧭 Eu sou a <strong>'+esc(nome)+'</strong>, o motor de inteligência financeira local da Bússola. Tudo roda aqui no seu navegador, usando os dados que você já registrou, nenhuma informação sai daqui, e eu não uso nenhuma IA externa.<br><br>Posso responder sobre receitas, despesas, cartões, dívidas, investimentos, patrimônio, metas e orçamento, fazer comparações e simulações, e dar dicas. Também posso explicar conceitos de educação financeira em geral (reserva de emergência, CDI, juros compostos, como sair de dívidas…), mesmo sem ligação com os seus dados. Veja mais exemplos na Central de Ajuda, em "🧭 Converse com a Bússola".', chatQuick(["Faça uma análise completa","O que é a regra 50/30/20?"]));
   }
   var CHAT_BROAD_FINANCIAL_WORDS = ["dinheiro","financ","banco","conta","cartao","credito","debito","pagar","pagamento","comprar","compra","preco","valor","salario","emprego","trabalho","economi","poupar","poupanca","juro","taxa","imposto","renda","gasto","despesa","receita","divida","emprestimo","investir","investimento","aposentar","reforma","seguro","patrimonio","rico","pobre","milionario","mil","reais","euro","dolar","fatura","limite","cdi","selic","tesouro","cdb","acao","acoes","fundo","fii"];
   function chatHasBroadFinancialSignal(normText){
