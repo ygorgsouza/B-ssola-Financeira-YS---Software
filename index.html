@@ -1918,6 +1918,17 @@
   </div>
 </div>
 
+<div class="modal-overlay hidden" id="backupReminderOverlay">
+  <div class="modal-box" style="max-width:440px;">
+    <h2>💾 Não esqueça do backup</h2>
+    <p class="section-hint" style="margin-bottom:6px;" id="backupReminderText">Seus dados ficam guardados só neste navegador. Exportar um backup leva 2 segundos e evita perder tudo se limpar o navegador ou trocar de aparelho.</p>
+    <div class="modal-close-row" style="gap:8px;">
+      <button class="btn btn-ghost btn-sm" id="backupReminderLaterBtn">Agora não</button>
+      <button class="btn btn-primary btn-sm" id="backupReminderExportBtn">Exportar backup agora</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay hidden" id="bellOverlay">
   <div class="modal-box" style="max-width:480px;">
     <h2>Central de Alertas</h2>
@@ -2854,7 +2865,46 @@
     if(state.owner){ document.getElementById("onboardNameInput").value = state.owner; document.getElementById("onboardGreeting").textContent = "Olá, "+state.owner+" 👋"; }
     document.getElementById("onboardOverlay").classList.remove("hidden");
     showOnboardStep(1);
+  } else {
+    maybeShowBackupReminder();
   }
+  /* ===== Lembrete diário de backup =====
+     Roda uma vez por dia (nunca mais de uma vez, mesmo se a pessoa abrir o app
+     várias vezes no mesmo dia) e só se já existir algum dado real cadastrado —
+     não faz sentido cobrar backup de uma conta vazia. A data do último lembrete
+     mostrado fica numa chave própria do navegador, separada de state, para não
+     ir junto no backup exportado nem ser apagada ao importar um backup. */
+  function hasAnyRealData(){
+    return (state.expenses&&state.expenses.length) || (state.incomes&&state.incomes.length) ||
+           (state.investmentAccounts&&state.investmentAccounts.length) || (state.cards&&state.cards.length) ||
+           (state.debts&&state.debts.length) || (state.goals&&state.goals.length);
+  }
+  function maybeShowBackupReminder(){
+    if(!hasAnyRealData()) return;
+    var REMIND_KEY = "bussola_backup_reminder_last_shown";
+    var today = todayISO();
+    var lastShown = null;
+    try{ lastShown = localStorage.getItem(REMIND_KEY); }catch(e){}
+    if(lastShown === today) return;
+    var txt = document.getElementById("backupReminderText");
+    if(!state.lastBackupDate){
+      txt.textContent = "Você ainda não exportou nenhum backup. Seus dados existem só neste navegador — exportar leva 2 segundos e evita perder tudo.";
+    } else {
+      var dias = Math.floor((new Date(today) - new Date(state.lastBackupDate)) / 86400000);
+      txt.textContent = dias<=0
+        ? "Você já exportou um backup hoje, tudo certo. Este lembrete some sozinho quando não há nada pendente."
+        : "Faz "+dias+" dia"+(dias===1?"":"s")+" desde o seu último backup. Seus dados ficam só neste navegador — exportar leva 2 segundos.";
+    }
+    document.getElementById("backupReminderOverlay").classList.remove("hidden");
+    try{ localStorage.setItem(REMIND_KEY, today); }catch(e){}
+  }
+  document.getElementById("backupReminderLaterBtn").addEventListener("click", function(){
+    document.getElementById("backupReminderOverlay").classList.add("hidden");
+  });
+  document.getElementById("backupReminderExportBtn").addEventListener("click", function(){
+    document.getElementById("backupReminderOverlay").classList.add("hidden");
+    document.getElementById("exportBtn").click();
+  });
   /* Rever onboarding a qualquer momento — nunca apaga dados, só reabre a apresentação. */
   document.getElementById("reopenOnboardingBtn").addEventListener("click", function(){
     document.getElementById("helpOverlay").classList.add("hidden");
