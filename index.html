@@ -264,6 +264,12 @@
   .cat-pill{display:inline-block; font-size:11px; padding:2px 8px; border-radius:999px; background:var(--surface-2); color:var(--text-soft); margin-right:4px;}
   .pill-fixa{background:var(--amber-bg); color:var(--amber-text);}
   .pill-variavel{background:var(--surface-2); color:var(--text-soft);}
+  .pill-preview{background:var(--surface-2); color:var(--text-soft); font-style:italic;}
+  /* Linha de recorrente "prevista" (mês que ainda não chegou de verdade): mais apagada e sem
+     o botão de excluir, pra ficar claro visualmente que é só uma prévia, não um gasto real
+     ainda registrado — nada aqui conta em nenhum total ou cálculo. */
+  tr.preview-row{ opacity:0.55; font-style:italic; }
+  tr.preview-row td{ cursor:default; }
   .amt{font-family:'IBM Plex Mono', monospace; font-weight:600;}
   .del-btn{border:none; background:transparent; color:var(--rust); cursor:pointer; font-size:16px; padding:4px 8px; border-radius:6px; transition:transform .12s ease, background .15s ease;}
   .del-btn:hover{background:var(--rust-bg);}
@@ -292,7 +298,14 @@
      costuma ultrapassar a célula do grid no mobile, empurrando/sobrepondo o campo seguinte (Membro).
      Forçar min-width:0 no item e no controlo é o que corrige isso de vez, em qualquer largura de ecrã. */
   .form-row > .field{ min-width:0; }
-  .field label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-soft); margin-bottom:5px;}
+  /* O rótulo de cada campo (DESCRIÇÃO, TIPO, VALOR, DATA...) precisa nunca vazar da própria
+     caixa para cima do campo vizinho — isso pode acontecer em qualquer coluna que fique
+     estreita o bastante (zoom do navegador, "Tamanho da tela" do Android, fonte mais larga
+     no aparelho, etc.), independente da largura exata da tela. Em vez de vazar, trunca com
+     reticências: nunca sobrepõe outro elemento, e como os rótulos já são curtos isso não é
+     visualmente perceptível na grande maioria dos aparelhos — só entra em ação quando
+     realmente não há espaço. */
+  .field label{display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-soft); margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .field input, .field select{ width:100%; min-width:0; padding:10px 10px; border:1px solid var(--line); border-radius:7px; background:var(--bg); font-size:14px; font-family:inherit; color:var(--text); min-height:40px; }
   .field input[type="date"]{ -webkit-min-logical-width:0; max-width:100%; width:100%; box-sizing:border-box; }
   /* Correção para o campo Data "ultrapassar" ligeiramente o card no mobile: alguns motores de
@@ -3279,6 +3292,31 @@
     state.recurringExpenses = state.recurringExpenses.filter(function(r){return r.id!==id;});
     saveState(); renderAll();
   }
+  /* ===== Projeção anual das despesas recorrentes =====
+     Importante: isto é só uma LEITURA sobre dados que já existem, nunca escreve nada no
+     patrimônio. Para cada regra recorrente, soma os meses do ano informado que:
+     (a) já viraram uma despesa real em state.expenses (ligada por recurringId) → "realizado"
+     (b) ainda não viraram (mês futuro dentro do ano, ou mês passado que por algum motivo não
+         foi gerado) → "projeção restante"
+     O total é sempre realizado + restante, nunca inventado por valor×quantidadeDeMeses direto
+     sobre o patrimônio — é só a soma dos dois grupos acima, para exibição. */
+  function computeRecurringYearProjection(year){
+    var realizado = 0, restante = 0;
+    state.recurringExpenses.forEach(function(r){
+      var startYm = r.dataInicio.slice(0,7);
+      var startYear = parseInt(startYm.slice(0,4), 10);
+      if(startYear > year) return; // regra começa depois do ano em questão: nada a projetar
+      var cursor = startYear < year ? (year+"-01") : startYm;
+      var guard = 0;
+      while(cursor.slice(0,4) === String(year) && guard < 12){
+        var jaRealizada = state.expenses.some(function(e){ return e.recurringId===r.id && (e.data||"").slice(0,7)===cursor; });
+        if(jaRealizada) realizado += r.valor; else restante += r.valor;
+        cursor = shiftMonth(cursor, 1);
+        guard++;
+      }
+    });
+    return {realizado:realizado, restante:restante, total:realizado+restante};
+  }
   function renderRecurringList(){
     var wrap = document.getElementById("recurringList");
     if(state.recurringExpenses.length===0){ wrap.innerHTML=""; return; }
@@ -3286,10 +3324,28 @@
     state.recurringExpenses.forEach(function(r){
       html += '<span class="cat-pill" style="margin-bottom:6px; display:inline-flex; align-items:center; gap:6px;">'+escapeHtml(r.desc)+' ('+fmtMoney(r.valor)+'/mês) <button class="recurring-del-btn" data-id="'+r.id+'" style="background:none; border:none; cursor:pointer; color:var(--rust);">✕</button></span> ';
     });
+    var year = parseInt(state.viewMonth.slice(0,4), 10);
+    var proj = computeRecurringYearProjection(year);
+    html += '<p class="section-hint" style="margin-top:8px; width:100%;">Projeção das recorrentes para '+year+': <strong>'+fmtMoney(proj.total)+'</strong> no ano (já realizado: '+fmtMoney(proj.realizado)+' · ainda por vir: '+fmtMoney(proj.restante)+'). Isso é só uma estimativa de planejamento, nada aqui é descontado do patrimônio antes de o mês realmente acontecer.</p>';
     wrap.innerHTML = html;
     wrap.querySelectorAll(".recurring-del-btn").forEach(function(btn){ btn.addEventListener("click", function(){ deleteRecurringTemplate(btn.dataset.id); }); });
   }
 
+  /* ===== Prévia de recorrentes em meses futuros (só visual, nunca conta em cálculo) =====
+     Quando o usuário navega a seta pra um mês que ainda não chegou de verdade, mostra as
+     despesas recorrentes que VÃO se repetir ali como uma linha "Prevista" — só pra confirmar
+     visualmente que ele não precisa recadastrar nada. Isso NUNCA entra em monthEntries(),
+     totals, orçamento, patrimônio ou qualquer cálculo: é puramente informativo, calculado à
+     parte e descartado depois de desenhar a tabela. */
+  function computeRecurringPreviewForMonth(month){
+    var currentMonth = todayISO().slice(0,7);
+    if(month <= currentMonth) return []; // mês já realizado (ou é o atual) — nada a prever aqui
+    return state.recurringExpenses.filter(function(r){
+      return r.dataInicio.slice(0,7) <= month;
+    }).map(function(r){
+      return {id:"preview-"+r.id, desc:r.desc, cat:r.cat, tipo:"Fixa", valor:r.valor, membro:r.membro, isPreview:true};
+    });
+  }
   function renderExpenses(){
     var body = document.getElementById("expenseTableBody");
     var searchTerm = document.getElementById("expSearch").value.trim().toLowerCase();
@@ -3298,13 +3354,21 @@
       ? state.expenses.filter(function(e){ return e.desc.toLowerCase().indexOf(searchTerm)!==-1; })
       : monthEntries(state.expenses);
     var sortedItems = items.slice().sort(function(a,b){return b.data.localeCompare(a.data);});
+    var previewItems = isSearching ? [] : computeRecurringPreviewForMonth(state.viewMonth);
     body.innerHTML = "";
-    if(sortedItems.length===0){
+    if(sortedItems.length===0 && previewItems.length===0){
       body.innerHTML = '<tr class="empty-row"><td colspan="7">'+(isSearching?'Nenhuma despesa encontrada para essa busca.':'Nenhuma despesa registrada neste mês ainda.')+'</td></tr>';
     } else {
       sortedItems.forEach(function(e){
         var tr = document.createElement("tr");
         tr.innerHTML = '<td class="mono" data-label="Data">'+e.data.split("-").reverse().join("/")+'</td><td data-label="Descrição">'+escapeHtml(e.desc)+'</td><td data-label="Categoria"><span class="cat-pill">'+escapeHtml(e.cat)+'</span></td><td data-label="Tipo"><span class="cat-pill '+(e.tipo==="Fixa"?"pill-fixa":"pill-variavel")+'">'+escapeHtml(e.tipo)+'</span></td><td data-label="Membro"><span class="cat-pill">'+escapeHtml(e.membro||"—")+'</span></td><td data-label="Valor" style="text-align:right;" class="amt">'+fmtMoney(e.valor)+'</td><td data-label="" style="text-align:right;"><button class="del-btn" data-id="'+e.id+'" aria-label="Excluir">✕</button></td>';
+        body.appendChild(tr);
+      });
+      previewItems.forEach(function(e){
+        var tr = document.createElement("tr");
+        tr.className = "preview-row";
+        tr.title = "Recorrente prevista para este mês — ainda não entra no patrimônio, só passa a valer quando o mês chegar de verdade.";
+        tr.innerHTML = '<td class="mono" data-label="Data">—</td><td data-label="Descrição">'+escapeHtml(e.desc)+'</td><td data-label="Categoria"><span class="cat-pill">'+escapeHtml(e.cat)+'</span></td><td data-label="Tipo"><span class="cat-pill pill-preview">Prevista</span></td><td data-label="Membro"><span class="cat-pill">'+escapeHtml(e.membro||"—")+'</span></td><td data-label="Valor" style="text-align:right;" class="amt">'+fmtMoney(e.valor)+'</td><td data-label=""></td>';
         body.appendChild(tr);
       });
       body.querySelectorAll(".del-btn").forEach(function(btn){ btn.addEventListener("click", function(){ deleteExpense(btn.dataset.id); }); });
