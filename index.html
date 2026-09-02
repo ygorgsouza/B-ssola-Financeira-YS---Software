@@ -242,6 +242,18 @@
     #tab-rendimentos .ledger tbody td[data-label]:not([data-label=""])::before, #tab-despesas .ledger tbody td[data-label]:not([data-label=""])::before{ content:attr(data-label); font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-soft); font-weight:600; flex-shrink:0; margin-right:10px; }
     #tab-rendimentos .ledger tbody td[data-label=""], #tab-despesas .ledger tbody td[data-label=""]{ justify-content:flex-end; }
     #tab-rendimentos .ledger tbody tr.empty-row td, #tab-despesas .ledger tbody tr.empty-row td{ display:block; text-align:center !important; }
+    /* Mesma correção: "Maiores gastos do mês" (Análises) também forçava rolagem horizontal
+       silenciosa (a coluna Valor ficava fora da área visível, sem indício de que dava pra
+       arrastar) — aplica exatamente o mesmo padrão de card já comprovado nas duas tabelas
+       acima, em vez de inventar uma solução nova. */
+    #tab-analises .ledger table{ border:none; display:block; width:100%; min-width:0; }
+    #tab-analises .ledger thead{ display:none; }
+    #tab-analises .ledger tbody{ display:block; width:100%; }
+    #tab-analises .ledger tbody tr{ display:block; width:100%; border-bottom:1px solid var(--line); padding:10px 12px; }
+    #tab-analises .ledger tbody tr.empty-row{ padding:22px 12px; }
+    #tab-analises .ledger tbody td{ display:flex; width:100%; justify-content:space-between; align-items:center; padding:4px 0; border:none; text-align:left !important; }
+    #tab-analises .ledger tbody td[data-label]:not([data-label=""])::before{ content:attr(data-label); font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-soft); font-weight:600; flex-shrink:0; margin-right:10px; }
+    #tab-analises .ledger tbody tr.empty-row td{ display:block; text-align:center !important; }
   }
   table{width:100%; border-collapse:collapse; font-size:13.5px; min-width:480px;}
   thead th{ text-align:left; background:var(--surface-dark); color:#F4EFDF; padding:10px 12px; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; font-weight:600; }
@@ -734,7 +746,7 @@
   @media (max-width:700px){ .proj-summary{grid-template-columns:1fr;} .proj-summary .stat-value{font-size:24px;} }
 
   .guide-block{margin-bottom:24px; transition:transform .2s ease;}
-  .guide-toggle{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .guide-toggle{display:flex; align-items:center; justify-content:space-between; gap:10px; text-align:center; cursor:pointer;}
   .guide-chevron{font-size:13px; color:var(--text-soft); transition:transform .25s cubic-bezier(.16,.8,.3,1); flex-shrink:0;}
   .guide-toggle.open .guide-chevron{transform:rotate(180deg); color:var(--brass);}
   .guide-body{overflow:hidden; max-height:2000px; transition:max-height .3s ease, opacity .3s ease; opacity:1;}
@@ -5603,7 +5615,7 @@
     if(items.length===0){ body.innerHTML = '<tr class="empty-row"><td colspan="3">Sem despesas neste mês ainda.</td></tr>'; return; }
     items.forEach(function(e){
       var tr = document.createElement("tr");
-      tr.innerHTML = '<td>'+escapeHtml(e.desc)+'</td><td><span class="cat-pill">'+escapeHtml(e.cat)+'</span></td><td style="text-align:right;" class="amt">'+fmtMoney(e.valor)+'</td>';
+      tr.innerHTML = '<td data-label="Descrição">'+escapeHtml(e.desc)+'</td><td data-label="Categoria"><span class="cat-pill">'+escapeHtml(e.cat)+'</span></td><td data-label="Valor" style="text-align:right;" class="amt">'+fmtMoney(e.valor)+'</td>';
       body.appendChild(tr);
     });
   }
