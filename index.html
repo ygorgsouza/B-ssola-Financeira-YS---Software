@@ -4882,7 +4882,7 @@
     var ctaHtml = "";
     if(a.cta && a.tab){ ctaHtml = '<button type="button" class="ac-cta" data-tab="'+a.tab+'">'+escapeHtml(a.cta)+' →</button>'; }
     else if(a.cta && a.action==="backup"){ ctaHtml = '<button type="button" class="ac-cta" data-action="backup">'+escapeHtml(a.cta)+' →</button>'; }
-    return '<div class="alert-card '+(a.level||"ok")+'" data-sig="'+escapeHtml(sig)+'" style="cursor:pointer;'+(lido?'opacity:.55;':'')+'"><div class="ac-icon">'+a.icon+'</div><div class="ac-body">'+
+    return '<div class="alert-card '+(a.level||"ok")+'" data-sig="'+encodeURIComponent(sig)+'" style="cursor:pointer;'+(lido?'opacity:.55;':'')+'"><div class="ac-icon">'+a.icon+'</div><div class="ac-body">'+
       '<div class="ac-title">'+escapeHtml(a.title)+'</div>'+
       '<div class="ac-desc">'+escapeHtml(a.desc)+'</div>'+
       ctaHtml+
@@ -4898,7 +4898,7 @@
     container.querySelectorAll(".alert-card[data-sig]").forEach(function(card){
       card.addEventListener("click", function(e){
         if(e.target.closest(".ac-cta")) return;
-        markAlertRead(card.dataset.sig);
+        markAlertRead(decodeURIComponent(card.dataset.sig));
         updateBellBadge();
         card.style.opacity = ".55";
       });
@@ -4907,7 +4907,7 @@
       btn.addEventListener("click", function(e){
         e.stopPropagation();
         var card = btn.closest(".alert-card");
-        if(card) markAlertRead(card.dataset.sig);
+        if(card) markAlertRead(decodeURIComponent(card.dataset.sig));
         updateBellBadge();
         document.getElementById("bellOverlay").classList.add("hidden");
         document.getElementById("helpOverlay").classList.add("hidden");
@@ -4919,7 +4919,7 @@
       btn.addEventListener("click", function(e){
         e.stopPropagation();
         var card = btn.closest(".alert-card");
-        if(card) markAlertRead(card.dataset.sig);
+        if(card) markAlertRead(decodeURIComponent(card.dataset.sig));
         updateBellBadge();
         document.getElementById("bellOverlay").classList.add("hidden");
         document.getElementById("exportBtn").click();
