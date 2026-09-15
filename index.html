@@ -434,7 +434,8 @@
   .pe-stat .v{font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:15px;}
 
   .alert-cards{display:flex; flex-direction:column; gap:10px; margin-top:14px;}
-  .alert-card{ display:flex; gap:12px; align-items:flex-start; padding:14px 16px; border-radius:var(--radius); border:1px solid var(--line); background:var(--surface); transition:transform .18s ease, box-shadow .18s ease; }
+  .alert-card{ display:flex; gap:12px; align-items:flex-start; padding:14px 16px; border-radius:var(--radius); border:1px solid var(--line); background:var(--surface); transition:transform .18s ease, box-shadow .18s ease, opacity .25s ease; }
+  #bellContent .alert-card:hover{ transform:translateY(-1px); box-shadow:var(--shadow-sm); }
   .alert-card:hover{ transform:translateY(-1px); box-shadow:var(--shadow); }
   .alert-card .ac-icon{font-size:20px; flex-shrink:0; line-height:1;}
   .alert-card .ac-body{flex:1; min-width:0;}
@@ -1939,7 +1940,10 @@
     <h2>Central de Alertas</h2>
     <p class="section-hint" style="margin-bottom:10px;">Tudo o que o Prumo identificou nos seus dados, organizado por tipo, não é preciso ir à Dashboard para ver.</p>
     <div id="bellContent"></div>
-    <div class="modal-close-row"><button class="btn btn-primary btn-sm" id="bellCloseBtn">Fechar</button></div>
+    <div class="modal-close-row" style="gap:8px;">
+      <button class="btn btn-ghost btn-sm" id="bellMarkAllReadBtn" style="margin-right:auto;">✓ Marcar tudo como lido</button>
+      <button class="btn btn-primary btn-sm" id="bellCloseBtn">Fechar</button>
+    </div>
   </div>
 </div>
 
@@ -2268,6 +2272,7 @@
     lastBackupDate:null,
     unlockedAchievements:[],
     exploredTopics:[],
+    alertasLidos:[],
     onboarded:false
   };
 
@@ -4842,11 +4847,71 @@
     return {attention:attention, opportunities:opportunities, evolution:evolution, education:education};
   }
   function updateBellBadge(){
-    var s = computeBellSections();
-    var count = s.attention.length;
+    var count = bellUnreadCount();
     var badge = document.getElementById("bellBadge");
     if(count>0){ badge.style.display="flex"; badge.textContent = count>9 ? "9+" : String(count); }
     else{ badge.style.display="none"; }
+  }
+  /* Assinatura única de um alerta (título+descrição): usada para saber se ele já foi
+     "lido" pelo utilizador. Como os alertas são recalculados a cada render (não são
+     guardados), se o texto mudar (ex.: valor diferente), ele volta a contar como novo. */
+  function alertSignature(a){ return (a.title||"")+"|"+(a.desc||""); }
+  function allBellAlerts(){
+    var s = computeBellSections();
+    return [].concat(s.attention, s.opportunities, s.evolution, s.education);
+  }
+  function bellUnreadCount(){
+    var lidos = state.alertasLidos || [];
+    return allBellAlerts().filter(function(a){ return lidos.indexOf(alertSignature(a)) === -1; }).length;
+  }
+  function markAlertRead(sig){
+    if(!state.alertasLidos) state.alertasLidos = [];
+    if(state.alertasLidos.indexOf(sig) === -1){
+      state.alertasLidos.push(sig);
+      saveState();
+    }
+  }
+  function markAllBellAlertsRead(){
+    state.alertasLidos = allBellAlerts().map(alertSignature);
+    saveState();
+  }
+  /* Card do sino: igual ao alertCardHtml, mas com a assinatura no data-sig e visual
+     "lido" (opacidade reduzida) para o que já foi marcado antes. */
+  function bellCardHtml(a){
+    var sig = alertSignature(a);
+    var lido = (state.alertasLidos||[]).indexOf(sig) !== -1;
+    var ctaHtml = "";
+    if(a.cta && a.tab){ ctaHtml = '<button type="button" class="ac-cta" data-tab="'+a.tab+'">'+escapeHtml(a.cta)+' →</button>'; }
+    else if(a.cta && a.action==="backup"){ ctaHtml = '<button type="button" class="ac-cta" data-action="backup">'+escapeHtml(a.cta)+' →</button>'; }
+    return '<div class="alert-card '+(a.level||"ok")+'" data-sig="'+escapeHtml(sig)+'" style="cursor:pointer;'+(lido?'opacity:.55;':'')+'"><div class="ac-icon">'+a.icon+'</div><div class="ac-body">'+
+      '<div class="ac-title">'+escapeHtml(a.title)+'</div>'+
+      '<div class="ac-desc">'+escapeHtml(a.desc)+'</div>'+
+      ctaHtml+
+    '</div></div>';
+  }
+  /* Clicar em qualquer parte do card já marca como lido (o sino reduz na hora). Se o
+     card tiver uma ação (ir para aba, ou exportar backup), essa ação também acontece;
+     senão, o card só fica esmaecido no lugar, sem fechar a central. */
+  function wireBellCardActions(container){
+    container.querySelectorAll(".alert-card[data-sig]").forEach(function(card){
+      card.addEventListener("click", function(){
+        markAlertRead(card.dataset.sig);
+        updateBellBadge();
+        var tabBtn = card.querySelector(".ac-cta[data-tab]");
+        var backupBtn = card.querySelector(".ac-cta[data-action='backup']");
+        if(tabBtn){
+          document.getElementById("bellOverlay").classList.add("hidden");
+          document.getElementById("helpOverlay").classList.add("hidden");
+          activateTab(tabBtn.dataset.tab);
+          window.scrollTo({top:0, behavior: PREFERS_REDUCED_MOTION ? "auto" : "smooth"});
+        } else if(backupBtn){
+          document.getElementById("bellOverlay").classList.add("hidden");
+          document.getElementById("exportBtn").click();
+        } else {
+          card.style.opacity = ".55";
+        }
+      });
+    });
   }
   function renderBellPanel(){
     var s = computeBellSections();
@@ -4854,7 +4919,7 @@
     var blocks = [];
     function section(title, items){
       if(items.length===0) return "";
-      return '<h3 style="font-size:13px; margin:16px 0 8px;">'+title+'</h3><div class="alert-cards" style="margin-top:0;">'+items.map(alertCardHtml).join("")+'</div>';
+      return '<h3 style="font-size:13px; margin:16px 0 8px;">'+title+'</h3><div class="alert-cards" style="margin-top:0;">'+items.map(bellCardHtml).join("")+'</div>';
     }
     blocks.push(section("Precisa da sua atenção", s.attention));
     blocks.push(section("Oportunidades", s.opportunities));
@@ -4862,11 +4927,16 @@
     blocks.push(section("Educação", s.education));
     var html = blocks.join("");
     wrap.innerHTML = html || '<p class="section-hint">Nenhum alerta ou insight no momento. Continue registrando seus dados.</p>';
-    wireAlertCardActions(wrap);
+    wireBellCardActions(wrap);
   }
   document.getElementById("bellToggle").addEventListener("click", function(){
     renderBellPanel();
     document.getElementById("bellOverlay").classList.remove("hidden");
+  });
+  document.getElementById("bellMarkAllReadBtn").addEventListener("click", function(){
+    markAllBellAlertsRead();
+    updateBellBadge();
+    renderBellPanel();
   });
   document.getElementById("bellCloseBtn").addEventListener("click", function(){ document.getElementById("bellOverlay").classList.add("hidden"); });
 
