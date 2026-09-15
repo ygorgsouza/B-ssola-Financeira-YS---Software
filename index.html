@@ -441,12 +441,11 @@
   .alert-card .ac-body{flex:1; min-width:0;}
   .alert-card .ac-title{font-weight:700; font-size:13.5px; margin-bottom:3px;}
   .alert-card .ac-desc{font-size:12.5px; color:var(--text-soft); line-height:1.5;}
-  .alert-card .ac-cta{margin-top:8px; font-size:12px; font-weight:600; background:none; border:1px solid currentColor; padding:5px 12px; border-radius:6px; cursor:pointer; transition:all .15s ease;}
-  .alert-card .ac-cta:hover{ background:currentColor; }
-  .alert-card .ac-cta:hover{ color:var(--bg); }
-  .alert-card.danger{border-left:3px solid var(--rust);} .alert-card.danger .ac-title, .alert-card.danger .ac-cta{color:var(--rust-text);}
-  .alert-card.warn{border-left:3px solid var(--amber);} .alert-card.warn .ac-title, .alert-card.warn .ac-cta{color:var(--amber-text);}
-  .alert-card.ok{border-left:3px solid var(--moss);} .alert-card.ok .ac-title{color:var(--moss-text);}
+  .alert-card .ac-cta{margin-top:8px; font-size:12px; font-weight:600; background:none; border:1px solid var(--cta-color, var(--text)); color:var(--cta-color, var(--text)); padding:5px 12px; border-radius:6px; cursor:pointer; transition:all .15s ease;}
+  .alert-card .ac-cta:hover{ background:var(--cta-color, var(--text)); color:var(--surface); }
+  .alert-card.danger{border-left:3px solid var(--rust); --cta-color:var(--rust-text);} .alert-card.danger .ac-title{color:var(--rust-text);}
+  .alert-card.warn{border-left:3px solid var(--amber); --cta-color:var(--amber-text);} .alert-card.warn .ac-title{color:var(--amber-text);}
+  .alert-card.ok{border-left:3px solid var(--moss); --cta-color:var(--moss-text);} .alert-card.ok .ac-title{color:var(--moss-text);}
 
   .bar-row{display:flex; align-items:center; gap:10px; margin-bottom:10px; min-width:0;}
   .bar-row-clickable{cursor:pointer; border-radius:6px; padding:2px 4px; margin-left:-4px; transition:background .15s ease;}
@@ -4892,24 +4891,38 @@
   /* Clicar em qualquer parte do card já marca como lido (o sino reduz na hora). Se o
      card tiver uma ação (ir para aba, ou exportar backup), essa ação também acontece;
      senão, o card só fica esmaecido no lugar, sem fechar a central. */
+  /* Clicar no corpo do card só marca como lido e deixa ele visualmente mais claro,
+     sem sair da central — assim dá pra ver o efeito, igual numa notificação normal.
+     Clicar no botão de ação (ex.: "Ver dívidas") marca como lido E navega. */
   function wireBellCardActions(container){
     container.querySelectorAll(".alert-card[data-sig]").forEach(function(card){
-      card.addEventListener("click", function(){
+      card.addEventListener("click", function(e){
+        if(e.target.closest(".ac-cta")) return;
         markAlertRead(card.dataset.sig);
         updateBellBadge();
-        var tabBtn = card.querySelector(".ac-cta[data-tab]");
-        var backupBtn = card.querySelector(".ac-cta[data-action='backup']");
-        if(tabBtn){
-          document.getElementById("bellOverlay").classList.add("hidden");
-          document.getElementById("helpOverlay").classList.add("hidden");
-          activateTab(tabBtn.dataset.tab);
-          window.scrollTo({top:0, behavior: PREFERS_REDUCED_MOTION ? "auto" : "smooth"});
-        } else if(backupBtn){
-          document.getElementById("bellOverlay").classList.add("hidden");
-          document.getElementById("exportBtn").click();
-        } else {
-          card.style.opacity = ".55";
-        }
+        card.style.opacity = ".55";
+      });
+    });
+    container.querySelectorAll(".ac-cta[data-tab]").forEach(function(btn){
+      btn.addEventListener("click", function(e){
+        e.stopPropagation();
+        var card = btn.closest(".alert-card");
+        if(card) markAlertRead(card.dataset.sig);
+        updateBellBadge();
+        document.getElementById("bellOverlay").classList.add("hidden");
+        document.getElementById("helpOverlay").classList.add("hidden");
+        activateTab(btn.dataset.tab);
+        window.scrollTo({top:0, behavior: PREFERS_REDUCED_MOTION ? "auto" : "smooth"});
+      });
+    });
+    container.querySelectorAll(".ac-cta[data-action='backup']").forEach(function(btn){
+      btn.addEventListener("click", function(e){
+        e.stopPropagation();
+        var card = btn.closest(".alert-card");
+        if(card) markAlertRead(card.dataset.sig);
+        updateBellBadge();
+        document.getElementById("bellOverlay").classList.add("hidden");
+        document.getElementById("exportBtn").click();
       });
     });
   }
