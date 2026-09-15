@@ -13,7 +13,7 @@
     --text:#0E1B2E; --text-soft:#57667A;
     --surface-dark:#0A1628; --on-dark:#F2F6FA; --on-dark-soft:#B7C4D3;
     --brass:#1B4D89; --brass-light:#2E6BB3; --moss:#0E9F6E; --moss-bg:#E1F5EC;
-    --rust:#C0392B; --rust-bg:#FBE7E4; --amber:#C17817; --amber-bg:#FBEEDA; --radius:10px;
+    --rust:#C0392B; --rust-bg:#FBE7E4; --amber:#C17817; --amber-bg:#FBEEDA; --radius:14px; --radius-sm:10px; --radius-lg:20px;
     --moss-text:#0B6B4A; --rust-text:#7A2318; --amber-text:#7A5210;
     --brass-bg:#E4EDF6; --brass-text:#123A63;
     --accent2:#2C8FC9; --accent2-bg:#E1F1F9; --accent2-text:#12495F;
@@ -22,7 +22,9 @@
     --grad-accent: linear-gradient(135deg, #0E9F6E 0%, #1B4D89 100%);
     --glow-accent2: 0 0 0 3px rgba(44,143,201,0.18), 0 6px 20px -6px rgba(44,143,201,0.45);
     --glow-accent3: 0 0 0 3px rgba(91,79,214,0.16), 0 6px 20px -6px rgba(91,79,214,0.45);
-    --shadow: 0 1px 0 rgba(14,27,46,0.06), 0 8px 20px -12px rgba(14,27,46,0.25);
+    --shadow: 0 1px 0 rgba(14,27,46,0.05), 0 10px 24px -14px rgba(14,27,46,0.22);
+    --shadow-sm: 0 1px 0 rgba(14,27,46,0.05), 0 4px 12px -8px rgba(14,27,46,0.18);
+    --shadow-lg: 0 1px 0 rgba(14,27,46,0.06), 0 22px 48px -18px rgba(14,27,46,0.32);
     --scrollbar-track: transparent;
   }
   :root[data-theme="dark"]{
@@ -39,7 +41,9 @@
     --grad-accent: linear-gradient(135deg, #34D399 0%, #4C8DD9 100%);
     --glow-accent2: 0 0 0 3px rgba(56,189,248,0.22), 0 6px 24px -6px rgba(56,189,248,0.5);
     --glow-accent3: 0 0 0 3px rgba(167,139,250,0.2), 0 6px 24px -6px rgba(167,139,250,0.5);
-    --shadow: 0 1px 0 rgba(0,0,0,0.3), 0 8px 20px -12px rgba(0,0,0,0.6);
+    --shadow: 0 1px 0 rgba(0,0,0,0.25), 0 10px 24px -14px rgba(0,0,0,0.5);
+    --shadow-sm: 0 1px 0 rgba(0,0,0,0.25), 0 4px 12px -8px rgba(0,0,0,0.4);
+    --shadow-lg: 0 1px 0 rgba(0,0,0,0.3), 0 22px 48px -18px rgba(0,0,0,0.65);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -268,7 +272,9 @@
   tr.preview-row{ opacity:0.55; font-style:italic; }
   tr.preview-row td{ cursor:default; }
   .amt{font-family:'IBM Plex Mono', monospace; font-weight:600;}
-  .del-btn{border:none; background:transparent; color:var(--rust); cursor:pointer; font-size:16px; padding:4px 8px; border-radius:6px; transition:transform .12s ease, background .15s ease;}
+  .del-btn{border:none; background:transparent; color:var(--rust); cursor:pointer; font-size:16px; padding:4px 8px; border-radius:var(--radius-sm); transition:transform .12s ease, background .15s ease;}
+  .del-btn:hover{ background:var(--rust-bg); }
+  .del-btn:focus-visible{ outline:2px solid var(--rust); outline-offset:1px; }
   .del-btn:hover{background:var(--rust-bg);}
   .del-btn:active{transform:scale(0.85);}
   .empty-row td{text-align:center; color:var(--text-soft); padding:22px 12px; font-style:italic;}
@@ -321,8 +327,9 @@
      em nenhuma largura de ecrã. Só afeta estes dois campos específicos; o resto do formulário
      (Descrição/Categoria, Tipo/Valor) continua em 2 colunas como antes. */
   @media (max-width:820px){ .field-full-mobile{ grid-column:1 / -1; } }
-  .btn{ border:none; border-radius:7px; padding:10px 16px; font-size:13.5px; font-weight:600; cursor:pointer; transition:transform .12s ease, opacity .15s ease, box-shadow .15s ease; min-height:40px; }
+  .btn{ border:none; border-radius:var(--radius-sm); padding:10px 16px; font-size:13.5px; font-weight:600; cursor:pointer; transition:transform .12s ease, opacity .15s ease, box-shadow .15s ease; min-height:40px; }
   .btn:hover{ transform:translateY(-1px); box-shadow:0 4px 10px -4px rgba(22,35,28,0.3); }
+  .btn:focus-visible{ outline:2px solid var(--accent2); outline-offset:2px; }
   .btn-cta-shimmer{ position:relative; overflow:hidden; }
   .btn-cta-shimmer::after{ content:""; position:absolute; top:0; left:-60%; width:40%; height:100%; background:linear-gradient(115deg, transparent, rgba(255,255,255,0.35), transparent); transform:skewX(-20deg); }
   .btn-cta-shimmer:hover::after{ animation:btnShimmer 1s ease; }
