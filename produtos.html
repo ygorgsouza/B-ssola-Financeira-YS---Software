@@ -1,168 +1,1345 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Meus produtos — Bússola Financeira YS</title>
+
+  <meta name="theme-color" content="#080D18">
+  <meta name="description" content="Escolha o produto que deseja acessar.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
   <style>
     :root {
-      --navy: #080D18;
-      --emerald: #22C48E;
-      --gold: #D6B378;
+      --bg: #080D18;
+      --bg-soft: #0B1220;
+      --card: rgba(15, 24, 40, 0.72);
+      --card-border: rgba(255,255,255,0.09);
+
       --text: #F5F7FA;
-      --muted: #9CA6B5;
-      --card: #111927;
-      --border: rgba(255,255,255,.09);
+      --muted: #8D99AA;
+
+      --emerald: #22C48E;
+      --emerald-soft: rgba(34,196,142,0.18);
+
+      --gold: #D6B378;
+      --gold-soft: rgba(214,179,120,0.18);
+
+      --white-soft: rgba(255,255,255,0.06);
+
+      --mouse-x: 50%;
+      --mouse-y: 50%;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+    }
 
     body {
-      margin: 0;
       min-height: 100vh;
-      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--navy);
+      overflow-x: hidden;
+
+      font-family: "Inter", sans-serif;
       color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+
+      background:
+        radial-gradient(
+          circle at var(--mouse-x) var(--mouse-y),
+          rgba(34,196,142,0.08),
+          transparent 25%
+        ),
+        radial-gradient(
+          circle at 15% 15%,
+          rgba(34,196,142,0.07),
+          transparent 30%
+        ),
+        radial-gradient(
+          circle at 85% 80%,
+          rgba(214,179,120,0.05),
+          transparent 30%
+        ),
+        var(--bg);
+
+      position: relative;
     }
 
-    .container {
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+
+      pointer-events: none;
+
+      background-image:
+        linear-gradient(
+          rgba(255,255,255,0.025) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          90deg,
+          rgba(255,255,255,0.025) 1px,
+          transparent 1px
+        );
+
+      background-size: 48px 48px;
+
+      mask-image: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.9),
+        transparent 90%
+      );
+
+      z-index: 0;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+
+      width: 500px;
+      height: 500px;
+
+      left: var(--mouse-x);
+      top: var(--mouse-y);
+
+      transform: translate(-50%, -50%);
+
+      background: radial-gradient(
+        circle,
+        rgba(34,196,142,0.07),
+        transparent 65%
+      );
+
+      pointer-events: none;
+
+      z-index: 0;
+      transition:
+        left 0.15s ease-out,
+        top 0.15s ease-out;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+
+      pointer-events: none;
+
+      opacity: 0.035;
+
+      background-image:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+
+      z-index: 10;
+    }
+
+    .page {
+      min-height: 100vh;
+
+      display: flex;
+      flex-direction: column;
+
+      position: relative;
+      z-index: 2;
+    }
+
+    .top-bar {
       width: 100%;
-      max-width: 920px;
-      text-align: center;
+
+      padding: 26px 38px;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      animation: fadeDown 0.8s ease both;
     }
 
     .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+
+      border-radius: 10px;
+
+      display: grid;
+      place-items: center;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(34,196,142,0.25),
+          rgba(34,196,142,0.05)
+        );
+
+      border: 1px solid rgba(34,196,142,0.25);
+
+      box-shadow:
+        0 0 25px rgba(34,196,142,0.12),
+        inset 0 0 15px rgba(34,196,142,0.05);
+
+      font-size: 17px;
+    }
+
+    .brand-name {
+      font-family: "Manrope", sans-serif;
       font-size: 14px;
       font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
+      letter-spacing: -0.2px;
+    }
+
+    .brand-name span {
       color: var(--emerald);
-      margin-bottom: 18px;
+    }
+
+    .secure {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      color: #748196;
+
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .secure-dot {
+      width: 7px;
+      height: 7px;
+
+      border-radius: 50%;
+
+      background: var(--emerald);
+
+      box-shadow:
+        0 0 10px rgba(34,196,142,0.8);
+
+      animation: pulse 2s infinite;
+    }
+
+    .main {
+      width: 100%;
+      max-width: 1120px;
+
+      margin: 0 auto;
+
+      padding:
+        65px 28px
+        80px;
+
+      flex: 1;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero {
+      text-align: center;
+
+      max-width: 720px;
+
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      padding: 7px 13px;
+
+      border-radius: 999px;
+
+      border: 1px solid rgba(34,196,142,0.18);
+
+      background: rgba(34,196,142,0.06);
+
+      color: #78DDBB;
+
+      font-size: 10px;
+      font-weight: 700;
+
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+
+      width: 5px;
+      height: 5px;
+
+      border-radius: 50%;
+
+      background: var(--emerald);
+
+      box-shadow:
+        0 0 10px rgba(34,196,142,0.8);
     }
 
     h1 {
-      margin: 0;
-      font-size: clamp(30px, 5vw, 46px);
-      line-height: 1.08;
-      letter-spacing: -.03em;
+      margin-top: 23px;
+
+      font-family: "Manrope", sans-serif;
+
+      font-size: clamp(38px, 5vw, 58px);
+
+      line-height: 1.02;
+
+      letter-spacing: -2.8px;
+
+      font-weight: 800;
+
+      background:
+        linear-gradient(
+          110deg,
+          #ffffff 20%,
+          #dce5e3 50%,
+          #9ee6cf 80%
+        );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
-    .subtitle {
-      margin: 14px auto 38px;
-      max-width: 620px;
+    .hero p {
+      margin: 19px auto 0;
+
+      max-width: 580px;
+
       color: var(--muted);
-      font-size: 17px;
-      line-height: 1.6;
+
+      font-size: 15px;
+      line-height: 1.7;
     }
 
     .products {
+      width: 100%;
+
+      margin-top: 58px;
+
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 20px;
+
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+      gap: 22px;
     }
 
-    .product {
+    .product-card {
+      position: relative;
+
+      min-height: 390px;
+
+      padding: 34px;
+
+      border-radius: 25px;
+
+      border: 1px solid var(--card-border);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(20,31,50,0.88),
+          rgba(10,17,29,0.78)
+        );
+
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+
+      overflow: hidden;
+
+      text-decoration: none;
+      color: inherit;
+
+      transform-style: preserve-3d;
+
+      transition:
+        transform 0.45s cubic-bezier(.2,.8,.2,1),
+        border-color 0.35s ease,
+        box-shadow 0.45s ease;
+
+      animation:
+        fadeUp 0.8s ease both;
+    }
+
+    .product-card:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .product-card::before {
+      content: "";
+
+      position: absolute;
+
+      inset: 0;
+
+      background:
+        radial-gradient(
+          circle at 10% 0%,
+          rgba(34,196,142,0.15),
+          transparent 35%
+        );
+
+      opacity: 0.7;
+
+      transition: opacity 0.4s ease;
+
+      pointer-events: none;
+    }
+
+    .product-card.patrium::before {
+      background:
+        radial-gradient(
+          circle at 90% 0%,
+          rgba(214,179,120,0.14),
+          transparent 38%
+        );
+    }
+
+    .product-card::after {
+      content: "";
+
+      position: absolute;
+
+      width: 250px;
+      height: 250px;
+
+      right: -120px;
+      bottom: -130px;
+
+      border-radius: 50%;
+
+      background: rgba(34,196,142,0.08);
+
+      filter: blur(35px);
+
+      transition:
+        transform 0.5s ease,
+        opacity 0.5s ease;
+
+      pointer-events: none;
+    }
+
+    .product-card.patrium::after {
+      background: rgba(214,179,120,0.08);
+    }
+
+    .product-card:hover {
+      transform:
+        translateY(-9px)
+        perspective(1000px)
+        rotateX(1deg);
+
+      border-color:
+        rgba(34,196,142,0.32);
+
+      box-shadow:
+        0 25px 80px rgba(0,0,0,0.42),
+        0 0 40px rgba(34,196,142,0.07);
+    }
+
+    .product-card.patrium:hover {
+      border-color:
+        rgba(214,179,120,0.30);
+
+      box-shadow:
+        0 25px 80px rgba(0,0,0,0.42),
+        0 0 40px rgba(214,179,120,0.06);
+    }
+
+    .product-card:hover::before {
+      opacity: 1;
+    }
+
+    .product-card:hover::after {
+      transform: scale(1.25);
+    }
+
+    .card-content {
+      position: relative;
+      z-index: 2;
+
+      height: 100%;
+
       display: flex;
       flex-direction: column;
-      text-align: left;
-      min-height: 300px;
-      padding: 30px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      text-decoration: none;
-      color: var(--text);
-      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
     }
 
-    .product:hover {
-      transform: translateY(-4px);
-      border-color: rgba(34,196,142,.5);
-      box-shadow: 0 18px 50px rgba(0,0,0,.25);
-    }
+    .product-logo-area {
+      min-height: 78px;
 
-    .icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-weight: 800;
+    }
+
+    .product-logo {
+      max-width: 190px;
+      max-height: 60px;
+
+      width: auto;
+      height: auto;
+
+      object-fit: contain;
+
+      display: block;
+
+      filter:
+        drop-shadow(
+          0 8px 22px rgba(0,0,0,0.25)
+        );
+
+      transition:
+        transform 0.4s ease,
+        filter 0.4s ease;
+    }
+
+    .product-card:hover .product-logo {
+      transform: translateY(-2px) scale(1.025);
+
+      filter:
+        drop-shadow(
+          0 12px 30px rgba(0,0,0,0.35)
+        );
+    }
+
+    .logo-fallback {
+      display: none;
+
+      align-items: center;
+      gap: 12px;
+    }
+
+    .fallback-symbol {
+      width: 48px;
+      height: 48px;
+
+      border-radius: 14px;
+
+      display: grid;
+      place-items: center;
+
+      font-family: "Manrope", sans-serif;
       font-size: 20px;
-      background: rgba(34,196,142,.12);
+      font-weight: 800;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(34,196,142,0.22),
+          rgba(34,196,142,0.04)
+        );
+
+      border: 1px solid rgba(34,196,142,0.25);
+
       color: var(--emerald);
-      margin-bottom: 24px;
+
+      box-shadow:
+        inset 0 0 20px rgba(34,196,142,0.05),
+        0 0 25px rgba(34,196,142,0.06);
     }
 
-    .product.patrium .icon {
-      background: rgba(214,179,120,.12);
+    .patrium .fallback-symbol {
       color: var(--gold);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(214,179,120,0.22),
+          rgba(214,179,120,0.04)
+        );
+
+      border-color:
+        rgba(214,179,120,0.25);
+
+      box-shadow:
+        inset 0 0 20px rgba(214,179,120,0.05),
+        0 0 25px rgba(214,179,120,0.06);
     }
 
-    .product h2 {
-      margin: 0 0 10px;
-      font-size: 25px;
+    .fallback-name {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
     }
 
-    .product p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 15px;
+    .fallback-name strong {
+      font-family: "Manrope", sans-serif;
+      font-size: 22px;
+      letter-spacing: -0.8px;
     }
 
-    .open {
-      margin-top: auto;
-      padding-top: 28px;
-      color: var(--emerald);
-      font-weight: 700;
-      font-size: 14px;
+    .fallback-name span {
+      color: #778397;
+      font-size: 10px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
     }
 
-    .patrium .open { color: var(--gold); }
-
-    .footer {
+    .product-card h2 {
       margin-top: 30px;
-      color: var(--muted);
-      font-size: 13px;
+
+      font-family: "Manrope", sans-serif;
+
+      font-size: 25px;
+      line-height: 1.15;
+
+      letter-spacing: -0.8px;
     }
 
-    @media (max-width: 700px) {
-      body { padding: 18px; }
-      .products { grid-template-columns: 1fr; }
-      .product { min-height: 250px; }
-      .subtitle { margin-bottom: 28px; }
+    .product-card p {
+      margin-top: 12px;
+
+      color: var(--muted);
+
+      font-size: 13px;
+      line-height: 1.65;
+
+      max-width: 440px;
+    }
+
+    .features {
+      margin-top: 24px;
+
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .feature {
+      padding: 7px 10px;
+
+      border-radius: 8px;
+
+      background: rgba(255,255,255,0.035);
+
+      border: 1px solid rgba(255,255,255,0.055);
+
+      color: #8E9AAA;
+
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .card-bottom {
+      margin-top: auto;
+      padding-top: 30px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      color: #8D9AA9;
+
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+
+      border-radius: 50%;
+
+      background: var(--emerald);
+
+      box-shadow:
+        0 0 12px rgba(34,196,142,0.7);
+    }
+
+    .patrium .status-dot {
+      background: var(--gold);
+
+      box-shadow:
+        0 0 12px rgba(214,179,120,0.7);
+    }
+
+    .access {
+      width: 40px;
+      height: 40px;
+
+      border-radius: 12px;
+
+      display: grid;
+      place-items: center;
+
+      background: rgba(255,255,255,0.045);
+
+      border: 1px solid rgba(255,255,255,0.08);
+
+      transition:
+        transform 0.35s ease,
+        background 0.35s ease;
+    }
+
+    .access svg {
+      width: 17px;
+      height: 17px;
+
+      stroke: #B7C2CE;
+
+      transition:
+        transform 0.35s ease,
+        stroke 0.35s ease;
+    }
+
+    .product-card:hover .access {
+      transform: translateX(4px);
+
+      background: rgba(34,196,142,0.12);
+    }
+
+    .product-card:hover .access svg {
+      transform: translateX(2px);
+
+      stroke: var(--emerald);
+    }
+
+    .patrium:hover .access {
+      background: rgba(214,179,120,0.11);
+    }
+
+    .patrium:hover .access svg {
+      stroke: var(--gold);
+    }
+
+    .bottom-note {
+      margin-top: 32px;
+
+      color: #657184;
+
+      font-size: 11px;
+
+      text-align: center;
+
+      animation:
+        fadeUp 0.8s 0.3s ease both;
+    }
+
+    .bottom-note strong {
+      color: #8995A5;
+      font-weight: 600;
+    }
+
+    footer {
+      padding:
+        24px 25px
+        30px;
+
+      text-align: center;
+
+      color: #505C6D;
+
+      font-size: 10px;
+
+      animation:
+        fadeUp 0.8s 0.35s ease both;
+    }
+
+    footer span {
+      color: #687486;
+    }
+
+    .orb {
+      position: fixed;
+
+      border-radius: 50%;
+
+      pointer-events: none;
+
+      filter: blur(1px);
+
+      z-index: 1;
+    }
+
+    .orb.one {
+      width: 220px;
+      height: 220px;
+
+      top: 8%;
+      left: -110px;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(34,196,142,0.07),
+          transparent 70%
+        );
+
+      animation:
+        floatOne 9s ease-in-out infinite;
+    }
+
+    .orb.two {
+      width: 260px;
+      height: 260px;
+
+      right: -130px;
+      bottom: 8%;
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(214,179,120,0.055),
+          transparent 70%
+        );
+
+      animation:
+        floatTwo 11s ease-in-out infinite;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(22px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.55;
+        transform: scale(0.75);
+      }
+    }
+
+    @keyframes floatOne {
+      0%,
+      100% {
+        transform: translate(0,0);
+      }
+
+      50% {
+        transform: translate(35px,45px);
+      }
+    }
+
+    @keyframes floatTwo {
+      0%,
+      100% {
+        transform: translate(0,0);
+      }
+
+      50% {
+        transform: translate(-40px,-30px);
+      }
+    }
+
+    @media (max-width: 780px) {
+
+      .top-bar {
+        padding:
+          20px 20px;
+      }
+
+      .secure {
+        display: none;
+      }
+
+      .main {
+        padding:
+          45px 18px
+          60px;
+      }
+
+      h1 {
+        letter-spacing: -1.9px;
+      }
+
+      .hero p {
+        font-size: 14px;
+      }
+
+      .products {
+        grid-template-columns: 1fr;
+
+        margin-top: 42px;
+      }
+
+      .product-card {
+        min-height: 350px;
+
+        padding: 28px;
+      }
+    }
+
+    @media (max-width: 420px) {
+
+      .brand-name {
+        font-size: 13px;
+      }
+
+      .brand-mark {
+        width: 31px;
+        height: 31px;
+      }
+
+      .main {
+        padding:
+          35px 14px
+          45px;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+
+      .product-card {
+        padding: 24px;
+
+        min-height: 335px;
+      }
+
+      .product-card h2 {
+        font-size: 23px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
+
 </head>
+
 <body>
-  <main class="container">
-    <div class="brand">Bússola Financeira YS</div>
-    <h1>Meus produtos</h1>
-    <p class="subtitle">Sua conta possui acesso a mais de um produto. Escolha qual deseja acessar.</p>
 
-    <section class="products">
-      <a class="product" href="https://prumo.bussolafinanceirays.com">
-        <div class="icon">P</div>
-        <h2>Prumo Finance</h2>
-        <p>Organize suas finanças, acompanhe seus números e transforme controle financeiro em decisões melhores.</p>
-        <div class="open">Acessar Prumo →</div>
-      </a>
+  <div class="noise"></div>
 
-      <a class="product patrium" href="https://patrium.bussolafinanceirays.com">
-        <div class="icon">✦</div>
-        <h2>Patrium Invest</h2>
-        <p>Acompanhe seus investimentos, patrimônio, rentabilidade e evolução financeira em um só lugar.</p>
-        <div class="open">Acessar Patrium →</div>
-      </a>
-    </section>
+  <div class="orb one"></div>
+  <div class="orb two"></div>
 
-    <div class="footer">Bússola Financeira YS · Do controle financeiro à construção do seu patrimônio</div>
-  </main>
+  <div class="page">
+
+```
+<header class="top-bar">
+
+  <a
+    class="brand"
+    href="https://bussolafinanceirays.com"
+    aria-label="Bússola Financeira YS"
+  >
+    <div class="brand-mark">
+      🧭
+    </div>
+
+    <div class="brand-name">
+      Bússola <span>Financeira</span> YS
+    </div>
+  </a>
+
+  <div class="secure">
+    <span class="secure-dot"></span>
+    Ambiente seguro
+  </div>
+
+</header>
+
+
+<main class="main">
+
+  <section class="hero">
+
+    <div class="eyebrow">
+      Seu ecossistema financeiro
+    </div>
+
+    <h1>
+      Meus produtos
+    </h1>
+
+    <p>
+      Sua conta possui acesso a mais de um produto.
+      Escolha a experiência que deseja abrir.
+    </p>
+
+  </section>
+
+
+  <section class="products">
+
+
+    <!-- PRUMO -->
+
+    <a
+      class="product-card prumo"
+      href="https://prumo.bussolafinanceirays.com"
+      aria-label="Abrir Prumo Finance"
+    >
+
+      <div class="card-content">
+
+        <div class="product-logo-area">
+
+          <img
+            class="product-logo"
+            src="https://prumo.bussolafinanceirays.com/logo.svg"
+            alt="Prumo Finance"
+            onerror="showLogoFallback(this, 'prumo')"
+          >
+
+          <div
+            class="logo-fallback"
+            id="fallback-prumo"
+          >
+            <div class="fallback-symbol">
+              P
+            </div>
+
+            <div class="fallback-name">
+              <strong>Prumo</strong>
+              <span>Finance</span>
+            </div>
+          </div>
+
+        </div>
+
+
+        <h2>
+          Prumo Finance
+        </h2>
+
+        <p>
+          Organize sua vida financeira, acompanhe
+          seus números e transforme informação em
+          clareza para tomar melhores decisões.
+        </p>
+
+
+        <div class="features">
+
+          <span class="feature">
+            Controle financeiro
+          </span>
+
+          <span class="feature">
+            Dashboard
+          </span>
+
+          <span class="feature">
+            Planejamento
+          </span>
+
+        </div>
+
+
+        <div class="card-bottom">
+
+          <div class="status">
+            <span class="status-dot"></span>
+            Acesso disponível
+          </div>
+
+          <div class="access">
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14"></path>
+              <path d="m13 6 6 6-6 6"></path>
+            </svg>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </a>
+
+
+    <!-- PATRIUM -->
+
+    <a
+      class="product-card patrium"
+      href="https://patrium.bussolafinanceirays.com/"
+      aria-label="Abrir Patrium Invest"
+    >
+
+      <div class="card-content">
+
+        <div class="product-logo-area">
+
+          <img
+            class="product-logo"
+            src="https://patrium.bussolafinanceirays.com/logo.svg"
+            alt="Patrium Invest"
+            onerror="showLogoFallback(this, 'patrium')"
+          >
+
+          <div
+            class="logo-fallback"
+            id="fallback-patrium"
+          >
+            <div class="fallback-symbol">
+              P
+            </div>
+
+            <div class="fallback-name">
+              <strong>Patrium</strong>
+              <span>Invest</span>
+            </div>
+          </div>
+
+        </div>
+
+
+        <h2>
+          Patrium Invest
+        </h2>
+
+        <p>
+          Acompanhe seus investimentos, construa
+          patrimônio e tenha uma visão completa da
+          evolução da sua carteira.
+        </p>
+
+
+        <div class="features">
+
+          <span class="feature">
+            Investimentos
+          </span>
+
+          <span class="feature">
+            Patrimônio
+          </span>
+
+          <span class="feature">
+            Evolução da carteira
+          </span>
+
+        </div>
+
+
+        <div class="card-bottom">
+
+          <div class="status">
+            <span class="status-dot"></span>
+            Acesso disponível
+          </div>
+
+          <div class="access">
+
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14"></path>
+              <path d="m13 6 6 6-6 6"></path>
+            </svg>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </a>
+
+  </section>
+
+
+  <div class="bottom-note">
+    <strong>Uma conta.</strong>
+    Dois produtos.
+    Uma experiência integrada.
+  </div>
+
+</main>
+
+
+<footer>
+  Bússola Financeira YS
+  <span>·</span>
+  Do controle financeiro à construção do seu patrimônio
+</footer>
+```
+
+  </div>
+
+  <script>
+
+    /*
+      Fallback caso o arquivo logo.svg não exista
+      no domínio do respectivo produto.
+    */
+
+    function showLogoFallback(image, product) {
+
+      image.style.display = "none";
+
+      const fallback =
+        document.getElementById(
+          "fallback-" + product
+        );
+
+      if (fallback) {
+        fallback.style.display = "flex";
+      }
+    }
+
+
+    /*
+      Efeito de iluminação seguindo o mouse.
+    */
+
+    document.addEventListener(
+      "mousemove",
+      function(event) {
+
+        const x =
+          (event.clientX /
+            window.innerWidth) *
+          100;
+
+        const y =
+          (event.clientY /
+            window.innerHeight) *
+          100;
+
+        document.documentElement.style.setProperty(
+          "--mouse-x",
+          x + "%"
+        );
+
+        document.documentElement.style.setProperty(
+          "--mouse-y",
+          y + "%"
+        );
+      }
+    );
+
+
+    /*
+      Pequeno efeito 3D nos cards.
+      Desativado automaticamente em dispositivos
+      que não possuem hover.
+    */
+
+    if (
+      window.matchMedia(
+        "(hover: hover)"
+      ).matches
+    ) {
+
+      document
+        .querySelectorAll(".product-card")
+        .forEach(function(card) {
+
+          card.addEventListener(
+            "mousemove",
+            function(event) {
+
+              const rect =
+                card.getBoundingClientRect();
+
+              const x =
+                event.clientX -
+                rect.left;
+
+              const y =
+                event.clientY -
+                rect.top;
+
+              const rotateY =
+                ((x / rect.width) - 0.5) * 3;
+
+              const rotateX =
+                ((y / rect.height) - 0.5) * -3;
+
+              card.style.transform =
+                "translateY(-9px) perspective(1000px) rotateX(" +
+                rotateX +
+                "deg) rotateY(" +
+                rotateY +
+                "deg)";
+            }
+          );
+
+
+          card.addEventListener(
+            "mouseleave",
+            function() {
+
+              card.style.transform =
+                "";
+            }
+          );
+
+        });
+
+    }
+
+  </script>
+
 </body>
 </html>
