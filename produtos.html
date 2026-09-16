@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus produtos — Bússola Financeira YS</title>
+  <style>
+    :root {
+      --navy: #080D18;
+      --emerald: #22C48E;
+      --gold: #D6B378;
+      --text: #F5F7FA;
+      --muted: #9CA6B5;
+      --card: #111927;
+      --border: rgba(255,255,255,.09);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--navy);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 920px;
+      text-align: center;
+    }
+
+    .brand {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--emerald);
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 46px);
+      line-height: 1.08;
+      letter-spacing: -.03em;
+    }
+
+    .subtitle {
+      margin: 14px auto 38px;
+      max-width: 620px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .product {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      min-height: 300px;
+      padding: 30px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      text-decoration: none;
+      color: var(--text);
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .product:hover {
+      transform: translateY(-4px);
+      border-color: rgba(34,196,142,.5);
+      box-shadow: 0 18px 50px rgba(0,0,0,.25);
+    }
+
+    .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 20px;
+      background: rgba(34,196,142,.12);
+      color: var(--emerald);
+      margin-bottom: 24px;
+    }
+
+    .product.patrium .icon {
+      background: rgba(214,179,120,.12);
+      color: var(--gold);
+    }
+
+    .product h2 {
+      margin: 0 0 10px;
+      font-size: 25px;
+    }
+
+    .product p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .open {
+      margin-top: auto;
+      padding-top: 28px;
+      color: var(--emerald);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .patrium .open { color: var(--gold); }
+
+    .footer {
+      margin-top: 30px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 700px) {
+      body { padding: 18px; }
+      .products { grid-template-columns: 1fr; }
+      .product { min-height: 250px; }
+      .subtitle { margin-bottom: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <div class="brand">Bússola Financeira YS</div>
+    <h1>Meus produtos</h1>
+    <p class="subtitle">Sua conta possui acesso a mais de um produto. Escolha qual deseja acessar.</p>
+
+    <section class="products">
+      <a class="product" href="https://prumo.bussolafinanceirays.com">
+        <div class="icon">P</div>
+        <h2>Prumo Finance</h2>
+        <p>Organize suas finanças, acompanhe seus números e transforme controle financeiro em decisões melhores.</p>
+        <div class="open">Acessar Prumo →</div>
+      </a>
+
+      <a class="product patrium" href="https://patrium.bussolafinanceirays.com">
+        <div class="icon">✦</div>
+        <h2>Patrium Invest</h2>
+        <p>Acompanhe seus investimentos, patrimônio, rentabilidade e evolução financeira em um só lugar.</p>
+        <div class="open">Acessar Patrium →</div>
+      </a>
+    </section>
+
+    <div class="footer">Bússola Financeira YS · Do controle financeiro à construção do seu patrimônio</div>
+  </main>
+</body>
+</html>
