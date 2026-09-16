@@ -54,10 +54,6 @@
       overflow-x: hidden;
     }
 
-    /* ==================================================
-       FUNDO
-    ================================================== */
-
     .background {
       position: fixed;
       inset: 0;
@@ -110,10 +106,6 @@
       mask-image: linear-gradient(to bottom, black, transparent 85%);
     }
 
-    /* ==================================================
-       LAYOUT
-    ================================================== */
-
     .page {
       position: relative;
       z-index: 1;
@@ -131,10 +123,6 @@
       gap: 70px;
       align-items: center;
     }
-
-    /* ==================================================
-       LADO DA MARCA
-    ================================================== */
 
     .brand-side {
       padding: 20px 0;
@@ -189,10 +177,6 @@
       font-size: 17px;
       line-height: 1.7;
     }
-
-    /* ==================================================
-       BÚSSOLA ANIMADA
-    ================================================== */
 
     .compass-area {
       position: relative;
@@ -280,10 +264,30 @@
       color: rgba(255,255,255,.55);
     }
 
-    .direction.n { top: 13px; left: 50%; transform: translateX(-50%); color: var(--gold-light); }
-    .direction.s { bottom: 13px; left: 50%; transform: translateX(-50%); }
-    .direction.e { right: 14px; top: 50%; transform: translateY(-50%); }
-    .direction.w { left: 14px; top: 50%; transform: translateY(-50%); }
+    .direction.n {
+      top: 13px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--gold-light);
+    }
+
+    .direction.s {
+      bottom: 13px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .direction.e {
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .direction.w {
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
 
     .needle {
       position: absolute;
@@ -376,10 +380,6 @@
       animation: statusPulse 2s infinite;
     }
 
-    /* ==================================================
-       CARD LOGIN
-    ================================================== */
-
     .login-card {
       position: relative;
       width: 100%;
@@ -456,10 +456,6 @@
       font-size: 14px;
       line-height: 1.55;
     }
-
-    /* ==================================================
-       CAMPOS
-    ================================================== */
 
     .field {
       margin-bottom: 17px;
@@ -539,10 +535,6 @@
     .password-toggle:hover {
       color: #fff;
     }
-
-    /* ==================================================
-       BOTÃO
-    ================================================== */
 
     .primary-btn {
       position: relative;
@@ -626,10 +618,6 @@
       color: var(--gold-light);
     }
 
-    /* ==================================================
-       MENSAGENS
-    ================================================== */
-
     .message {
       display: none;
       margin-top: 17px;
@@ -672,10 +660,6 @@
         transform: translateY(0);
       }
     }
-
-    /* ==================================================
-       RECOVERY
-    ================================================== */
 
     .recovery-card {
       display: none;
@@ -735,10 +719,6 @@
       content: "✓";
     }
 
-    /* ==================================================
-       RODAPÉ
-    ================================================== */
-
     .security {
       display: flex;
       align-items: center;
@@ -771,10 +751,6 @@
       pointer-events: none;
     }
 
-    /* ==================================================
-       ANIMAÇÕES
-    ================================================== */
-
     @keyframes fadeUp {
       from {
         opacity: 0;
@@ -785,10 +761,6 @@
         transform: translateY(0);
       }
     }
-
-    /* ==================================================
-       RESPONSIVO
-    ================================================== */
 
     @media (max-width: 850px) {
       .page {
@@ -879,21 +851,18 @@
 
     <div class="shell">
 
-      <!-- ==================================================
-           MARCA
-      ================================================== -->
-
       <section class="brand-side">
 
         <div class="brand-mark">
           <span class="brand-mark-line"></span>
           Bússola Financeira YS
-     <span class="brand-mark-line"></span>
+          <span class="brand-mark-line"></span>
         </div>
 
-<h1>
-  Organize sua vida financeira.
-</h1>
+        <h1>
+          Organize sua vida financeira.
+        </h1>
+
         <p class="brand-description">
           Do controle financeiro à construção do seu patrimônio.<br>
           Assuma o controle. Encontre a direção. Construa o seu futuro.
@@ -940,13 +909,7 @@
       </section>
 
 
-      <!-- ==================================================
-           ÁREA DE AUTENTICAÇÃO
-      ================================================== -->
-
       <section>
-
-        <!-- LOGIN NORMAL -->
 
         <div class="login-card" id="loginCard">
 
@@ -1070,8 +1033,6 @@
 
         </div>
 
-
-        <!-- RECUPERAÇÃO DE SENHA -->
 
         <div
           class="login-card recovery-card"
@@ -1247,6 +1208,27 @@
   const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_bGaSjpWnKibqowcO1LWTaA_lEKRwx4U";
 
+
+  /* ==================================================
+     PRODUTOS
+  ================================================== */
+
+  const PRUMO_PRODUCT_ID =
+    "f4c1af50-a083-11f1-9773-298e381a2f95";
+
+  const PATRIUM_PRODUCT_ID =
+    "63df3710-b1c6-11f1-ac16-9998ac7f49b1";
+
+  const PRODUTOS_URL =
+    "https://prumo.bussolafinanceirays.com/produtos.html";
+
+  const PRUMO_URL =
+    "https://prumo.bussolafinanceirays.com";
+
+  const PATRIUM_URL =
+    "https://patrium.bussolafinanceirays.com";
+
+
   const supabaseClient =
     supabase.createClient(
       SUPABASE_URL,
@@ -1308,6 +1290,123 @@
 
     element.className =
       "message";
+
+  }
+
+
+  /* ==================================================
+     DIRECIONAMENTO POR PRODUTO
+  ================================================== */
+
+  async function routeUserByProducts(userId) {
+
+    const {
+      data: purchases,
+      error
+    } = await supabaseClient
+      .from("Purchases")
+      .select("product_id, access_active")
+      .eq("user_id", userId)
+      .eq("access_active", true);
+
+
+    if (error) {
+
+      console.error(
+        "Erro ao verificar produtos:",
+        error
+      );
+
+      throw new Error(
+        "Não foi possível verificar os produtos da sua conta."
+      );
+
+    }
+
+
+    console.log(
+      "Produtos ativos encontrados:",
+      purchases
+    );
+
+
+    const hasPrumo =
+      purchases?.some(
+        purchase =>
+          purchase.product_id === PRUMO_PRODUCT_ID
+      ) || false;
+
+
+    const hasPatrium =
+      purchases?.some(
+        purchase =>
+          purchase.product_id === PATRIUM_PRODUCT_ID
+      ) || false;
+
+
+    console.log(
+      "Acesso Prumo:",
+      hasPrumo
+    );
+
+    console.log(
+      "Acesso Patrium:",
+      hasPatrium
+    );
+
+
+    /*
+       POSSUI OS DOIS PRODUTOS
+    */
+
+    if (
+      hasPrumo &&
+      hasPatrium
+    ) {
+
+      window.location.href =
+        PRODUTOS_URL;
+
+      return;
+
+    }
+
+
+    /*
+       POSSUI SOMENTE PRUMO
+    */
+
+    if (hasPrumo) {
+
+      window.location.href =
+        PRUMO_URL;
+
+      return;
+
+    }
+
+
+    /*
+       POSSUI SOMENTE PATRIUM
+    */
+
+    if (hasPatrium) {
+
+      window.location.href =
+        PATRIUM_URL;
+
+      return;
+
+    }
+
+
+    /*
+       NENHUM PRODUTO ATIVO
+    */
+
+    throw new Error(
+      "Esta conta não possui nenhum produto com acesso ativo."
+    );
 
   }
 
@@ -1407,14 +1506,6 @@
       );
 
 
-      /*
-         RECUPERAÇÃO / DEFINIÇÃO DE SENHA
-
-         Sempre que o Supabase entregar uma sessão
-         de recuperação, mostramos a tela de criação
-         de palavra-passe.
-      */
-
       if (
         event === "PASSWORD_RECOVERY"
       ) {
@@ -1425,13 +1516,6 @@
 
       }
 
-
-      /*
-         Se a página foi aberta diretamente através
-         de um link de recuperação, não mostramos
-         o login enquanto o Supabase termina de
-         processar a sessão.
-      */
 
       if (
         recoveryUrl
@@ -1449,10 +1533,6 @@
 
   /*
      Verificação inicial.
-
-     Isto cobre o caso em que a sessão já foi
-     processada antes do listener acima estar
-     completamente preparado.
   */
 
   (async () => {
@@ -1517,6 +1597,7 @@
       const password =
         passwordInput.value;
 
+
       if (!email || !password) {
 
         showMessage(
@@ -1528,6 +1609,7 @@
         return;
 
       }
+
 
       loginButton.disabled = true;
 
@@ -1558,9 +1640,12 @@
           let text =
             "Não foi possível entrar. Verifique o e-mail e a palavra-passe.";
 
+
           if (
             error.message &&
-            error.message.toLowerCase().includes("email not confirmed")
+            error.message
+              .toLowerCase()
+              .includes("email not confirmed")
           ) {
 
             text =
@@ -1568,15 +1653,19 @@
 
           }
 
+
           if (
             error.message &&
-            error.message.toLowerCase().includes("too many")
+            error.message
+              .toLowerCase()
+              .includes("too many")
           ) {
 
             text =
               "Foram feitas muitas tentativas. Aguarde alguns minutos e tente novamente.";
 
           }
+
 
           showMessage(
             loginMessage,
@@ -1595,33 +1684,52 @@
         );
 
 
+        if (!data.user?.id) {
+
+          showMessage(
+            loginMessage,
+            "Não foi possível identificar a sua conta.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
         showMessage(
           loginMessage,
-          "Acesso confirmado. A abrir a sua Bússola...",
+          "Acesso confirmado. A verificar os seus produtos...",
           "success"
         );
 
 
-        setTimeout(
-          () => {
-            window.location.href = "/";
-          },
-          500
+        await new Promise(
+          resolve =>
+            setTimeout(resolve, 300)
+        );
+
+
+        await routeUserByProducts(
+          data.user.id
         );
 
 
       } catch (error) {
 
         console.error(
-          "Erro inesperado no login:",
+          "Erro ao direcionar utilizador:",
           error
         );
 
+
         showMessage(
           loginMessage,
-          "Ocorreu um erro inesperado. Tente novamente.",
+          error.message ||
+            "Não foi possível identificar os produtos da sua conta.",
           "error"
         );
+
 
       } finally {
 
@@ -1704,6 +1812,7 @@
             let text =
               "Não foi possível enviar o e-mail de recuperação. Tente novamente.";
 
+
             if (
               errorMessage.includes("rate limit") ||
               errorMessage.includes("too many") ||
@@ -1728,6 +1837,7 @@
                 "Não encontrámos uma conta associada a este e-mail.";
 
             }
+
 
             showMessage(
               loginMessage,
@@ -1798,10 +1908,6 @@
           .value;
 
 
-      /* ------------------------------------------------
-         VALIDAÇÕES
-      ------------------------------------------------ */
-
       if (newPassword.length < 6) {
 
         showMessage(
@@ -1836,70 +1942,73 @@
 
       try {
 
-let {
-  data: sessionData,
-  error: sessionError
-} =
-  await supabaseClient.auth.getSession();
+        let {
+          data: sessionData,
+          error: sessionError
+        } =
+          await supabaseClient.auth.getSession();
 
 
-if (sessionError) {
+        if (sessionError) {
 
-  console.error(
-    "Erro ao obter sessão de recuperação:",
-    sessionError
-  );
+          console.error(
+            "Erro ao obter sessão de recuperação:",
+            sessionError
+          );
 
-}
-
-
-if (!sessionData?.session) {
-
-  await new Promise(
-    resolve => setTimeout(resolve, 800)
-  );
-
-  const {
-    data: retrySessionData
-  } =
-    await supabaseClient.auth.getSession();
-
-  sessionData =
-    retrySessionData;
-
-}
+        }
 
 
-if (!sessionData?.session) {
+        if (!sessionData?.session) {
 
-  console.error(
-    "Sessão de recuperação não encontrada."
-  );
-
-  showMessage(
-    recoveryMessage,
-    "A sessão de recuperação ainda não está pronta. Aguarde alguns segundos e tente novamente.",
-    "error"
-  );
-
-  recoveryButton.disabled = false;
-
-  recoveryButton.textContent =
-    "Criar nova palavra-passe";
-
-  return;
-
-}
+          await new Promise(
+            resolve =>
+              setTimeout(resolve, 800)
+          );
 
 
-const {
-  error
-} =
-  await supabaseClient.auth
-    .updateUser({
-      password:
-        newPassword
-    });
+          const {
+            data: retrySessionData
+          } =
+            await supabaseClient.auth.getSession();
+
+
+          sessionData =
+            retrySessionData;
+
+        }
+
+
+        if (!sessionData?.session) {
+
+          console.error(
+            "Sessão de recuperação não encontrada."
+          );
+
+          showMessage(
+            recoveryMessage,
+            "A sessão de recuperação ainda não está pronta. Aguarde alguns segundos e tente novamente.",
+            "error"
+          );
+
+          recoveryButton.disabled = false;
+
+          recoveryButton.textContent =
+            "Criar nova palavra-passe";
+
+          return;
+
+        }
+
+
+        const {
+          error
+        } =
+          await supabaseClient.auth
+            .updateUser({
+              password:
+                newPassword
+            });
 
 
         if (error) {
@@ -1918,10 +2027,6 @@ const {
             "Não foi possível alterar a palavra-passe.";
 
 
-          /*
-             LINK EXPIRADO / INVÁLIDO
-          */
-
           if (
             errorMessage.includes("expired") ||
             errorMessage.includes("invalid") ||
@@ -1935,28 +2040,20 @@ const {
           }
 
 
-          /*
-             SENHA IGUAL À ANTERIOR
-          */
+          if (
+            errorMessage.includes("same password") ||
+            errorMessage.includes("password should be different") ||
+            errorMessage.includes("new password should be different") ||
+            errorMessage.includes("password is the same") ||
+            errorMessage.includes("reuse") ||
+            errorMessage.includes("previous password")
+          ) {
 
-if (
-  errorMessage.includes("same password") ||
-  errorMessage.includes("password should be different") ||
-  errorMessage.includes("new password should be different") ||
-  errorMessage.includes("password is the same") ||
-  errorMessage.includes("reuse") ||
-  errorMessage.includes("previous password")
-) {
-
-  text =
-    "Esta palavra-passe já foi utilizada anteriormente. Escolha uma palavra-passe diferente.";
+            text =
+              "Esta palavra-passe já foi utilizada anteriormente. Escolha uma palavra-passe diferente.";
 
           }
 
-
-          /*
-             SENHA FRACA
-          */
 
           if (
             errorMessage.includes("password") &&
@@ -1996,10 +2093,42 @@ if (
 
 
         setTimeout(
-          () => {
+          async () => {
 
-            window.location.href =
-              "/";
+            try {
+
+              const {
+                data: sessionResult
+              } =
+                await supabaseClient.auth.getSession();
+
+
+              if (
+                sessionResult?.session?.user?.id
+              ) {
+
+                await routeUserByProducts(
+                  sessionResult.session.user.id
+                );
+
+              } else {
+
+                window.location.href =
+                  PRUMO_URL;
+
+              }
+
+            } catch (error) {
+
+              console.error(
+                "Erro ao direcionar após recuperação:",
+                error
+              );
+
+              window.location.href =
+                PRUMO_URL;
+
+            }
 
           },
           1200
@@ -2062,6 +2191,7 @@ if (
 
     const input =
       document.getElementById(inputId);
+
 
     button.addEventListener(
       "click",
